@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Shuttle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#181a1b">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">SmartShuttle</h1>
+            <div class="status-container">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <div class="status-label">LIVE Tracker</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+
+            <div class="bus-image-container">
+                <img src="images/shuttle.svg" alt="Shuttle Bus" class="bus-image">
+            </div>
+
+            <button class="next-button" id="nextButton">
+                <img src="images/arrow.svg" alt="Next" class="arrow-icon">
+            </button>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

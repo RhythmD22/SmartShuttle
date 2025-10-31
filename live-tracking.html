@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Shuttle - Live Tracking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/live-tracking.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#181a1b">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <button class="search-btn">
+                    <img src="images/search.svg" alt="Search" class="icon">
+                </button>
+            </div>
+            <div class="header-center">
+                <div class="live-indicator-container">
+                    <div class="live-indicator" id="statusIndicator"></div>
+                    <div class="header-text">LIVE shuttle tracking</div>
+                </div>
+                <div class="current-location">
+                    <img src="images/curvedright.svg" alt=">" class="icon">
+                    <span>Current Location</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="menu-btn">
+                    <img src="images/feedback.svg" alt="Feedback" class="icon">
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div id="map" class="map-container"></div>
+            <div id="location-confirmation" class="location-confirmation">
+                <div class="location-confirmation-content">
+                    <h3>Allow Location Access</h3>
+                    <p>This app needs your location to show nearby shuttles and provide accurate tracking.</p>
+                    <div class="location-buttons">
+                        <button id="allow-location" class="location-btn allow-btn">Allow</button>
+                        <button id="deny-location" class="location-btn deny-btn">Deny</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom navigation -->
+        <div class="bottom-nav">
+            <div class="bottom-nav-content">
+                <div class="nav-icon">
+                    <img src="images/map.svg" alt="Map" class="nav-icon-img">
+                </div>
+                <div class="nav-rectangle">
+                    <img src="images/location.svg" alt="Location" class="nav-icon-img">
+                </div>
+            </div>
+        </div>
+
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            // Initialize the map
+            const map = L.map('map').setView([40.4406, -79.9951], 15); // Set initial view to a default location (Pittsburgh as example)
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Function to get user's current location
+            function getUserLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showUserLocation, handleLocationError);
+                } else {
+                    console.log("Geolocation is not supported by this browser.");
+                }
+            }
+
+            // Function to show user's location on the map
+            function showUserLocation(position) {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                // Add user location marker
+                const userMarker = L.marker([userLat, userLng]).addTo(map);
+                userMarker.bindPopup('Your Location').openPopup();
+
+                // Add a circle around the user location to indicate accuracy
+                const accuracy = position.coords.accuracy;
+                L.circle([userLat, userLng], {
+                    color: '#6A63F6',
+                    fillColor: '#6A63F6',
+                    fillOpacity: 0.2,
+                    radius: accuracy
+                }).addTo(map);
+
+                // Optionally center map on user location
+                map.setView([userLat, userLng], 15);
+            }
+
+            // Function to handle location errors
+            function handleLocationError(error) {
+                console.log("Unable to retrieve your location. Error code: " + error.code + ", Message: " + error.message);
+
+                // Still show a default location if user denies location access
+                // Using a default location (e.g., center of campus or city)
+                const defaultMarker = L.marker([40.4406, -79.9951]).addTo(map);
+                defaultMarker.bindPopup('Current Location').openPopup();
+            }
+
+            // Add sample shuttle/bus markers to the map
+            function addShuttleMarkers() {
+                // Sample shuttle locations - in a real app, these would come from an API
+                const shuttleLocations = [
+                    { lat: 40.4425, lng: -79.9980, id: 'Shuttle 1', route: 'Route A' },
+                    { lat: 40.4390, lng: -79.9920, id: 'Shuttle 2', route: 'Route B' },
+                    { lat: 40.4440, lng: -79.9960, id: 'Shuttle 3', route: 'Route C' },
+                    { lat: 40.4380, lng: -79.9990, id: 'Shuttle 4', route: 'Route A' },
+                    { lat: 40.4415, lng: -79.9935, id: 'Shuttle 5', route: 'Route B' }
+                ];
+
+                shuttleLocations.forEach(shuttle => {
+                    // Create a custom icon for the shuttle
+                    const shuttleIcon = L.divIcon({
+                        className: 'shuttle-icon',
+                        html: '🚌',
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
+                    });
+
+                    // Add shuttle marker to the map
+                    const marker = L.marker([shuttle.lat, shuttle.lng], { icon: shuttleIcon }).addTo(map);
+                    marker.bindPopup(`<b>${shuttle.id}</b><br>Route: ${shuttle.route}`);
+                });
+            }
+
+            // Get user location and add shuttle markers when the map is loaded
+            map.whenReady(function () {
+                getUserLocation();
+                addShuttleMarkers();
+            });
+        </script>
+        <script src="js/live-tracking.js"></script>
+</body>
+
+</html>
