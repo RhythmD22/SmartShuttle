@@ -1,0 +1,222 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #181a1b;
+    color: #fff;
+    line-height: 1.2;
+    overflow: hidden;
+    /* Prevent scrolling */
+    width: 100vw;
+    /* Ensure body is exactly viewport width */
+    height: 100vh;
+    /* Ensure body is exactly viewport height */
+    max-width: 100vw;
+    /* Prevent exceeding viewport width */
+    max-height: 100vh;
+    /* Prevent exceeding viewport height */
+}
+
+/* Container */
+.container {
+    max-width: 100%;
+    min-height: 100vh;
+    height: 100vh;
+    /* Fixed height to prevent overflow */
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    background: #181a1b;
+    overflow: hidden;
+    /* Prevent any overflow */
+}
+
+/* Header */
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.app-title {
+    font-size: 40px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    /* Stretch items to full width */
+    justify-content: center;
+    padding: 0 0 20px;
+    /* Removed horizontal padding */
+    text-align: left;
+    /* Change from center to allow full width */
+}
+
+.status-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.status-label {
+    font-size: 24px;
+    font-weight: 600;
+    /* semibold */
+    color: #C8C7C5;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #F8312F;
+    /* Red color as requested */
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.bus-details {
+    margin-bottom: 30px;
+}
+
+.bus-number {
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.bus-route {
+    font-size: 18px;
+    color: #ccc;
+}
+
+/* Next Button */
+.next-button {
+    background-color: #6A63F6;
+    /* Purple color matching the original design */
+    border: none;
+    border-radius: 0;
+    /* Remove rounded corners */
+    width: 90px;
+    /* Increased width */
+    height: 60px;
+    /* Increased height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin: 20px auto;
+    /* Center the button with auto margins */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+}
+
+.next-button:hover {
+    background-color: #5a53e6;
+}
+
+.next-button:active {
+    transform: scale(0.98);
+}
+
+.arrow-icon {
+    width: 30px;
+    /* Increased size for the arrow image */
+    height: 30px;
+    -webkit-filter: brightness(0) invert(1);
+    /* Make it white for Safari/older browsers */
+    filter: brightness(0) invert(1);
+    /* Make it white */
+}
+
+.bus-image-container {
+    margin: 15px 0 10px;
+    /* Reduced top margin to move image up */
+    width: 100%;
+    overflow: hidden;
+}
+
+.bus-image {
+    width: 100%;
+    height: 200px;
+    /* Fixed height to make it appear stretched */
+    object-fit: cover;
+    /* Stretch the image to cover the area */
+    max-width: 100%;
+    display: block;
+    /* Remove any inline spacing */
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    margin: 0;
+    /* Ensure no margins */
+    padding: 0;
+    /* Ensure no padding */
+    position: relative;
+    /* Ensure proper positioning */
+}
+
+
+
+/* Responsive design */
+@media (min-width: 768px) {
+    .container {
+        max-width: 500px;
+        margin: 0 auto;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-label {
+        font-size: 32px;
+    }
+
+    .bus-number {
+        font-size: 36px;
+    }
+
+    .bus-route {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .status-label {
+        font-size: 20px;
+    }
+
+    .bus-number {
+        font-size: 24px;
+    }
+
+    .bus-route {
+        font-size: 16px;
+    }
+}

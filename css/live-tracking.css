@@ -1,0 +1,610 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #181a1b;
+    color: #fff;
+    line-height: 1.2;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+}
+
+/* Container */
+.container {
+    max-width: 100%;
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    background: #181a1b;
+    overflow: hidden;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #333;
+}
+
+/* Header positioning */
+.header-left,
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    margin: 0 20px;
+}
+
+.live-indicator-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+/* Icon styles */
+.icon {
+    width: 24px;
+    height: 24px;
+}
+
+.search-btn,
+.menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.search-btn:hover,
+.menu-btn:hover {
+    background-color: #2a2d2f;
+}
+
+.live-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #F8312F;
+    margin-right: 8px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.header-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.current-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    color: #fff;
+    font-size: 15px;
+}
+
+.status-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.status-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.status-label {
+    font-size: 20px;
+    font-weight: 600;
+    color: #C8C7C5;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #F8312F;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff;
+    margin: 0;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow-y: auto;
+    padding-bottom: 140px;
+    /* Account for fixed bottom navigation height */
+}
+
+/* Map Container */
+.map-container {
+    flex: 1;
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+    z-index: 0;
+}
+
+/* Shuttle Icon */
+.shuttle-icon {
+    font-size: 30px;
+    text-align: center;
+}
+
+/* Location Confirmation Popup */
+.location-confirmation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.location-confirmation-content {
+    background-color: #181a1b;
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 80%;
+    width: 300px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.location-confirmation h3 {
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.location-confirmation p {
+    color: #C8C7C5;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.location-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.location-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.allow-btn {
+    background-color: #6A63F6;
+    color: white;
+    flex: 1;
+}
+
+.allow-btn:hover {
+    background-color: #5a53e6;
+}
+
+.deny-btn {
+    background-color: #333;
+    color: white;
+    flex: 1;
+}
+
+.deny-btn:hover {
+    background-color: #444;
+}
+
+/* User location icon */
+.user-location-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-location-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #6A63F6;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.bus-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #333;
+    margin-bottom: 20px;
+}
+
+.bus-details {
+    flex: 1;
+}
+
+.bus-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.bus-route {
+    font-size: 16px;
+    color: #C8C7C5;
+}
+
+.bus-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #2a2d2f;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+.location-text {
+    font-size: 14px;
+    color: #fff;
+}
+
+.map-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    min-height: 300px;
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 250px;
+    background: #2a2d2f;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.bus-icon {
+    font-size: 40px;
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    animation: moveBus 5s infinite alternate;
+}
+
+@keyframes moveBus {
+    from {
+        left: 20%;
+    }
+
+    to {
+        left: 80%;
+    }
+}
+
+.route-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #6A63F6;
+    z-index: 1;
+}
+
+.stop {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    color: #181a1b;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 3;
+}
+
+.stop-1 {
+    left: 10%;
+}
+
+.stop-2 {
+    left: 35%;
+}
+
+.stop-3 {
+    left: 65%;
+}
+
+.stop-4 {
+    left: 90%;
+}
+
+.stop.active {
+    background: #6A63F6;
+    color: #fff;
+}
+
+.schedule-info {
+    margin-top: 20px;
+}
+
+.schedule-header {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.schedule-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+}
+
+.schedule-time {
+    font-weight: bold;
+    color: #fff;
+}
+
+.schedule-location {
+    color: #C8C7C5;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+    .container {
+        max-width: 500px;
+        margin: 0 auto;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .page-title {
+        font-size: 36px;
+    }
+
+    .bus-number {
+        font-size: 28px;
+    }
+}
+
+/* Bottom navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    z-index: 100;
+    background-color: #181a1b;
+    border-top: 1px solid #333;
+    padding: 10px 0;
+}
+
+.bottom-nav-content {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.nav-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #6A63F6;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-rectangle {
+    width: 35px;
+    height: 50px;
+    background-color: #413C96;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: calc(50% + 55px);
+    /* Position it further to the right of the centered map icon */
+}
+
+.nav-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #6A63F6;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-rectangle {
+    width: 35px;
+    height: 50px;
+    background-color: #413C96;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-icon-img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+    /* Makes the icon white */
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.footer-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #6A63F6;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.footer-rectangle {
+    width: 40px;
+    height: 50px;
+    background-color: #413C96;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: calc(50% + 55px);
+    /* Position it to the right of the centered icon with more space */
+}
+
+.map-icon {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+    /* Makes the icon white */
+}
+
+.footer-rectangle {
+    width: 40px;
+    height: 50px;
+    background-color: #413C96;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.location-icon {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+    /* Makes the icon white */
+}
+
+@media (max-width: 480px) {
+    .bus-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .page-title {
+        font-size: 28px;
+    }
+
+    .status-label {
+        font-size: 18px;
+    }
+}
