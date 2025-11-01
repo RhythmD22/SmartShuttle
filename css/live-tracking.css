@@ -30,41 +30,78 @@ body {
     overflow: hidden;
 }
 
-/* Header */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #333;
+/* Header - more specific selector to override general styles */
+body .container .header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 15px 20px !important;
+    /* Reduced vertical padding */
+    border-bottom: 1px solid #333 !important;
+    min-height: 70px !important;
+    flex-direction: row !important;
 }
 
-/* Header positioning */
-.header-left,
-.header-right {
-    display: flex;
-    align-items: center;
+/* Header positioning - more specific to override general styles */
+body .header-left,
+body .header-right {
+    display: flex !important;
+    align-items: center !important;
+    z-index: 10 !important;
+    min-width: 60px !important;
+    /* Ensure consistent spacing for icons */
 }
 
-.header-center {
+.container .header .header-center {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     flex: 1;
     margin: 0 20px;
+    text-align: center;
+    min-height: 0;
+    min-width: 0;
+}
+
+.current-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* Reduced gap */
+    margin-top: 0;
+    /* Remove top margin */
+    color: #fff;
+    font-size: 14px;
+}
+
+/* Make the header center more compact by adjusting line spacing */
+.header-center>* {
+    line-height: 1.2;
 }
 
 .live-indicator-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 5px;
+    gap: 6px;
+    /* Add space between indicator and text */
+}
+
+.live-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #F8312F;
+    /* Removed margin-right since we're using gap now */
+    animation: blink 1s infinite;
 }
 
 /* Icon styles */
 .icon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
+    display: block;
 }
 
 .search-btn,
@@ -78,6 +115,9 @@ body {
     align-items: center;
     justify-content: center;
     transition: background-color 0.2s;
+    min-width: auto;
+    width: 40px;
+    height: 40px;
 }
 
 .search-btn:hover,
@@ -115,23 +155,6 @@ body {
     color: #fff;
 }
 
-.current-location {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px;
-    color: #fff;
-    font-size: 15px;
-}
-
-.status-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
 .status-container {
     display: flex;
     align-items: center;
@@ -152,20 +175,6 @@ body {
     border-radius: 50%;
     background-color: #F8312F;
     animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    0% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.3;
-    }
-
-    100% {
-        opacity: 1;
-    }
 }
 
 .page-title {
@@ -194,8 +203,6 @@ body {
     border-radius: 8px;
     z-index: 0;
 }
-
-
 
 /* Location Confirmation Popup */
 .location-confirmation {
@@ -287,10 +294,6 @@ body {
     border: 2px solid white;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
-
-
-
-
 
 .schedule-info {
     margin-top: 20px;
@@ -461,8 +464,6 @@ body {
     left: calc(50% + 55px);
     /* Position it to the right of the centered icon with more space */
 }
-
-
 
 @media (max-width: 480px) {
     .bus-info {
