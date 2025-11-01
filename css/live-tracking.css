@@ -5,6 +5,13 @@
     box-sizing: border-box;
 }
 
+/* Force light mode to prevent iOS from automatically applying dark mode to icons */
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: light !important;
+    }
+}
+
 body {
     font-family: 'Inter', Arial, sans-serif;
     background: #181a1b;
