@@ -4,9 +4,18 @@ const CACHE_NAME = 'smart-shuttle-v1';
 const urlsToCache = [
   '/',
   '/index.html',
+  '/live-tracking.html',
   '/css/style.css',
+  '/css/live-tracking.css',
   '/js/main.js',
-  '/images/shuttle.png'
+  '/js/live-tracking.js',
+  '/images/shuttle.svg',
+  '/images/arrow.svg',
+  '/images/search.svg',
+  '/images/curvedright.svg',
+  '/images/feedback.svg',
+  '/images/map.svg',
+  '/images/location.svg'
 ];
 
 // Install event - cache resources
