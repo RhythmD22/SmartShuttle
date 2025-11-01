@@ -22,16 +22,6 @@ SmartShuttle is a Progressive Web Application (PWA) that provides real-time shut
 - Web Manifest for PWA features
 - Geolocation API for location services
 
-## Installation and Setup
-
-1. Clone or download this repository to your local machine
-2. Open `index.html` in your web browser to view the main application
-3. Navigate to `live-tracking.html` to access the real-time tracking interface
-4. For local development server (recommended), use:
-   - Python: `python -m http.server 8000`
-   - Node.js: `npx serve .`
-   - Or any local server that can serve static files
-
 ## PWA Capabilities
 
 SmartShuttle is built as a Progressive Web App with the following features:
@@ -39,9 +29,7 @@ SmartShuttle is built as a Progressive Web App with the following features:
 - **Installable**: Users can install the app on their device home screen
 - **Offline Support**: Basic functionality available when offline
 - **App-like Experience**: Looks and feels like a native app when installed
-- **Responsive**: Works on any device size
 - **Fast Loading**: Optimized for performance and quick loading
-- **Secure**: Served via HTTPS in production
 
 ## Project Structure
 
@@ -58,24 +46,15 @@ SmartShuttle/
 │   ├── main.js             # Main application JavaScript
 │   └── live-tracking.js    # Live tracking page JavaScript
 ├── images/                 # Application images and icons
-└── README.md              # Project documentation
+└── README.md               # Project documentation
 ```
 
 ## How It Works
 
-1. **Main Interface**: The home page provides access to the live tracking feature
-2. **Location Access**: On the live tracking page, the app requests access to your location
-3. **Real-time Tracking**: Once location access is granted, the map displays your location and nearby shuttles
-4. **Interactive Map**: Use the map controls to navigate and view shuttle positions
-5. **Service Information**: Access additional information about shuttle schedules and routes
-
-## Browser Compatibility
-
-SmartShuttle is compatible with all modern browsers that support PWA features:
-- Chrome (latest versions)
-- Firefox (latest versions)
-- Safari (iOS and macOS)
-- Edge (latest versions)
+1. **Location Access**: On the live tracking page, the app requests access to your location.
+2. **Real-time Tracking**: Once location access is granted, the map displays your location and nearby shuttles.
+3. **Interactive Map**: Use the map controls to navigate and view shuttle positions.
+4. **Service Information**: Access additional information about shuttle schedules and routes.
 
 ## Contributing
 
@@ -91,16 +70,10 @@ Contributions to improve SmartShuttle are welcome. To contribute:
 ## Future Enhancements
 
 - Push notifications for shuttle arrival times
-- Enhanced route planning features
 - User feedback and rating system
 - Shuttle capacity information
-- Multi-language support
 - Accessibility improvements
 
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
-
-## Support
-
-If you encounter any issues or have questions about the application, please open an issue in the repository or contact the development team.
