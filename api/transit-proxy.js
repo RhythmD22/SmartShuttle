@@ -1,7 +1,12 @@
 export default async function handler(request, response) {
   try {
     // Extract the API endpoint from the URL - construct complete URL with query parameters
-    const { pathname, search } = new URL(request.url);
+    // In Next.js API routes, request.url includes the path and query string but not the protocol/host
+    // We need to parse the path and query separately
+    const urlParts = request.url.split('?');
+    const pathname = urlParts[0];
+    const search = urlParts.length > 1 ? '?' + urlParts[1] : '';
+    
     const endpoint = pathname.replace('/api/transit', '');
     const searchParams = search; // This includes the ? and all parameters
 
@@ -13,8 +18,26 @@ export default async function handler(request, response) {
       return response.status(500).json({ error: 'Transit API key not configured' });
     }
 
+    // Ensure endpoint starts with a slash to create a valid URL
+    const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    
+    // Transit API v3 requires the /public prefix for public endpoints
+    // Check if the endpoint already has /public, if not, add it
+    const apiEndpoint = formattedEndpoint.startsWith('/public') ? formattedEndpoint : `/public${formattedEndpoint}`;
+    
     // Construct the target URL for the Transit API, properly including query parameters
-    const targetUrl = `https://external.transitapp.com/v3${endpoint}${searchParams}`;
+    const targetUrl = `https://external.transitapp.com/v3${apiEndpoint}${searchParams}`;
+    
+    // Validate the constructed URL
+    try {
+      new URL(targetUrl);
+    } catch (urlError) {
+      console.error('Invalid target URL constructed:', targetUrl, urlError);
+      return response.status(400).json({ 
+        error: 'Invalid API endpoint', 
+        details: 'The requested endpoint is malformed' 
+      });
+    }
 
     console.log(`Forwarding request to: ${targetUrl}`); // Debug log
 
