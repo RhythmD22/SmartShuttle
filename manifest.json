@@ -1,0 +1,31 @@
+{
+    "name": "SmartShuttle",
+    "short_name": "SmartShuttle",
+    "description": "Live Shuttle Tracker",
+    "start_url": "/SmartShuttle/",
+    "display": "standalone",
+    "background_color": "#181a1b",
+    "theme_color": "#6A63F6",
+    "icons": [
+        {
+            "src": "/SmartShuttle/favicon.ico",
+            "sizes": "48x48",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "/SmartShuttle/apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "/SmartShuttle/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/SmartShuttle/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Real-time shuttle tracking application">
+    <meta name="theme-color" content="#6A63F6">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SmartShuttle">
+
+    <title>SmartShuttle</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+    <div class="desktop-notification" id="desktopNotification">
+        <p>For the best experience, please use your mobile device</p>
+        <button id="closeNotification">&times;</button>
+    </div>
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">SmartShuttle</h1>
+            <div class="status-container">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <div class="status-label">LIVE Tracker</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+
+            <div class="bus-image-container">
+                <img src="images/shuttle.svg" alt="Shuttle Bus" class="bus-image">
+            </div>
+
+            <button class="next-button" id="nextButton">
+                <img src="images/arrow.svg" alt="Next" class="arrow-icon">
+            </button>
+        </main>
+    </div>
+
+    <script src="js/index.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="SmartShuttle settings page">
+    <meta name="theme-color" content="#6A63F6">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SmartShuttle">
+
+    <title>SmartShuttle - Settings</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/settings.css">
+</head>
+
+<body>
+    <div class="desktop-notification" id="desktopNotification">
+        <p>For the best experience, please use your mobile device</p>
+        <button id="closeNotification">&times;</button>
+    </div>
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <img src="images/icon.svg" alt="SmartShuttle" class="app-icon">
+            </div>
+            <div class="header-center">
+                <h1 class="header-text">SmartShuttle</h1>
+            </div>
+            <div class="header-right">
+                <button class="feedback-btn">
+                    <img src="images/feedback.svg" alt="Feedback" class="icon">
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="settings-section">
+                <h2 class="section-title">Push Notifications</h2>
+                <div class="notification-rectangle">
+                    <img src="images/alert.svg" alt="Alert" class="notification-icon">
+                    <div class="notification-text">
+                        <div class="route-delay-text">Route x Delayed</div>
+                        <div class="expected-delay-text">Expected Delay: x minutes</div>
+                    </div>
+                    <img src="images/offstatus.svg" alt="Off Status" class="status-icon" id="statusIcon0">
+                </div>
+                <div class="notification-rectangle">
+                    <img src="images/directions.svg" alt="Directions" class="notification-icon">
+                    <div class="notification-text">
+                        <div class="route-delay-text">Route x Change</div>
+                        <div class="expected-delay-text">New stop added at x</div>
+                    </div>
+                    <img src="images/onstatus.svg" alt="On Status" class="status-icon" id="statusIcon1">
+                </div>
+                <div class="notification-rectangle">
+                    <img src="images/clock.svg" alt="Clock" class="notification-icon">
+                    <div class="notification-text">
+                        <div class="route-delay-text">Arrival Time Update</div>
+                        <div class="expected-delay-text">Bus x arriving in x minutes</div>
+                    </div>
+                    <img src="images/offstatus.svg" alt="Off Status" class="status-icon" id="statusIcon2">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2 class="section-title">Notification Preferences</h2>
+                <div class="preferences-container">
+                    <div class="preference-item">
+                        <span>Delay Alerts</span>
+                        <label class="switch">
+                            <input type="checkbox" id="delayAlertsToggle" data-status-icon="0">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="preference-item">
+                        <span>Route Changes</span>
+                        <label class="switch">
+                            <input type="checkbox" id="routeChangesToggle" data-status-icon="1">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="preference-item">
+                        <span>Arrival Times</span>
+                        <label class="switch">
+                            <input type="checkbox" id="arrivalTimesToggle" data-status-icon="2">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom navigation -->
+        <div class="bottom-nav">
+            <div class="bottom-nav-content">
+                <a href="live-notifications.html" class="nav-rectangle">
+                    <img src="images/location.svg" alt="Location" class="nav-icon-img">
+                </a>
+                <a href="settings.html" class="nav-icon active-nav">
+                    <img src="images/notification.svg" alt="Notifications" class="nav-icon-img">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/settings.js"></script>
+</body>
+
+</html>

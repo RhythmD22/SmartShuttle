@@ -1,0 +1,20 @@
+{
+  "functions": {
+    "api/transit-proxy.js": {
+      "runtime": "edge"
+    },
+    "api/send-feedback.js": {
+      "runtime": "edge"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/transit/:path*",
+      "destination": "/api/transit-proxy.js"
+    },
+    {
+      "source": "/api/send-feedback",
+      "destination": "/api/send-feedback.js"
+    }
+  ]
+}
