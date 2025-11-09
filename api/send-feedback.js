@@ -14,8 +14,8 @@ export default async function handler(request, response) {
     }
 
     const githubToken = process.env.GITHUB_TOKEN;
-    const repoOwner = process.env.GITHUB_REPO_OWNER;  
-    const repoName = process.env.GITHUB_REPO_NAME;    
+    const repoOwner = process.env.GITHUB_REPO_OWNER;
+    const repoName = process.env.GITHUB_REPO_NAME;
 
     if (!githubToken || !repoOwner || !repoName) {
       console.error('GitHub feedback configuration missing');
@@ -26,7 +26,7 @@ export default async function handler(request, response) {
 
     const issueData = {
       title: `Feedback: ${emailParams.issue_type}`,
-      body: `**Issue Type:** ${emailParams.issue_type}\n\n**Description:**\n${emailParams.description}\n\n**From:** SmartShuttle feedback form\n**Timestamp:** ${new Date().toISOString()}\n\n**Attachment Info:** ${emailParams.attachment_info || 'No attachment'}`,
+      body: `**Issue Type:** ${emailParams.issue_type}\n\n**Description:**\n${emailParams.description}\n\n**From:** SmartShuttle Feedback Form\n**Timestamp:** ${new Date().toISOString()}\n\n**Attachment Info:** ${emailParams.attachment_info || 'No attachment'}`,
       labels: ["feedback", "smartshuttle"]
     };
 
@@ -69,7 +69,7 @@ export default async function handler(request, response) {
       ...request.body,
       error: error.message
     });
-    
+
     return response.status(500).json({
       error: 'Failed to create GitHub issue, but feedback was logged',
       details: error.message
