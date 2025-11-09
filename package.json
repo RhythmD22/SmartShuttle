@@ -1,0 +1,11 @@
+{
+  "name": "smartshuttle",
+  "version": "1.0.0",
+  "description": "SmartShuttle - Live Shuttle Tracker",
+  "type": "module",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
