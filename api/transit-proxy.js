@@ -1,4 +1,4 @@
-export default async function handler(request) {
+export default async function handler(request, response) {
   // Extract the API endpoint from the URL
   const { pathname } = new URL(request.url);
   const endpoint = pathname.replace('/api/transit', '');
@@ -7,10 +7,7 @@ export default async function handler(request) {
   const apiKey = process.env.TRANSIT_API_KEY;
 
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'Transit API key not configured' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return response.status(500).json({ error: 'Transit API key not configured' });
   }
 
   try {
@@ -24,27 +21,21 @@ export default async function handler(request) {
     };
 
     // Forward the request to the Transit API
-    const response = await fetch(targetUrl, {
+    const apiResponse = await fetch(targetUrl, {
       method: request.method,
       headers: headers,
-      body: request.method !== 'GET' && request.body ? await request.text() : undefined
+      body: request.method !== 'GET' && request.body ? JSON.stringify(request.body) : undefined
     });
 
     // Return the response from the Transit API
-    const data = await response.json();
-    return new Response(JSON.stringify(data), {
-      status: response.status,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    const data = await apiResponse.json();
+    return response.status(apiResponse.status).json(data);
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Error forwarding request to Transit API' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return response.status(500).json({ error: 'Error forwarding request to Transit API' });
   }
 }
 
 export const config = {
-  runtime: 'edge'
+  runtime: 'nodejs'
 };

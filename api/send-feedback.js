@@ -1,10 +1,7 @@
-export default async function handler(request) {
+export default async function handler(request, response) {
   // Only allow POST requests
   if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return response.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
@@ -14,14 +11,11 @@ export default async function handler(request) {
     const publicKey = process.env.EMAILJS_PUBLIC_KEY;
 
     if (!serviceId || !templateId || !publicKey) {
-      return new Response(JSON.stringify({ error: 'Email service not configured' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return response.status(500).json({ error: 'Email service not configured' });
     }
 
     // Get the email parameters from the request body
-    const emailParams = await request.json();
+    const emailParams = request.body;
 
     // Prepare the request to EmailJS API
     const emailData = {
@@ -32,7 +26,7 @@ export default async function handler(request) {
     };
 
     // Send the request to EmailJS API
-    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+    const apiResponse = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,33 +34,27 @@ export default async function handler(request) {
       body: JSON.stringify(emailData)
     });
 
-    const result = await response.json();
+    const result = await apiResponse.json();
 
-    if (!response.ok) {
+    if (!apiResponse.ok) {
       throw new Error(result.text || 'Failed to send email');
     }
 
     // Return success response
-    return new Response(JSON.stringify({
+    return response.status(200).json({
       success: true,
       message: 'Feedback sent successfully',
       response: result
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
     console.error('Error sending feedback:', error);
-    return new Response(JSON.stringify({
+    return response.status(500).json({
       error: 'Failed to send feedback',
       details: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
     });
   }
 }
 
 export const config = {
-  runtime: 'edge'  // Use edge runtime like your transit proxy
+  runtime: 'nodejs'
 };
