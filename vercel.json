@@ -1,10 +1,11 @@
 {
+  "version": 2,
   "functions": {
     "api/transit-proxy.js": {
-      "runtime": "nodejs22.x"
+      "runtime": "vercel/node@22.x"
     },
     "api/send-feedback.js": {
-      "runtime": "nodejs22.x"
+      "runtime": "vercel/node@22.x"
     }
   },
   "rewrites": [
