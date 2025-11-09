@@ -24,6 +24,11 @@ export default async function handler(request, response) {
       'apiKey': apiKey
     };
 
+    // Log headers (excluding apiKey for security)
+    const loggedHeaders = { ...headers };
+    delete loggedHeaders.apiKey;
+    console.log('Forwarding headers:', loggedHeaders);
+
     // Forward the request to the Transit API
     const apiResponse = await fetch(targetUrl, {
       method: request.method,
@@ -34,8 +39,14 @@ export default async function handler(request, response) {
     console.log(`Transit API responded with status: ${apiResponse.status}`); // Debug log
 
     if (!apiResponse.ok) {
-      // If there's an error response, return it properly
-      const errorData = await apiResponse.json().catch(() => ({})); // Safely parse error response
+      // If there's an error response, try to get more details
+      let errorData = {};
+      try {
+        errorData = await apiResponse.json();
+      } catch (e) {
+        // If parsing as JSON fails, try to get the raw text response
+        errorData.raw_response = await apiResponse.text();
+      }
       console.error('Transit API error response:', errorData);
       return response.status(apiResponse.status).json({
         error: 'Transit API error',
