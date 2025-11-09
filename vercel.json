@@ -1,13 +1,5 @@
 {
   "version": 2,
-  "functions": {
-    "api/transit-proxy.js": {
-      "runtime": "vercel/node@22.x"
-    },
-    "api/send-feedback.js": {
-      "runtime": "vercel/node@22.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/transit/:path*",
