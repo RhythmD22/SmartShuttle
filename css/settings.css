@@ -1,0 +1,458 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Ensure no scrolling in any circumstance */
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #181a1b;
+    color: #fff;
+    line-height: 1.2;
+    width: 100vw;
+    height: 100dvh;
+    max-width: 100vw;
+    max-height: 100dvh;
+}
+
+/* Container */
+.container {
+    max-width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0 auto;
+    /* Center container if needed */
+    background: #181a1b;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #333;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+
+
+.header-left {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin-right: 5px;
+}
+
+.header-center {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    text-align: left;
+    min-height: 0;
+    min-width: 0;
+}
+
+.app-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+}
+
+.header-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin-left: auto;
+    /* Push the center content away */
+}
+
+/* Make the header center more compact by adjusting line spacing */
+.header-center>* {
+    line-height: 1.2;
+}
+
+/* Icon styles */
+.icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.back-btn,
+.refresh-btn,
+.feedback-btn {
+    background: none;
+    border: 1px solid white;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: auto;
+    width: 40px;
+    height: 40px;
+}
+
+
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 16px 10px 16px;
+    /* Reduced bottom padding */
+    margin-top: 5px;
+    margin-bottom: 100px;
+    /* Space for footer */
+    overflow-y: auto;
+    position: relative;
+}
+
+.settings-section {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+}
+
+.preferences-container {
+    background-color: #272A2C;
+    padding: 2px 15px;
+    /* Even more reduced vertical padding */
+    margin-top: 10px;
+}
+
+.preference-item {
+    color: #B5B5B5;
+    font-weight: 600;
+    /* semibold */
+    font-size: 15px;
+    padding: 12px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Toggle switch styling for notification preferences */
+.preferences-container .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.preferences-container .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.preferences-container .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000;
+    /* Black when off */
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.preferences-container .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.preferences-container input:checked+.slider {
+    background-color: #6A63F6;
+    /* Purple when on */
+}
+
+.preferences-container input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+.notification-rectangle {
+    width: 100%;
+    min-height: 50px;
+    background-color: #413C96;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+}
+
+.notification-rectangle:last-child {
+    margin-bottom: 0;
+}
+
+.notification-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.notification-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.route-delay-text {
+    color: #fff;
+    font-weight: 600;
+    /* semibold */
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.expected-delay-text {
+    color: #fff;
+    font-weight: 500;
+    /* medium */
+    font-size: 12px;
+}
+
+.status-icon {
+    width: 34px;
+    height: 34px;
+    margin-left: auto;
+    /* This pushes the icon to the right */
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #333;
+}
+
+.setting-label {
+    font-size: 16px;
+    color: #fff;
+    font-weight: 500;
+}
+
+.setting-value {
+    font-size: 14px;
+    color: #C8C7C5;
+}
+
+.setting-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+}
+
+/* Toggle switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #4a4a4a;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: #6A63F6;
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+    .container {
+        max-width: 500px;
+        margin: 0 auto;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Bottom navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 75px;
+    /* Adjusted to match other pages */
+    left: 0;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    z-index: 100;
+    background-color: #181a1b;
+    border-top: 1px solid #333;
+    padding: 10px 0;
+    height: auto;
+    box-sizing: content-box;
+}
+
+.bottom-nav-content {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.nav-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #6A63F6;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-rectangle {
+    width: 35px;
+    height: 45px;
+    background-color: #413C96;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 8px;
+    margin: 4px;
+}
+
+.bottom-nav .nav-rectangle {
+    position: absolute;
+    left: calc(50% - 110px);
+    /* Same distance as in live notifications */
+    top: -2px;
+    height: 45px;
+}
+
+.bottom-nav .nav-icon {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Specific border for the center icon only */
+.bottom-nav .nav-icon .nav-icon-img {
+    border: 1px solid white;
+    border-radius: 2px;
+}
+
+.nav-icon-img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+    /* Makes the icon white */
+    box-sizing: content-box;
+    padding: 4px;
+}
+
+/* Desktop notification banner */
+.desktop-notification {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #6A63F6;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    z-index: 9999;
+    font-size: 14px;
+}
+
+.desktop-notification p {
+    margin: 0;
+    display: inline-block;
+}
+
+.desktop-notification button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 10px;
+    margin-left: 10px;
+    float: right;
+}
+
+/* Show notification only on desktop screens */
+@media (min-width: 768px) {
+    .desktop-notification {
+        display: block;
+    }
+
+    /* Hide the main content on desktop */
+    .container {
+        display: none;
+    }
+}

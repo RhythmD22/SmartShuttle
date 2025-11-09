@@ -1,0 +1,256 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Ensure no scrolling in any circumstance */
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #181a1b;
+    color: #fff;
+    line-height: 1.2;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+}
+
+/* Container */
+.container {
+    max-width: 100%;
+    height: 100%;
+    min-height: 100%;
+    /* Fixed height to prevent overflow */
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0 auto;
+    /* Center container if viewport is wider than max-width */
+    background: #181a1b;
+    overflow: hidden;
+    /* Prevent any overflow */
+}
+
+/* Header */
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0 20px;
+    /* Increased top padding to move title down */
+    margin-bottom: 10px;
+}
+
+.app-title {
+    font-size: 40px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
+    text-align: left;
+    overflow: hidden;
+}
+
+.status-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.status-label {
+    font-size: 24px;
+    font-weight: 600;
+    /* semibold */
+    color: #C8C7C5;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #F8312F;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.bus-details {
+    margin-bottom: 30px;
+}
+
+.bus-number {
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.bus-route {
+    font-size: 18px;
+    color: #ccc;
+}
+
+/* Next Button */
+.next-button {
+    background-color: #6A63F6;
+    border: none;
+    border-radius: 0;
+    width: 90px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin: 20px auto;
+    /* Center the button with auto margins */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.next-button:hover {
+    background-color: #5a53e6;
+}
+
+.next-button:active {
+    background-color: #5049d6;
+    transform: scale(0.98);
+}
+
+.arrow-icon {
+    width: 30px;
+    height: 30px;
+    -webkit-filter: brightness(0) invert(1);
+    /* Make it white for Safari/older browsers */
+    filter: brightness(0) invert(1);
+    /* Make it white */
+}
+
+.bus-image-container {
+    margin: 15px 0 10px;
+    /* Reduced top margin to move image up */
+    width: 100%;
+    overflow: hidden;
+}
+
+.bus-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    max-width: 100%;
+    display: block;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+    .container {
+        max-width: 500px;
+        margin: 0 auto;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-label {
+        font-size: 32px;
+    }
+
+    .bus-number {
+        font-size: 36px;
+    }
+
+    .bus-route {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .status-label {
+        font-size: 20px;
+    }
+
+    .bus-number {
+        font-size: 24px;
+    }
+
+    .bus-route {
+        font-size: 16px;
+    }
+}
+
+/* Desktop notification banner */
+.desktop-notification {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #6A63F6;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    z-index: 9999;
+    font-size: 14px;
+}
+
+.desktop-notification p {
+    margin: 0;
+    display: inline-block;
+}
+
+.desktop-notification button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 10px;
+    margin-left: 10px;
+    float: right;
+}
+
+/* Show notification only on desktop screens */
+@media (min-width: 768px) {
+    .desktop-notification {
+        display: block;
+    }
+
+    /* Hide the main content on desktop */
+    .container {
+        display: none;
+    }
+}
