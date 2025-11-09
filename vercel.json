@@ -1,10 +1,10 @@
 {
   "functions": {
     "api/transit-proxy.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs22.x"
     },
     "api/send-feedback.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs22.x"
     }
   },
   "rewrites": [
