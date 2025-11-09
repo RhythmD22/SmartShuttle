@@ -11,6 +11,7 @@ export default async function handler(request, response) {
     const publicKey = process.env.EMAILJS_PUBLIC_KEY;
 
     if (!serviceId || !templateId || !publicKey) {
+      console.error('EmailJS credentials not configured');
       return response.status(500).json({ error: 'Email service not configured' });
     }
 
@@ -25,6 +26,8 @@ export default async function handler(request, response) {
       template_params: emailParams
     };
 
+    console.log('Sending email request to EmailJS:', { serviceId, templateId }); // Debug log
+
     // Send the request to EmailJS API
     const apiResponse = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
       method: 'POST',
@@ -34,10 +37,16 @@ export default async function handler(request, response) {
       body: JSON.stringify(emailData)
     });
 
-    const result = await apiResponse.json();
+    console.log('EmailJS API responded with status:', apiResponse.status); // Debug log
+
+    const result = await apiResponse.json().catch(() => ({})); // Safely parse response
 
     if (!apiResponse.ok) {
-      throw new Error(result.text || 'Failed to send email');
+      console.error('EmailJS API error:', result);
+      return response.status(apiResponse.status).json({
+        error: 'Failed to send email',
+        details: result
+      });
     }
 
     // Return success response
