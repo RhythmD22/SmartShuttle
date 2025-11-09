@@ -49,14 +49,19 @@ export default async function handler(request, response) {
 
       console.log('EmailJS API responded with status:', apiResponse.status); // Debug log
 
-      // Try to parse the response, but handle it gracefully in case of non-JSON response
+      // Clone the response to be able to read it multiple times
+      const clonedResponse = apiResponse.clone();
+      
+      // Try to parse the response as JSON first
       let result = {};
+      let responseText = '';
+      
       try {
         result = await apiResponse.json();
       } catch (parseError) {
         // If JSON parsing fails, try to get the text content
         try {
-          const responseText = await apiResponse.text();
+          responseText = await clonedResponse.text();
           console.error('Failed to parse JSON response, got text:', responseText);
           result = { raw_response: responseText };
         } catch (textError) {
