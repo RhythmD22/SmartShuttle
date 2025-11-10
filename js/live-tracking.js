@@ -102,8 +102,8 @@ function initializeMap() {
             }
         }
 
-        // Find and display nearby bus stops
-        findNearbyBusStops(userLat, userLng);
+        // Find and display active bus stops served by shuttles
+        findActiveBusStops(userLat, userLng);
     }
 
     // Function to handle location errors
@@ -148,8 +148,8 @@ function initializeMap() {
             }
         }
 
-        // Find and display nearby bus stops at default location
-        findNearbyBusStops(defaultLat, defaultLng);
+        // Find and display active bus stops served by shuttles at default location
+        findActiveBusStops(defaultLat, defaultLng);
     }
 
     // Debounce function to limit API calls
@@ -165,13 +165,119 @@ function initializeMap() {
         };
     }
 
-    // Debounced version of finding bus stops
-    const debouncedFindBusStops = debounce(async function (lat, lng) {
+    // Debounced version of finding active bus stops served by shuttles
+    const debouncedFindActiveBusStops = debounce(async function (lat, lng) {
         // Clear existing bus stop markers
         clearBusStopMarkers();
 
         try {
-            // Search for bus stops within a certain radius using Overpass API via Overpass-Turbo
+            // Use the Transit API to get real-time shuttle routes and stops
+            const transitResponse = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`);
+
+            if (!transitResponse.ok) {
+                throw new Error(`Transit API error! status: ${transitResponse.status}`);
+            }
+
+            const transitData = await transitResponse.json();
+
+            if (transitData.routes && transitData.routes.length > 0) {
+                // Create a Set to store unique active bus stops
+                const activeStops = new Set();
+
+                // Process each route to find active bus stops
+                transitData.routes.forEach(route => {
+                    if (route.itineraries && route.itineraries.length > 0) {
+                        route.itineraries.forEach(itinerary => {
+                            // Process stops in the route
+                            if (itinerary.closest_stop) {
+                                // Add the stop to our set of active stops
+                                const stopKey = `${itinerary.closest_stop.stop_lat},${itinerary.closest_stop.stop_lon}`;
+                                activeStops.add({
+                                    ...itinerary.closest_stop,
+                                    route: route.route_short_name || 'Unknown Route',
+                                    headsign: itinerary.headsign || 'Unknown Direction'
+                                });
+                            }
+
+                            // Also process schedule items which may contain stops
+                            if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
+                                itinerary.schedule_items.forEach(scheduleItem => {
+                                    if (scheduleItem.stop) {
+                                        // Add the stop to our set of active stops
+                                        const stopKey = `${scheduleItem.stop.stop_lat},${scheduleItem.stop.stop_lon}`;
+                                        activeStops.add({
+                                            ...scheduleItem.stop,
+                                            route: route.route_short_name || 'Unknown Route',
+                                            headsign: itinerary.headsign || 'Unknown Direction'
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+
+                // Convert the set back to an array and create markers for each active stop
+                const uniqueStops = Array.from(activeStops);
+
+                if (uniqueStops.length > 0) {
+                    uniqueStops.forEach(stop => {
+                        // Create a bus stop marker using the stop image
+                        const busStopIcon = L.divIcon({
+                            className: 'bus-stop-icon',
+                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px;">`,
+                            iconSize: [24, 24],
+                            iconAnchor: [12, 12]
+                        });
+
+                        const marker = L.marker([stop.stop_lat, stop.stop_lon], {
+                            icon: busStopIcon,
+                            purpose: 'active-bus-stop'
+                        }).addTo(map);
+
+                        // Create popup content with bus stop and route information
+                        let popupContent = `<b>Active Bus Stop</b>`;
+                        if (stop.stop_name) {
+                            popupContent += `<br>Name: ${stop.stop_name}`;
+                        }
+                        if (stop.route) {
+                            popupContent += `<br>Route: ${stop.route}`;
+                        }
+                        if (stop.headsign) {
+                            popupContent += `<br>Direction: ${stop.headsign}`;
+                        }
+
+                        marker.bindPopup(popupContent);
+
+                        // Store reference to marker for efficient cleanup
+                        busStopMarkers.push(marker);
+                    });
+                } else {
+                    console.log('No active bus stops found in the area');
+                }
+            } else {
+                console.log('No active routes found in the area');
+
+                // Fallback to showing all bus stops if no active routes
+                await fallbackToAllBusStops(lat, lng);
+            }
+        } catch (error) {
+            console.error('Error finding active bus stops:', error);
+
+            // Fallback to showing all bus stops if transit API fails
+            await fallbackToAllBusStops(lat, lng);
+        }
+    }, 800); // Wait 800ms after the last call before executing
+
+    // Function to find and display active bus stops served by shuttles (using the debounced version)
+    async function findActiveBusStops(lat, lng) {
+        debouncedFindActiveBusStops(lat, lng);
+    }
+
+    // Fallback function to show all bus stops if real-time data is unavailable
+    async function fallbackToAllBusStops(lat, lng) {
+        try {
+            // Search for bus stops within a certain radius using Overpass API
             const overpassQuery = `[out:json];(node["highway"="bus_stop"](around:500,${lat},${lng});way["highway"="bus_stop"](around:500,${lat},${lng}););out;`;
             const encodedQuery = encodeURIComponent(overpassQuery);
             const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodedQuery}`;
@@ -179,7 +285,8 @@ function initializeMap() {
             const response = await fetch(overpassUrl);
 
             if (!response.ok) {
-                throw new Error(`Overpass API error! status: ${response.status}`);
+                console.error(`Overpass API error! status: ${response.status}`);
+                return;
             }
 
             const data = await response.json();
@@ -221,17 +328,10 @@ function initializeMap() {
                         busStopMarkers.push(marker);
                     }
                 });
-            } else {
-                console.log('No bus stops found in the area');
             }
         } catch (error) {
-            console.error('Error finding nearby bus stops:', error);
+            console.error('Error in fallback to all bus stops:', error);
         }
-    }, 800); // Wait 800ms after the last call before executing
-
-    // Function to find and display nearby bus stops (using the debounced version)
-    async function findNearbyBusStops(lat, lng) {
-        debouncedFindBusStops(lat, lng);
     }
 
     // Function to clear bus stop markers
@@ -264,19 +364,19 @@ function initializeMap() {
     map.whenReady(function () {
         // Map is ready and functional
 
-        // Set up map move listener to show bus stops wherever the user goes
+        // Set up map move listener to show active bus stops wherever the user goes
         map.on('moveend', function () {
             // Get current map bounds
             const bounds = map.getBounds();
             const center = map.getCenter();
 
-            // Find and display bus stops around the current map center
+            // Find and display active bus stops around the current map center
             // This prevents too many API calls by focusing on the center
-            findNearbyBusStops(center.lat, center.lng);
+            findActiveBusStops(center.lat, center.lng);
         });
 
-        // Also find bus stops at the initial location
-        findNearbyBusStops(40.4406, -79.9951);
+        // Also find active bus stops at the initial location
+        findActiveBusStops(40.4406, -79.9951);
     });
 }
 
@@ -485,8 +585,8 @@ function initializeSearch() {
                 searchModal.style.display = 'none';
                 clearSearchResults();
 
-                // Find and display nearby bus stops at the new location
-                findNearbyBusStops(lat, lon);
+                // Find and display active bus stops at the new location
+                findActiveBusStops(lat, lon);
             });
 
             searchResults.appendChild(resultElement);
@@ -590,8 +690,8 @@ function initializeSearch() {
         // Add user location marker
         addUserLocationMarker(lat, lng, position);
 
-        // Find and display nearby bus stops at the new location
-        findNearbyBusStops(lat, lng);
+        // Find and display active bus stops at the new location
+        findActiveBusStops(lat, lng);
     }
 
     // Function to add user location marker to the map
