@@ -680,45 +680,38 @@ function updateShuttleCapacitySection(routes = []) {
     let shuttles = [];
 
     if (routes && routes.length > 0) {
-        // Generate shuttle data based on the found routes and location
+        // Generate shuttle data based on ALL the found routes and location
         routes.forEach((route, index) => {
-            if (index < 4) { // Limit to first 4 routes
-                const routeType = getRouteTypeText(route.route_type || 3); // Default to bus
-                let shuttleType = 'bus'; // Default type
+            const routeType = getRouteTypeText(route.route_type || 3); // Default to bus
+            let shuttleType = 'bus'; // Default type
 
-                // Determine shuttle type based on route type
-                if (routeType.includes('Light rail') || routeType.includes('Tram')) {
-                    shuttleType = 'standard';
-                } else if (routeType.includes('Subway') || routeType.includes('Metro')) {
-                    shuttleType = 'large';
-                } else if (routeType.includes('Bus')) {
-                    shuttleType = 'bus';
-                } else if (routeType.includes('Ferry')) {
-                    shuttleType = 'large';
-                } else if (routeType.includes('Cable tram') || routeType.includes('Aerial lift')) {
-                    shuttleType = 'small';
-                }
-
-                shuttles.push({
-                    id: index + 1,
-                    name: route.route_short_name || route.real_time_route_id || `Route ${index + 1}`,
-                    type: shuttleType,
-                    routeId: route.global_route_id
-                });
+            // Determine shuttle type based on route type
+            if (routeType.includes('Light rail') || routeType.includes('Tram')) {
+                shuttleType = 'standard';
+            } else if (routeType.includes('Subway') || routeType.includes('Metro')) {
+                shuttleType = 'large';
+            } else if (routeType.includes('Bus')) {
+                shuttleType = 'bus';
+            } else if (routeType.includes('Ferry')) {
+                shuttleType = 'large';
+            } else if (routeType.includes('Cable tram') || routeType.includes('Aerial lift')) {
+                shuttleType = 'small';
             }
+
+            shuttles.push({
+                id: index + 1,
+                name: route.route_short_name || route.real_time_route_id || `Route ${index + 1}`,
+                type: shuttleType,
+                routeId: route.global_route_id
+            });
         });
     } else {
-        // Define mock shuttle data for when no routes are found
-        shuttles = [
-            { id: 1, name: 'Shuttle 1', type: 'small' },
-            { id: 2, name: 'Shuttle 2', type: 'micro' },
-            { id: 3, name: 'Shuttle 3', type: 'standard' },
-            { id: 4, name: 'Express Bus', type: 'bus' }
-        ];
+        // When no routes found, return empty array so main check handles it
+        shuttles = [];
     }
 
     if (!shuttles || shuttles.length === 0) {
-        shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info">No shuttles available</div><div class="seats-info">-</div></div>';
+        shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info">No seating available</div><div class="seats-info">-</div></div>';
         return;
     }
 
