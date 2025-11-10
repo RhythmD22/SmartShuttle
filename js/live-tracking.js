@@ -394,11 +394,11 @@ function initializeSearch() {
         }
     });
 
-    // Perform search using Nominatim API and Transit API
+    // Perform search using Nominatim API
     async function performSearch(query) {
         try {
-            // Fetch results from multiple sources in parallel to improve performance
-            const [nominatimBusStopResponse, nominatimGeneralResponse, transitResponse] = await Promise.allSettled([
+            // Fetch both bus stops and general locations in parallel to improve performance
+            const [busStopResponse, generalResponse] = await Promise.all([
                 fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=US&format=json&limit=10&addressdetails=1&amenity=bus_stop`, {
                     method: 'GET',
                     headers: {
@@ -410,50 +410,28 @@ function initializeSearch() {
                     headers: {
                         'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
                     }
-                }),
-                fetch(`/api/transit/search?query=${encodeURIComponent(query)}`)
+                })
             ]);
 
             let busStopResults = [];
             let generalResults = [];
-            let transitResults = [];
 
-            // Process Nominatim bus stop results
-            if (nominatimBusStopResponse.status === 'fulfilled' && nominatimBusStopResponse.value.ok) {
-                const busStopData = await nominatimBusStopResponse.value.json();
+            if (busStopResponse.ok) {
+                const busStopData = await busStopResponse.json();
                 if (busStopData && Array.isArray(busStopData)) {
                     busStopResults = busStopData;
                 }
             }
 
-            // Process Nominatim general results
-            if (nominatimGeneralResponse.status === 'fulfilled' && nominatimGeneralResponse.value.ok) {
-                const generalData = await nominatimGeneralResponse.value.json();
+            if (generalResponse.ok) {
+                const generalData = await generalResponse.json();
                 if (generalData && Array.isArray(generalData)) {
                     generalResults = generalData;
                 }
             }
 
-            // Process Transit API results for active stops
-            if (transitResponse.status === 'fulfilled' && transitResponse.value.ok) {
-                const transitData = await transitResponse.value.json();
-                if (transitData && Array.isArray(transitData.stops)) {
-                    // Format transit stops to match the expected structure
-                    transitResults = transitData.stops.map(stop => ({
-                        lat: stop.stop_lat,
-                        lon: stop.stop_lon,
-                        display_name: stop.stop_name || stop.display_name || 'Transit Stop',
-                        address: stop.address || {},
-                        type: 'transit_stop',
-                        tags: {
-                            name: stop.stop_name
-                        }
-                    }));
-                }
-            }
-
-            // Combine all results with transit results first (active stops), then bus stops, then general results
-            const allResults = [...transitResults, ...busStopResults, ...generalResults];
+            // Combine results with bus stops first, then general results
+            const allResults = busStopResults.concat(generalResults);
 
             // Display search results
             displaySearchResults(allResults);
