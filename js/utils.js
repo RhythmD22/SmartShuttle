@@ -37,22 +37,6 @@ function initializeFeedbackButton(page = 'feedback.html') {
     }
 }
 
-// Initialize refresh button functionality
-function initializeRefreshButton(refreshCallback) {
-    const refreshBtn = document.getElementById('refreshFeedback');
-
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', function () {
-            if (refreshCallback && typeof refreshCallback === 'function') {
-                refreshCallback();
-            } else {
-                // Default refresh behavior
-                location.reload();
-            }
-        });
-    }
-}
-
 // Validate form fields
 function validateFormFields(requiredFields) {
     for (const [name, value] of Object.entries(requiredFields)) {

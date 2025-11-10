@@ -18,9 +18,6 @@ function initializeFeedbackForm() {
     const attachmentPreviewIcon = document.querySelector('#attachmentPreview .attachment-preview-icon');
     const attachmentPreviewText = document.querySelector('#attachmentPreview .attachment-preview-text');
 
-    // Use the shared refresh functionality
-    initializeRefreshButton();
-
     // Handle file selection
     if (attachmentInput) {
         attachmentInput.addEventListener('change', function () {
