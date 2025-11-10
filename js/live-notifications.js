@@ -567,7 +567,7 @@ function updateRouteArrivalsSection(routes) {
                     const routeName = route.route_short_name || route.real_time_route_id || 'Unknown Route';
 
                     routeRow.innerHTML = `
-                        <div class="route-info" style="color: #${route.route_color || '6A63F6'}">
+                        <div class="route-info">
                             ${routeName} - ${itinerary.headsign || 'Direction Unknown'}
                         </div>
                         <div class="arrival-info">${arrivalText}</div>
@@ -582,7 +582,7 @@ function updateRouteArrivalsSection(routes) {
                     const routeName = route.route_short_name || route.real_time_route_id || 'Unknown Route';
 
                     routeRow.innerHTML = `
-                        <div class="route-info" style="color: #${route.route_color || '6A63F6'}">
+                        <div class="route-info">
                             ${routeName}
                         </div>
                         <div class="arrival-info">Schedule unavailable</div>
@@ -599,7 +599,7 @@ function updateRouteArrivalsSection(routes) {
             const routeName = route.route_short_name || route.real_time_route_id || 'Unknown Route';
 
             routeRow.innerHTML = `
-                <div class="route-info" style="color: #${route.route_color || '6A63F6'}">
+                <div class="route-info">
                     ${routeName}
                 </div>
                 <div class="arrival-info">No schedule data</div>
