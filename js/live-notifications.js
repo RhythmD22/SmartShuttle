@@ -543,7 +543,7 @@ function updateRouteArrivalsSection(routes) {
 
     if (!routes || routes.length === 0) {
         routeArrivalsContent.innerHTML = '<div class="route-row"><div class="route-info">No routes available</div><div class="arrival-info">-</div></div>';
-        // Also update the shuttle capacity to show no shuttles
+        // Also update the shuttle capacity to show no capacity data when no routes are found
         updateShuttleCapacitySection([]);
         return;
     }
