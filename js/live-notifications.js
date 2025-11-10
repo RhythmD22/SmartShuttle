@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize feedback button functionality
     initializeFeedbackButton();
+
+    // Update shuttle capacity section
+    updateShuttleCapacitySection();
 });
 
 // Initialize desktop notification functionality
@@ -633,6 +636,55 @@ window.addEventListener('popstate', function (event) {
     // This handles the browser back button if needed
     console.log('Back button pressed');
 });
+
+// Define a mapping of shuttle types to their capacities (more accurate values)
+const SHUTTLE_CAPACITY_MAP = {
+    'micro': 6,      // Very small shuttles/podium vans
+    'small': 12,     // Small shuttle vans
+    'standard': 16,  // Standard shuttle vans
+    'large': 24,     // Larger shuttle vans
+    'minibus': 30,   // Small buses
+    'bus': 40        // Standard city buses
+};
+
+// Function to update the Shuttle Capacity section with real data
+function updateShuttleCapacitySection() {
+    const shuttleCapacityContent = document.querySelector('.shuttle-capacity-content');
+
+    if (!shuttleCapacityContent) return;
+
+    // Clear existing content
+    shuttleCapacityContent.innerHTML = '';
+
+    // Define mock shuttle data - In a real implementation, this would come from an API
+    const mockShuttles = [
+        { id: 1, name: 'Shuttle 1', type: 'small' },
+        { id: 2, name: 'Shuttle 2', type: 'micro' },
+        { id: 3, name: 'Shuttle 3', type: 'standard' },
+        { id: 4, name: 'Express Bus', type: 'bus' }
+    ];
+
+    if (!mockShuttles || mockShuttles.length === 0) {
+        shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info">No shuttles available</div><div class="seats-info">-</div></div>';
+        return;
+    }
+
+    // Process each shuttle and display capacity information
+    mockShuttles.forEach(shuttle => {
+        const shuttleRow = document.createElement('div');
+        shuttleRow.className = 'shuttle-row';
+
+        // Determine capacity based on shuttle type
+        const capacity = SHUTTLE_CAPACITY_MAP[shuttle.type] || SHUTTLE_CAPACITY_MAP['standard'];
+
+        shuttleRow.innerHTML = `
+      <div class="shuttle-info">${shuttle.name}</div>
+      <div class="seats-info">${capacity} seats</div>
+    `;
+
+        shuttleCapacityContent.appendChild(shuttleRow);
+    });
+}
 
 // Initialize feedback button functionality
 function initializeFeedbackButton() {
