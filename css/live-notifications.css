@@ -241,7 +241,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 0;
     margin-top: 5px;
     margin-bottom: 100px;
     /* Space for footer (reduced since footer is now higher) */
@@ -261,16 +261,16 @@ body {
     /* Allow flex item to shrink */
     margin: 0 auto;
     /* Center the map container */
+    padding: 0;
 }
 
 /* Wrapper for both containers */
 .info-containers-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0;
     width: calc(100% - 20px);
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
     box-sizing: border-box;
 }
 
@@ -284,6 +284,7 @@ body {
     box-sizing: border-box;
     max-height: 120px;
     /* Limit to 3 rows */
+    border-bottom: none;
 }
 
 .route-arrivals-heading {
@@ -332,6 +333,7 @@ body {
     box-sizing: border-box;
     max-height: 120px;
     /* Limit to 3 rows */
+    border-top: none;
 }
 
 .shuttle-capacity-header {
