@@ -781,6 +781,14 @@ body {
     box-sizing: border-box;
 }
 
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: #2a2d2e;
+}
+
 /* Show notification only on desktop screens */
 @media (min-width: 768px) {
     .desktop-notification {
