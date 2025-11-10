@@ -40,7 +40,6 @@ const urlsToCache = [
   '/images/offstatus.svg',
   '/images/onstatus.svg',
   '/images/search.svg',
-  '/images/shuttle.svg',
   '/images/stop.svg',
 ];
 
