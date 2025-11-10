@@ -1,5 +1,38 @@
 {
   "version": 2,
+  "headers": [
+    {
+      "source": "/manifest.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        }
+      ]
+    },
+    {
+      "source": "/service-worker.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/transit/:path*",
@@ -8,6 +41,10 @@
     {
       "source": "/api/send-feedback",
       "destination": "/api/send-feedback.js"
+    },
+    {
+      "source": "/((?!\\.).+)",
+      "destination": "/index.html"
     }
   ]
 }
