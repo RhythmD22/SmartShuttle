@@ -164,8 +164,7 @@ body {
 
 .search-btn,
 .menu-btn,
-.back-btn,
-.refresh-btn {
+.back-btn {
     background: none;
     border: 1px solid white;
     cursor: pointer;
