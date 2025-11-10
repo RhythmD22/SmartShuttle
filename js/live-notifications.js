@@ -3,6 +3,7 @@
 // Initialize map variable
 let map;
 let selectedLocation = null;
+let routeMarkers = []; // Store route markers for efficient cleanup
 
 // Initialize the map on page load
 document.addEventListener('DOMContentLoaded', function () {
@@ -67,16 +68,22 @@ function initializeSearch() {
     // Close modal when close button is clicked
     closeSearchModal.addEventListener('click', function () {
         searchModal.style.display = 'none';
-        searchResults.innerHTML = ''; // Clear previous results
-        searchInput.value = ''; // Clear search input
+        clearSearchResults();
+    });
+
+    // Show "Current Location" option when user focuses on search input
+    searchInput.addEventListener('focus', function () {
+        // Only show current location option if input is empty
+        if (searchInput.value.trim() === '') {
+            showCurrentLocationOption();
+        }
     });
 
     // Close modal when clicking outside the modal content
     window.addEventListener('click', function (event) {
         if (event.target === searchModal) {
             searchModal.style.display = 'none';
-            searchResults.innerHTML = '';
-            searchInput.value = '';
+            clearSearchResults();
         }
     });
 
@@ -87,11 +94,14 @@ function initializeSearch() {
         const query = searchInput.value.trim();
 
         if (query.length === 0) {
-            searchResults.innerHTML = '';
+            // Show current location option when input is empty
+            showCurrentLocationOption();
             return;
         }
 
         if (query.length < 3) {
+            // Clear existing results when query is too short
+            searchResults.innerHTML = '';
             return; // Don't search for queries shorter than 3 characters
         }
 
@@ -114,18 +124,24 @@ function initializeSearch() {
     // Perform search using Nominatim API
     async function performSearch(query) {
         try {
+            // Fetch both bus stops and general locations in parallel
+            const [busStopResponse, generalResponse] = await Promise.all([
+                fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=US&format=json&limit=10&addressdetails=1&amenity=bus_stop`, {
+                    method: 'GET',
+                    headers: {
+                        'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
+                    }
+                }),
+                fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=US&format=json&limit=10&addressdetails=1`, {
+                    method: 'GET',
+                    headers: {
+                        'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
+                    }
+                })
+            ]);
+
             let busStopResults = [];
             let generalResults = [];
-
-            // Search for bus stops regardless of the query
-            const busStopSearchUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=US&format=json&limit=10&addressdetails=1&amenity=bus_stop`;
-
-            const busStopResponse = await fetch(busStopSearchUrl, {
-                method: 'GET',
-                headers: {
-                    'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
-                }
-            });
 
             if (busStopResponse.ok) {
                 const busStopData = await busStopResponse.json();
@@ -133,16 +149,6 @@ function initializeSearch() {
                     busStopResults = busStopData;
                 }
             }
-
-            // Perform a general search for locations (cities, states, etc.)
-            const generalSearchUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=US&format=json&limit=10&addressdetails=1`;
-
-            const generalResponse = await fetch(generalSearchUrl, {
-                method: 'GET',
-                headers: {
-                    'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
-                }
-            });
 
             if (generalResponse.ok) {
                 const generalData = await generalResponse.json();
@@ -249,16 +255,158 @@ function initializeSearch() {
 
                 // Close the modal after selection
                 searchModal.style.display = 'none';
-                searchResults.innerHTML = '';
-                searchInput.value = '';
+                clearSearchResults();
 
                 // Fetch and display real-time buses for the selected location
                 fetchRealTimeBuses(lat, lon);
-
             });
 
             searchResults.appendChild(resultElement);
         });
+    }
+
+    // Function to clear search results and input
+    function clearSearchResults() {
+        searchResults.innerHTML = '';
+        searchInput.value = '';
+    }
+
+    // Function to show current location option when search input is focused
+    function showCurrentLocationOption() {
+        searchResults.innerHTML = '';
+
+        // Create current location option
+        const currentLocationElement = document.createElement('div');
+        currentLocationElement.className = 'search-result-item';
+        currentLocationElement.innerHTML = `
+            <div class="result-title">📍 Current Location</div>
+            <div class="result-address">Use my current location</div>
+        `;
+
+        // Add click event to use current location
+        currentLocationElement.addEventListener('click', function () {
+            // Get user's current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async function (position) {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+
+                        // Reverse geocode to get location name
+                        try {
+                            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLat}&lon=${userLng}`);
+                            const data = await response.json();
+
+                            let displayName = 'Current Location';
+                            if (data && data.display_name) {
+                                const addressParts = data.display_name.split(',');
+                                if (addressParts.length >= 3) {
+                                    displayName = `${addressParts[0].trim()}, ${addressParts[1].trim()}`;
+                                } else {
+                                    displayName = addressParts[0].trim() || 'Current Location';
+                                }
+                            }
+
+                            // Save the current location to localStorage
+                            saveLocationAndCenterMap(userLat, userLng, displayName);
+                        } catch (error) {
+                            console.error('Error getting location name:', error);
+
+                            // Fallback to "Current Location" if reverse geocoding fails
+                            saveLocationAndCenterMap(userLat, userLng, 'Current Location');
+                        }
+                    },
+                    function (error) {
+                        console.error('Error getting current location:', error);
+
+                        // Show error message
+                        searchResults.innerHTML = '<div class="search-result-item">Unable to retrieve your location. Please check permissions.</div>';
+
+                        // Also update the location display to show error
+                        const locationDisplay = document.getElementById('selectedLocationDisplay');
+                        if (locationDisplay) {
+                            locationDisplay.textContent = 'Location access denied';
+                        }
+                    }
+                );
+            } else {
+                // Geolocation not supported
+                searchResults.innerHTML = '<div class="search-result-item">Geolocation is not supported by your browser.</div>';
+            }
+        });
+
+        searchResults.appendChild(currentLocationElement);
+    }
+
+    // Function to save location, update UI, and center map
+    function saveLocationAndCenterMap(lat, lng, displayName) {
+        // Save the current location to localStorage
+        const selectedLocation = {
+            lat: lat,
+            lon: lng,
+            displayName: displayName,
+            timestamp: Date.now()
+        };
+        localStorage.setItem('selectedNotificationLocation', JSON.stringify(selectedLocation));
+
+        // Update the location display
+        const locationDisplay = document.getElementById('selectedLocationDisplay');
+        if (locationDisplay) {
+            locationDisplay.textContent = displayName;
+        }
+
+        // Center the map on the current location
+        map.setView([lat, lng], 13);
+
+        // Close the modal after selection
+        const searchModal = document.getElementById('searchModal');
+        if (searchModal) {
+            searchModal.style.display = 'none';
+        }
+        clearSearchResults();
+
+        // Add user location marker
+        addUserLocationMarker(lat, lng, position);
+
+        // Fetch and display real-time buses for the current location
+        fetchRealTimeBuses(lat, lng);
+    }
+
+    // Function to add user location marker to the map
+    function addUserLocationMarker(userLat, userLng, position) {
+        const userIcon = L.divIcon({
+            className: 'user-location-icon',
+            html: `<img src="images/current.svg" style="width: 24px; height: 24px;">`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+
+        // Remove any existing user location marker
+        if (window.userLocationMarker) {
+            map.removeLayer(window.userLocationMarker);
+        }
+
+        const userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
+        userMarker.bindPopup('Your Location').openPopup();
+        window.userLocationMarker = userMarker; // Store reference to remove later if needed
+
+        // Add a circle around the user location to indicate accuracy
+        const accuracy = position?.coords?.accuracy || 100; // Use provided accuracy or default to 100
+        L.circle([userLat, userLng], {
+            color: '#6A63F6',
+            fillColor: '#6A63F6',
+            fillOpacity: 0.5,
+            radius: accuracy
+        }).addTo(map);
+
+        // Add another larger circle around it that is CCCAFD with 50% opacity
+        L.circle([userLat, userLng], {
+            color: '#CCCAF6',
+            fillColor: '#CCCAF6',
+            fillOpacity: 0.5,
+            radius: accuracy * 1.5, // Slightly larger
+            purpose: 'user-location'
+        }).addTo(map);
     }
 }
 
@@ -360,7 +508,6 @@ function initializeMap() {
                 locationDisplay.textContent = 'Current Location';
             }
         }
-
     }
 
     // Function to handle location errors
@@ -371,7 +518,6 @@ function initializeMap() {
         loadSelectedLocation();
     }
 
-    // Initialize the bus tracking when the map is ready
     map.whenReady(function () {
         // First, try to load the saved location from localStorage
         const savedLocation = localStorage.getItem('selectedNotificationLocation');
@@ -500,8 +646,7 @@ function processRoutesData(routes) {
                         .bindPopup(`<b>${route.route_short_name || route.real_time_route_id}</b><br>${stop.stop_name}`);
 
                     // Store reference to route markers for potential future clearing
-                    if (!window.routeMarkers) window.routeMarkers = [];
-                    window.routeMarkers.push(stopMarker);
+                    routeMarkers.push(stopMarker);
                 }
 
                 // Process schedule items (bus arrival times)
@@ -522,13 +667,13 @@ function processRoutesData(routes) {
 
 // Function to clear existing bus markers from the map
 function clearBusMarkers() {
-    if (window.routeMarkers && Array.isArray(window.routeMarkers)) {
-        window.routeMarkers.forEach(marker => {
+    if (routeMarkers && Array.isArray(routeMarkers)) {
+        routeMarkers.forEach(marker => {
             if (map.hasLayer(marker)) {
                 map.removeLayer(marker);
             }
         });
-        window.routeMarkers = []; // Reset the array
+        routeMarkers = []; // Reset the array
     }
 }
 
@@ -766,8 +911,6 @@ function updateShuttleCapacitySection(routes) {
     });
 }
 
-
-
 // Initialize feedback button functionality
 function initializeFeedbackButton() {
     const feedbackBtn = document.querySelector('.menu-btn');
@@ -779,10 +922,3 @@ function initializeFeedbackButton() {
         });
     }
 }
-
-// Mark todo as completed
-document.addEventListener('DOMContentLoaded', function () {
-    // Update the shuttle capacity section when the page loads
-    // Only update with initial state if we have no data (don't override loading state)
-    // The loading state is already set in HTML
-});
