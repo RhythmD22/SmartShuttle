@@ -4,6 +4,9 @@
 let map;
 let shuttleMarkers = []; // Store shuttle markers for efficient cleanup
 
+// Debounced version of finding shuttles - moved to global scope
+let debouncedFindShuttles;
+
 // Initialize the map on page load
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize the map directly without API key check
@@ -16,6 +19,146 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeFeedbackButton();
 });
 
+// Debounce function to limit API calls - moved to global scope
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Debounced version of finding shuttles - moved to global scope
+function initShuttleFinder() {
+    debouncedFindShuttles = debounce(async function (lat, lng) {
+        // Clear existing shuttle markers
+        clearShuttleMarkers();
+
+        try {
+            // Use the Transit API to get real-time shuttle locations
+            const transitResponse = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`);
+
+            if (!transitResponse.ok) {
+                throw new Error(`Transit API error! status: ${transitResponse.status}`);
+            }
+
+            const transitData = await transitResponse.json();
+
+            if (transitData.routes && transitData.routes.length > 0) {
+                // Process each route to find active shuttles
+                transitData.routes.forEach(route => {
+                    if (route.itineraries && route.itineraries.length > 0) {
+                        route.itineraries.forEach(itinerary => {
+                            // Process schedule items which may contain real-time vehicle positions
+                            if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
+                                itinerary.schedule_items.forEach(scheduleItem => {
+                                    // Create markers for active shuttles if real-time data exists
+                                    if (scheduleItem.is_real_time && scheduleItem.vehicle_position) {
+                                        const position = scheduleItem.vehicle_position;
+
+                                        // Create a shuttle marker using stop.svg icon
+                                        const shuttleIcon = L.divIcon({
+                                            className: 'shuttle-icon',
+                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px; transform: rotate(${position.bearing || 0}deg);">`,
+                                            iconSize: [24, 24],
+                                            iconAnchor: [12, 12]
+                                        });
+
+                                        const marker = L.marker([position.lat, position.lon], {
+                                            icon: shuttleIcon,
+                                            purpose: 'active-shuttle'
+                                        }).addTo(map);
+
+                                        // Create popup content with shuttle information
+                                        let popupContent = `<b>Active Shuttle</b>`;
+                                        if (route.route_short_name) {
+                                            popupContent += `<br>Route: ${route.route_short_name}`;
+                                        }
+                                        if (itinerary.headsign) {
+                                            popupContent += `<br>Direction: ${itinerary.headsign}`;
+                                        }
+                                        if (scheduleItem.departure_time) {
+                                            const arrivalTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
+                                            popupContent += `<br>Arrival: ${arrivalTime}`;
+                                        }
+                                        if (scheduleItem.vehicle_id) {
+                                            popupContent += `<br>Vehicle: ${scheduleItem.vehicle_id}`;
+                                        }
+
+                                        marker.bindPopup(popupContent);
+
+                                        // Store reference to marker for efficient cleanup
+                                        shuttleMarkers.push(marker);
+                                    } else if (scheduleItem.vehicle_position) {
+                                        // Show shuttle even if not marked as real-time but has position
+                                        const position = scheduleItem.vehicle_position;
+
+                                        // Create a shuttle marker using stop.svg icon
+                                        const shuttleIcon = L.divIcon({
+                                            className: 'shuttle-icon',
+                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px; transform: rotate(${position.bearing || 0}deg);">`,
+                                            iconSize: [24, 24],
+                                            iconAnchor: [12, 12]
+                                        });
+
+                                        const marker = L.marker([position.lat, position.lon], {
+                                            icon: shuttleIcon,
+                                            purpose: 'active-shuttle'
+                                        }).addTo(map);
+
+                                        // Create popup content with shuttle information
+                                        let popupContent = `<b>Shuttle</b>`;
+                                        if (route.route_short_name) {
+                                            popupContent += `<br>Route: ${route.route_short_name}`;
+                                        }
+                                        if (itinerary.headsign) {
+                                            popupContent += `<br>Direction: ${itinerary.headsign}`;
+                                        }
+                                        if (scheduleItem.departure_time) {
+                                            const arrivalTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
+                                            popupContent += `<br>Arrival: ${arrivalTime}`;
+                                        }
+
+                                        marker.bindPopup(popupContent);
+
+                                        // Store reference to marker for efficient cleanup
+                                        shuttleMarkers.push(marker);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                console.log('No active shuttles found in the area');
+            }
+        } catch (error) {
+            console.error('Error finding nearby shuttles:', error);
+        }
+    }, 800); // Wait 800ms after the last call before executing
+}
+
+// Function to find and display nearby shuttles (using the debounced version)
+async function findNearbyShuttles(lat, lng) {
+    if (debouncedFindShuttles) {
+        debouncedFindShuttles(lat, lng);
+    }
+}
+
+// Function to clear shuttle markers
+function clearShuttleMarkers() {
+    shuttleMarkers.forEach(marker => {
+        if (map.hasLayer(marker)) {
+            map.removeLayer(marker);
+        }
+    });
+    shuttleMarkers = []; // Reset the array
+}
+
 // Initialize the map
 function initializeMap() {
     // Initialize the map
@@ -25,6 +168,9 @@ function initializeMap() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+
+    // Initialize shuttle finder
+    initShuttleFinder();
 
     // Function to get user's current location
     function getUserLocation() {
@@ -150,142 +296,6 @@ function initializeMap() {
 
         // Find and display real-time shuttles at default location
         findNearbyShuttles(defaultLat, defaultLng);
-    }
-
-    // Debounce function to limit API calls
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // Debounced version of finding shuttles
-    const debouncedFindShuttles = debounce(async function (lat, lng) {
-        // Clear existing shuttle markers
-        clearShuttleMarkers();
-
-        try {
-            // Use the Transit API to get real-time shuttle locations
-            const transitResponse = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`);
-
-            if (!transitResponse.ok) {
-                throw new Error(`Transit API error! status: ${transitResponse.status}`);
-            }
-
-            const transitData = await transitResponse.json();
-
-            if (transitData.routes && transitData.routes.length > 0) {
-                // Process each route to find active shuttles
-                transitData.routes.forEach(route => {
-                    if (route.itineraries && route.itineraries.length > 0) {
-                        route.itineraries.forEach(itinerary => {
-                            // Process schedule items which may contain real-time vehicle positions
-                            if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
-                                itinerary.schedule_items.forEach(scheduleItem => {
-                                    // Create markers for active shuttles if real-time data exists
-                                    if (scheduleItem.is_real_time && scheduleItem.vehicle_position) {
-                                        const position = scheduleItem.vehicle_position;
-
-                                        // Create a shuttle marker using stop.svg icon
-                                        const shuttleIcon = L.divIcon({
-                                            className: 'shuttle-icon',
-                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px; transform: rotate(${position.bearing || 0}deg);">`,
-                                            iconSize: [24, 24],
-                                            iconAnchor: [12, 12]
-                                        });
-
-                                        const marker = L.marker([position.lat, position.lon], {
-                                            icon: shuttleIcon,
-                                            purpose: 'active-shuttle'
-                                        }).addTo(map);
-
-                                        // Create popup content with shuttle information
-                                        let popupContent = `<b>Active Shuttle</b>`;
-                                        if (route.route_short_name) {
-                                            popupContent += `<br>Route: ${route.route_short_name}`;
-                                        }
-                                        if (itinerary.headsign) {
-                                            popupContent += `<br>Direction: ${itinerary.headsign}`;
-                                        }
-                                        if (scheduleItem.departure_time) {
-                                            const arrivalTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
-                                            popupContent += `<br>Arrival: ${arrivalTime}`;
-                                        }
-                                        if (scheduleItem.vehicle_id) {
-                                            popupContent += `<br>Vehicle: ${scheduleItem.vehicle_id}`;
-                                        }
-
-                                        marker.bindPopup(popupContent);
-
-                                        // Store reference to marker for efficient cleanup
-                                        shuttleMarkers.push(marker);
-                                    } else if (scheduleItem.vehicle_position) {
-                                        // Show shuttle even if not marked as real-time but has position
-                                        const position = scheduleItem.vehicle_position;
-
-                                        // Create a shuttle marker using stop.svg icon
-                                        const shuttleIcon = L.divIcon({
-                                            className: 'shuttle-icon',
-                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px; transform: rotate(${position.bearing || 0}deg);">`,
-                                            iconSize: [24, 24],
-                                            iconAnchor: [12, 12]
-                                        });
-
-                                        const marker = L.marker([position.lat, position.lon], {
-                                            icon: shuttleIcon,
-                                            purpose: 'active-shuttle'
-                                        }).addTo(map);
-
-                                        // Create popup content with shuttle information
-                                        let popupContent = `<b>Shuttle</b>`;
-                                        if (route.route_short_name) {
-                                            popupContent += `<br>Route: ${route.route_short_name}`;
-                                        }
-                                        if (itinerary.headsign) {
-                                            popupContent += `<br>Direction: ${itinerary.headsign}`;
-                                        }
-                                        if (scheduleItem.departure_time) {
-                                            const arrivalTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
-                                            popupContent += `<br>Arrival: ${arrivalTime}`;
-                                        }
-
-                                        marker.bindPopup(popupContent);
-
-                                        // Store reference to marker for efficient cleanup
-                                        shuttleMarkers.push(marker);
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            } else {
-                console.log('No active shuttles found in the area');
-            }
-        } catch (error) {
-            console.error('Error finding nearby shuttles:', error);
-        }
-    }, 800); // Wait 800ms after the last call before executing
-
-    // Function to find and display nearby shuttles (using the debounced version)
-    async function findNearbyShuttles(lat, lng) {
-        debouncedFindShuttles(lat, lng);
-    }
-
-    // Function to clear shuttle markers
-    function clearShuttleMarkers() {
-        shuttleMarkers.forEach(marker => {
-            if (map.hasLayer(marker)) {
-                map.removeLayer(marker);
-            }
-        });
-        shuttleMarkers = []; // Reset the array
     }
 
     // Service Worker registration for PWA functionality
@@ -465,16 +475,14 @@ function initializeSearch() {
             console.warn(`Filtered out ${invalidCount} invalid search results`);
         }
 
-        // Separate results into transit stops, bus stops and other locations
-        const transitStops = [];
+        // Separate results into bus stops and other locations
         const busStops = [];
         const otherLocations = [];
 
         validResults.forEach(result => {
-            // Check if this result is a transit stop
-            const isTransitStop = result.type === 'transit_stop';
-
             // Check if this result is a bus stop
+            // Bus stops in Nominatim typically have highway=bus_stop or amenity=bus_stop in the properties
+            // The class and type properties from Nominatim are used to identify different place types
             const isBusStop = (result.class === 'highway' && result.type === 'bus_stop') ||
                 (result.class === 'amenity' && result.type === 'bus_stop') ||
                 (result.category === 'highway' && result.type === 'bus_stop') ||
@@ -483,17 +491,15 @@ function initializeSearch() {
                 (result.display_name.toLowerCase().includes('stop') &&
                     (result.class === 'highway' || result.class === 'amenity'));
 
-            if (isTransitStop) {
-                transitStops.push(result);
-            } else if (isBusStop) {
+            if (isBusStop) {
                 busStops.push(result);
             } else {
                 otherLocations.push(result);
             }
         });
 
-        // Combine results with transit stops first, then bus stops, then other locations
-        const orderedResults = [...transitStops, ...busStops, ...otherLocations];
+        // Combine results with bus stops first, then other locations
+        const orderedResults = [...busStops, ...otherLocations];
 
         orderedResults.forEach(result => {
             const resultElement = document.createElement('div');
