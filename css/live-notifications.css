@@ -334,12 +334,29 @@ body {
     /* Limit to 3 rows */
 }
 
+.shuttle-capacity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 .shuttle-capacity-heading {
     color: white;
     font-size: 18px;
     font-weight: 600;
-    margin: 0 0 10px 0;
+    margin: 0;
     text-align: left;
+    flex: 1;
+}
+
+.predicted-text {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 0 10px;
+    text-align: right;
+    flex-shrink: 0;
 }
 
 .shuttle-capacity-content {
@@ -368,6 +385,22 @@ body {
     font-weight: 500;
     text-align: right;
     flex: 1;
+}
+
+/* Capacity indicators */
+.seats-info.low-capacity {
+    color: #ff6b6b;
+    /* Red for low capacity */
+}
+
+.seats-info.medium-capacity {
+    color: #ffd166;
+    /* Yellow for medium capacity */
+}
+
+.seats-info.high-capacity {
+    color: #06d6a0;
+    /* Green for high capacity */
 }
 
 /* User location icon */
