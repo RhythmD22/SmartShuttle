@@ -361,13 +361,18 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 20px 16px 10px 16px;
+    padding: 15px 16px 10px 16px;
     /* Reduced bottom padding */
-    margin-top: 5px;
     margin-bottom: 100px;
     /* Space for footer */
     overflow-y: auto;
     position: relative;
+}
+
+/* For feedback page that doesn't have bottom navigation */
+.container.feedback-page .main-content {
+    margin-bottom: 20px;
+    /* Reduced margin since no bottom nav */
 }
 
 .feedback-section {
