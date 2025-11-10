@@ -2,7 +2,7 @@
 
 // Initialize map variable
 let map;
-let busStopMarkers = []; // Store bus stop markers for efficient cleanup
+let shuttleMarkers = []; // Store shuttle markers for efficient cleanup
 
 // Initialize the map on page load
 document.addEventListener('DOMContentLoaded', function () {
@@ -102,8 +102,8 @@ function initializeMap() {
             }
         }
 
-        // Find and display active bus stops served by shuttles
-        findActiveBusStops(userLat, userLng);
+        // Find and display real-time shuttles
+        findNearbyShuttles(userLat, userLng);
     }
 
     // Function to handle location errors
@@ -148,8 +148,8 @@ function initializeMap() {
             }
         }
 
-        // Find and display active bus stops served by shuttles at default location
-        findActiveBusStops(defaultLat, defaultLng);
+        // Find and display real-time shuttles at default location
+        findNearbyShuttles(defaultLat, defaultLng);
     }
 
     // Debounce function to limit API calls
@@ -165,13 +165,13 @@ function initializeMap() {
         };
     }
 
-    // Debounced version of finding active bus stops served by shuttles
-    const debouncedFindActiveBusStops = debounce(async function (lat, lng) {
-        // Clear existing bus stop markers
-        clearBusStopMarkers();
+    // Debounced version of finding shuttles
+    const debouncedFindShuttles = debounce(async function (lat, lng) {
+        // Clear existing shuttle markers
+        clearShuttleMarkers();
 
         try {
-            // Use the Transit API to get real-time shuttle routes and stops
+            // Use the Transit API to get real-time shuttle locations
             const transitResponse = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`);
 
             if (!transitResponse.ok) {
@@ -181,167 +181,111 @@ function initializeMap() {
             const transitData = await transitResponse.json();
 
             if (transitData.routes && transitData.routes.length > 0) {
-                // Create a Set to store unique active bus stops
-                const activeStops = new Set();
-
-                // Process each route to find active bus stops
+                // Process each route to find active shuttles
                 transitData.routes.forEach(route => {
                     if (route.itineraries && route.itineraries.length > 0) {
                         route.itineraries.forEach(itinerary => {
-                            // Process stops in the route
-                            if (itinerary.closest_stop) {
-                                // Add the stop to our set of active stops
-                                const stopKey = `${itinerary.closest_stop.stop_lat},${itinerary.closest_stop.stop_lon}`;
-                                activeStops.add({
-                                    ...itinerary.closest_stop,
-                                    route: route.route_short_name || 'Unknown Route',
-                                    headsign: itinerary.headsign || 'Unknown Direction'
-                                });
-                            }
-
-                            // Also process schedule items which may contain stops
+                            // Process schedule items which may contain real-time vehicle positions
                             if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
                                 itinerary.schedule_items.forEach(scheduleItem => {
-                                    if (scheduleItem.stop) {
-                                        // Add the stop to our set of active stops
-                                        const stopKey = `${scheduleItem.stop.stop_lat},${scheduleItem.stop.stop_lon}`;
-                                        activeStops.add({
-                                            ...scheduleItem.stop,
-                                            route: route.route_short_name || 'Unknown Route',
-                                            headsign: itinerary.headsign || 'Unknown Direction'
+                                    // Create markers for active shuttles if real-time data exists
+                                    if (scheduleItem.is_real_time && scheduleItem.vehicle_position) {
+                                        const position = scheduleItem.vehicle_position;
+
+                                        // Create a shuttle marker using stop.svg icon
+                                        const shuttleIcon = L.divIcon({
+                                            className: 'shuttle-icon',
+                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px; transform: rotate(${position.bearing || 0}deg);">`,
+                                            iconSize: [24, 24],
+                                            iconAnchor: [12, 12]
                                         });
+
+                                        const marker = L.marker([position.lat, position.lon], {
+                                            icon: shuttleIcon,
+                                            purpose: 'active-shuttle'
+                                        }).addTo(map);
+
+                                        // Create popup content with shuttle information
+                                        let popupContent = `<b>Active Shuttle</b>`;
+                                        if (route.route_short_name) {
+                                            popupContent += `<br>Route: ${route.route_short_name}`;
+                                        }
+                                        if (itinerary.headsign) {
+                                            popupContent += `<br>Direction: ${itinerary.headsign}`;
+                                        }
+                                        if (scheduleItem.departure_time) {
+                                            const arrivalTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
+                                            popupContent += `<br>Arrival: ${arrivalTime}`;
+                                        }
+                                        if (scheduleItem.vehicle_id) {
+                                            popupContent += `<br>Vehicle: ${scheduleItem.vehicle_id}`;
+                                        }
+
+                                        marker.bindPopup(popupContent);
+
+                                        // Store reference to marker for efficient cleanup
+                                        shuttleMarkers.push(marker);
+                                    } else if (scheduleItem.vehicle_position) {
+                                        // Show shuttle even if not marked as real-time but has position
+                                        const position = scheduleItem.vehicle_position;
+
+                                        // Create a shuttle marker using stop.svg icon
+                                        const shuttleIcon = L.divIcon({
+                                            className: 'shuttle-icon',
+                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px; transform: rotate(${position.bearing || 0}deg);">`,
+                                            iconSize: [24, 24],
+                                            iconAnchor: [12, 12]
+                                        });
+
+                                        const marker = L.marker([position.lat, position.lon], {
+                                            icon: shuttleIcon,
+                                            purpose: 'active-shuttle'
+                                        }).addTo(map);
+
+                                        // Create popup content with shuttle information
+                                        let popupContent = `<b>Shuttle</b>`;
+                                        if (route.route_short_name) {
+                                            popupContent += `<br>Route: ${route.route_short_name}`;
+                                        }
+                                        if (itinerary.headsign) {
+                                            popupContent += `<br>Direction: ${itinerary.headsign}`;
+                                        }
+                                        if (scheduleItem.departure_time) {
+                                            const arrivalTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
+                                            popupContent += `<br>Arrival: ${arrivalTime}`;
+                                        }
+
+                                        marker.bindPopup(popupContent);
+
+                                        // Store reference to marker for efficient cleanup
+                                        shuttleMarkers.push(marker);
                                     }
                                 });
                             }
                         });
                     }
                 });
-
-                // Convert the set back to an array and create markers for each active stop
-                const uniqueStops = Array.from(activeStops);
-
-                if (uniqueStops.length > 0) {
-                    uniqueStops.forEach(stop => {
-                        // Create a bus stop marker using the stop image
-                        const busStopIcon = L.divIcon({
-                            className: 'bus-stop-icon',
-                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px;">`,
-                            iconSize: [24, 24],
-                            iconAnchor: [12, 12]
-                        });
-
-                        const marker = L.marker([stop.stop_lat, stop.stop_lon], {
-                            icon: busStopIcon,
-                            purpose: 'active-bus-stop'
-                        }).addTo(map);
-
-                        // Create popup content with bus stop and route information
-                        let popupContent = `<b>Active Bus Stop</b>`;
-                        if (stop.stop_name) {
-                            popupContent += `<br>Name: ${stop.stop_name}`;
-                        }
-                        if (stop.route) {
-                            popupContent += `<br>Route: ${stop.route}`;
-                        }
-                        if (stop.headsign) {
-                            popupContent += `<br>Direction: ${stop.headsign}`;
-                        }
-
-                        marker.bindPopup(popupContent);
-
-                        // Store reference to marker for efficient cleanup
-                        busStopMarkers.push(marker);
-                    });
-                } else {
-                    console.log('No active bus stops found in the area');
-                }
             } else {
-                console.log('No active routes found in the area');
-
-                // Fallback to showing all bus stops if no active routes
-                await fallbackToAllBusStops(lat, lng);
+                console.log('No active shuttles found in the area');
             }
         } catch (error) {
-            console.error('Error finding active bus stops:', error);
-
-            // Fallback to showing all bus stops if transit API fails
-            await fallbackToAllBusStops(lat, lng);
+            console.error('Error finding nearby shuttles:', error);
         }
     }, 800); // Wait 800ms after the last call before executing
 
-    // Function to find and display active bus stops served by shuttles (using the debounced version)
-    async function findActiveBusStops(lat, lng) {
-        debouncedFindActiveBusStops(lat, lng);
+    // Function to find and display nearby shuttles (using the debounced version)
+    async function findNearbyShuttles(lat, lng) {
+        debouncedFindShuttles(lat, lng);
     }
 
-    // Fallback function to show all bus stops if real-time data is unavailable
-    async function fallbackToAllBusStops(lat, lng) {
-        try {
-            // Search for bus stops within a certain radius using Overpass API
-            const overpassQuery = `[out:json];(node["highway"="bus_stop"](around:500,${lat},${lng});way["highway"="bus_stop"](around:500,${lat},${lng}););out;`;
-            const encodedQuery = encodeURIComponent(overpassQuery);
-            const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodedQuery}`;
-
-            const response = await fetch(overpassUrl);
-
-            if (!response.ok) {
-                console.error(`Overpass API error! status: ${response.status}`);
-                return;
-            }
-
-            const data = await response.json();
-
-            if (data.elements && data.elements.length > 0) {
-                data.elements.forEach(element => {
-                    if (element.type === 'node') {
-                        // Create a bus stop marker using the stop image
-                        const busStopIcon = L.divIcon({
-                            className: 'bus-stop-icon',
-                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px;">`,
-                            iconSize: [24, 24],
-                            iconAnchor: [12, 12]
-                        });
-
-                        const marker = L.marker([element.lat, element.lon], {
-                            icon: busStopIcon,
-                            purpose: 'bus-stop'
-                        }).addTo(map);
-
-                        // Create popup content with bus stop information
-                        let popupContent = '<b>Bus Stop</b>';
-                        if (element.tags && element.tags.name) {
-                            popupContent += `<br>Name: ${element.tags.name}`;
-                        }
-                        if (element.tags && element.tags.network) {
-                            popupContent += `<br>Network: ${element.tags.network}`;
-                        }
-                        if (element.tags && element.tags.operator) {
-                            popupContent += `<br>Operator: ${element.tags.operator}`;
-                        }
-                        if (element.tags && element.tags.ref) {
-                            popupContent += `<br>Ref: ${element.tags.ref}`;
-                        }
-
-                        marker.bindPopup(popupContent);
-
-                        // Store reference to marker for efficient cleanup
-                        busStopMarkers.push(marker);
-                    }
-                });
-            }
-        } catch (error) {
-            console.error('Error in fallback to all bus stops:', error);
-        }
-    }
-
-    // Function to clear bus stop markers
-    function clearBusStopMarkers() {
-        busStopMarkers.forEach(marker => {
+    // Function to clear shuttle markers
+    function clearShuttleMarkers() {
+        shuttleMarkers.forEach(marker => {
             if (map.hasLayer(marker)) {
                 map.removeLayer(marker);
             }
         });
-        busStopMarkers = []; // Reset the array
+        shuttleMarkers = []; // Reset the array
     }
 
     // Service Worker registration for PWA functionality
@@ -364,19 +308,19 @@ function initializeMap() {
     map.whenReady(function () {
         // Map is ready and functional
 
-        // Set up map move listener to show active bus stops wherever the user goes
+        // Set up map move listener to show shuttles wherever the user goes
         map.on('moveend', function () {
             // Get current map bounds
             const bounds = map.getBounds();
             const center = map.getCenter();
 
-            // Find and display active bus stops around the current map center
+            // Find and display shuttles around the current map center
             // This prevents too many API calls by focusing on the center
-            findActiveBusStops(center.lat, center.lng);
+            findNearbyShuttles(center.lat, center.lng);
         });
 
-        // Also find active bus stops at the initial location
-        findActiveBusStops(40.4406, -79.9951);
+        // Also find shuttles at the initial location
+        findNearbyShuttles(40.4406, -79.9951);
     });
 }
 
@@ -450,11 +394,11 @@ function initializeSearch() {
         }
     });
 
-    // Perform search using Nominatim API
+    // Perform search using Nominatim API and Transit API
     async function performSearch(query) {
         try {
-            // Fetch both bus stops and general locations in parallel to improve performance
-            const [busStopResponse, generalResponse] = await Promise.all([
+            // Fetch results from multiple sources in parallel to improve performance
+            const [nominatimBusStopResponse, nominatimGeneralResponse, transitResponse] = await Promise.allSettled([
                 fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=US&format=json&limit=10&addressdetails=1&amenity=bus_stop`, {
                     method: 'GET',
                     headers: {
@@ -466,28 +410,50 @@ function initializeSearch() {
                     headers: {
                         'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
                     }
-                })
+                }),
+                fetch(`/api/transit/search?query=${encodeURIComponent(query)}`)
             ]);
 
             let busStopResults = [];
             let generalResults = [];
+            let transitResults = [];
 
-            if (busStopResponse.ok) {
-                const busStopData = await busStopResponse.json();
+            // Process Nominatim bus stop results
+            if (nominatimBusStopResponse.status === 'fulfilled' && nominatimBusStopResponse.value.ok) {
+                const busStopData = await nominatimBusStopResponse.value.json();
                 if (busStopData && Array.isArray(busStopData)) {
                     busStopResults = busStopData;
                 }
             }
 
-            if (generalResponse.ok) {
-                const generalData = await generalResponse.json();
+            // Process Nominatim general results
+            if (nominatimGeneralResponse.status === 'fulfilled' && nominatimGeneralResponse.value.ok) {
+                const generalData = await nominatimGeneralResponse.value.json();
                 if (generalData && Array.isArray(generalData)) {
                     generalResults = generalData;
                 }
             }
 
-            // Combine results with bus stops first, then general results
-            const allResults = busStopResults.concat(generalResults);
+            // Process Transit API results for active stops
+            if (transitResponse.status === 'fulfilled' && transitResponse.value.ok) {
+                const transitData = await transitResponse.value.json();
+                if (transitData && Array.isArray(transitData.stops)) {
+                    // Format transit stops to match the expected structure
+                    transitResults = transitData.stops.map(stop => ({
+                        lat: stop.stop_lat,
+                        lon: stop.stop_lon,
+                        display_name: stop.stop_name || stop.display_name || 'Transit Stop',
+                        address: stop.address || {},
+                        type: 'transit_stop',
+                        tags: {
+                            name: stop.stop_name
+                        }
+                    }));
+                }
+            }
+
+            // Combine all results with transit results first (active stops), then bus stops, then general results
+            const allResults = [...transitResults, ...busStopResults, ...generalResults];
 
             // Display search results
             displaySearchResults(allResults);
@@ -520,14 +486,16 @@ function initializeSearch() {
             console.warn(`Filtered out ${invalidCount} invalid search results`);
         }
 
-        // Separate results into bus stops and other locations
+        // Separate results into transit stops, bus stops and other locations
+        const transitStops = [];
         const busStops = [];
         const otherLocations = [];
 
         validResults.forEach(result => {
+            // Check if this result is a transit stop
+            const isTransitStop = result.type === 'transit_stop';
+
             // Check if this result is a bus stop
-            // Bus stops in Nominatim typically have highway=bus_stop or amenity=bus_stop in the properties
-            // The class and type properties from Nominatim are used to identify different place types
             const isBusStop = (result.class === 'highway' && result.type === 'bus_stop') ||
                 (result.class === 'amenity' && result.type === 'bus_stop') ||
                 (result.category === 'highway' && result.type === 'bus_stop') ||
@@ -536,15 +504,17 @@ function initializeSearch() {
                 (result.display_name.toLowerCase().includes('stop') &&
                     (result.class === 'highway' || result.class === 'amenity'));
 
-            if (isBusStop) {
+            if (isTransitStop) {
+                transitStops.push(result);
+            } else if (isBusStop) {
                 busStops.push(result);
             } else {
                 otherLocations.push(result);
             }
         });
 
-        // Combine results with bus stops first, then other locations
-        const orderedResults = [...busStops, ...otherLocations];
+        // Combine results with transit stops first, then bus stops, then other locations
+        const orderedResults = [...transitStops, ...busStops, ...otherLocations];
 
         orderedResults.forEach(result => {
             const resultElement = document.createElement('div');
@@ -585,8 +555,8 @@ function initializeSearch() {
                 searchModal.style.display = 'none';
                 clearSearchResults();
 
-                // Find and display active bus stops at the new location
-                findActiveBusStops(lat, lon);
+                // Find and display nearby shuttles at the new location
+                findNearbyShuttles(lat, lon);
             });
 
             searchResults.appendChild(resultElement);
@@ -690,8 +660,8 @@ function initializeSearch() {
         // Add user location marker
         addUserLocationMarker(lat, lng, position);
 
-        // Find and display active bus stops at the new location
-        findActiveBusStops(lat, lng);
+        // Find and display nearby shuttles at the new location
+        findNearbyShuttles(lat, lon);
     }
 
     // Function to add user location marker to the map
