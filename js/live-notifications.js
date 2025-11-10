@@ -659,10 +659,16 @@ const SHUTTLE_CAPACITY_MAP = {
 };
 
 // Function to update the Shuttle Capacity section with real data
-function updateShuttleCapacitySection(routes = []) {
+function updateShuttleCapacitySection(routes) {
     const shuttleCapacityContent = document.querySelector('.shuttle-capacity-content');
 
     if (!shuttleCapacityContent) return;
+
+    // Only update if we have actual route data (not undefined)
+    if (routes === undefined) {
+        // Don't update if no data was provided (leave loading state intact)
+        return;
+    }
 
     // Clear existing content
     shuttleCapacityContent.innerHTML = '';
@@ -711,7 +717,7 @@ function updateShuttleCapacitySection(routes = []) {
     }
 
     if (!shuttles || shuttles.length === 0) {
-        shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info">No seating available</div><div class="seats-info">-</div></div>';
+        shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info">No shuttles available</div><div class="seats-info">-</div></div>';
         return;
     }
 
@@ -760,6 +766,8 @@ function updateShuttleCapacitySection(routes = []) {
     });
 }
 
+
+
 // Initialize feedback button functionality
 function initializeFeedbackButton() {
     const feedbackBtn = document.querySelector('.menu-btn');
@@ -775,6 +783,6 @@ function initializeFeedbackButton() {
 // Mark todo as completed
 document.addEventListener('DOMContentLoaded', function () {
     // Update the shuttle capacity section when the page loads
-    // This will ensure dynamic capacity is displayed from the start
-    updateShuttleCapacitySection();
+    // Only update with initial state if we have no data (don't override loading state)
+    // The loading state is already set in HTML
 });
