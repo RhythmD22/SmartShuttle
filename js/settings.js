@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDesktopNotification();
     initializeFeedbackButton();
     initializeThemeToggle();
-    initializeNotificationToggleSync();
 });
 
 // Initialize desktop notification functionality
@@ -69,41 +68,3 @@ function initializeThemeToggle() {
     }
 }
 
-// Initialize notification toggle synchronization with status icons
-function initializeNotificationToggleSync() {
-    // Get all the toggle switches
-    const toggleSwitches = [
-        document.getElementById('delayAlertsToggle'),
-        document.getElementById('routeChangesToggle'),
-        document.getElementById('arrivalTimesToggle')
-    ];
-
-    // Get all the status icons
-    const statusIcons = [
-        document.getElementById('statusIcon0'),
-        document.getElementById('statusIcon1'),
-        document.getElementById('statusIcon2')
-    ];
-
-    // Set initial state for each toggle based on existing icons
-    // Initially assume offstatus is for off and onstatus is for on
-    toggleSwitches.forEach((toggle, index) => {
-        if (toggle && statusIcons[index]) {
-            if (statusIcons[index].src.includes('onstatus')) {
-                toggle.checked = true;
-            } else {
-                toggle.checked = false;
-            }
-
-            // Add event listener to each toggle
-            toggle.addEventListener('change', function () {
-                // Update the corresponding status icon
-                if (this.checked) {
-                    statusIcons[index].src = 'images/onstatus.svg';
-                } else {
-                    statusIcons[index].src = 'images/offstatus.svg';
-                }
-            });
-        }
-    });
-}
