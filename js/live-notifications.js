@@ -635,7 +635,39 @@ function processRoutesData(routes) {
                 // Array to hold stop coordinates for drawing route line in order
                 const routeCoordinates = [];
 
-                // Process stops for this itinerary - create stop marker first if it doesn't exist yet
+                // Process all stops in the itinerary to get the complete route path
+                // According to the API documentation, itinerary should have a stops array
+                if (itinerary.stops && Array.isArray(itinerary.stops)) {
+                    // Process all stops in the route to create the complete path
+                    itinerary.stops.forEach(stop => {
+                        if (stop.stop_lat && stop.stop_lon) {
+                            const stopKey = `${stop.stop_lat.toFixed(6)},${stop.stop_lon.toFixed(6)}`; // Use fixed precision to handle floating point precision
+
+                            // Add stop to coordinates list for route line if unique
+                            if (!uniqueStops.has(stopKey)) {
+                                uniqueStops.add(stopKey);
+                                routeCoordinates.push([stop.stop_lat, stop.stop_lon]);
+
+                                // Create a stop marker on the map
+                                const stopIcon = L.divIcon({
+                                    className: 'stop-marker',
+                                    html: `<div style="background-color: #${route.route_color || '6A63F6'}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+                                    iconSize: [16, 16],
+                                    iconAnchor: [8, 8]
+                                });
+
+                                const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], { icon: stopIcon })
+                                    .addTo(map)
+                                    .bindPopup(`<b>${route.route_short_name || route.real_time_route_id}</b><br>${stop.stop_name}`);
+
+                                // Store reference to route markers for potential future clearing
+                                routeMarkers.push(stopMarker);
+                            }
+                        }
+                    });
+                }
+
+                // Process stops for this itinerary as fallback - create stop marker first if it doesn't exist yet
                 if (itinerary.closest_stop) {
                     const stop = itinerary.closest_stop;
                     const stopKey = `${stop.stop_lat.toFixed(6)},${stop.stop_lon.toFixed(6)}`; // Use fixed precision to handle floating point precision
