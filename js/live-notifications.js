@@ -630,36 +630,102 @@ function processRoutesData(routes) {
     routes.forEach((route, index) => {
         if (route.itineraries && route.itineraries.length > 0) {
             route.itineraries.forEach((itinerary, itineraryIndex) => {
-                // Process stops for this itinerary
+                // Set to track unique stops and avoid duplicate coordinates in the route line
+                const uniqueStops = new Set();
+                // Array to hold stop coordinates for drawing route line in order
+                const routeCoordinates = [];
+
+                // Process stops for this itinerary - create stop marker first if it doesn't exist yet
                 if (itinerary.closest_stop) {
                     const stop = itinerary.closest_stop;
+                    const stopKey = `${stop.stop_lat.toFixed(6)},${stop.stop_lon.toFixed(6)}`; // Use fixed precision to handle floating point precision
 
-                    // Create a stop marker on the map
-                    const stopIcon = L.divIcon({
-                        className: 'stop-marker',
-                        html: `<div style="background-color: #${route.route_color || '6A63F6'}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
-                        iconSize: [16, 16],
-                        iconAnchor: [8, 8]
-                    });
+                    // Add stop to coordinates list if unique
+                    if (!uniqueStops.has(stopKey)) {
+                        uniqueStops.add(stopKey);
+                        routeCoordinates.push([stop.stop_lat, stop.stop_lon]);
 
-                    const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], { icon: stopIcon })
-                        .addTo(map)
-                        .bindPopup(`<b>${route.route_short_name || route.real_time_route_id}</b><br>${stop.stop_name}`);
+                        // Create a stop marker on the map
+                        const stopIcon = L.divIcon({
+                            className: 'stop-marker',
+                            html: `<div style="background-color: #${route.route_color || '6A63F6'}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+                            iconSize: [16, 16],
+                            iconAnchor: [8, 8]
+                        });
 
-                    // Store reference to route markers for potential future clearing
-                    routeMarkers.push(stopMarker);
+                        const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], { icon: stopIcon })
+                            .addTo(map)
+                            .bindPopup(`<b>${route.route_short_name || route.real_time_route_id}</b><br>${stop.stop_name}`);
+
+                        // Store reference to route markers for potential future clearing
+                        routeMarkers.push(stopMarker);
+                    }
                 }
 
-                // Process schedule items (bus arrival times)
+                // Process schedule items which may contain real-time departure information
                 if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
                     itinerary.schedule_items.forEach(scheduleItem => {
-                        // Process real-time data if available
-                        if (scheduleItem.is_real_time && scheduleItem.departure_time) {
-                            // In a real implementation, this would show vehicle positions
-                            // For now, we'll just log for demonstration
-                            console.log(`Real-time bus for route ${route.route_short_name || route.real_time_route_id}: ${new Date(scheduleItem.departure_time * 1000).toLocaleTimeString()}`);
+                        if (itinerary.closest_stop) {
+                            const stop = itinerary.closest_stop;
+                            const stopKey = `${stop.stop_lat.toFixed(6)},${stop.stop_lon.toFixed(6)}`; // Use fixed precision to handle floating point precision
+
+                            // Add stop to coordinates list if unique
+                            if (!uniqueStops.has(stopKey)) {
+                                uniqueStops.add(stopKey);
+                                routeCoordinates.push([stop.stop_lat, stop.stop_lon]);
+                            }
+
+                            // Create markers for active buses at stops with real-time departures
+                            let markerType = scheduleItem.is_real_time ? 'Active Bus' : 'Bus';
+
+                            // Create a bus marker on the map
+                            const busIcon = L.divIcon({
+                                className: 'bus-marker',
+                                html: `<div style="background-color: #${route.route_color || '6A63F6'}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+                                iconSize: [16, 16],
+                                iconAnchor: [8, 8]
+                            });
+
+                            const marker = L.marker([stop.stop_lat, stop.stop_lon], {
+                                icon: busIcon,
+                                purpose: 'active-bus'
+                            }).addTo(map);
+
+                            // Create popup content with bus information
+                            let popupContent = `<b>${markerType}</b>`;
+                            if (route.route_short_name) {
+                                popupContent += `<br>Route: ${route.route_short_name}`;
+                            }
+                            if (itinerary.headsign) {
+                                popupContent += `<br>Direction: ${itinerary.headsign}`;
+                            }
+                            if (scheduleItem.departure_time) {
+                                const departureTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
+                                popupContent += `<br>Departure: ${departureTime}`;
+                            }
+                            if (scheduleItem.rt_trip_id) {
+                                popupContent += `<br>Trip: ${scheduleItem.rt_trip_id}`;
+                            }
+
+                            marker.bindPopup(popupContent);
+
+                            // Store reference to route markers for efficient cleanup
+                            routeMarkers.push(marker);
                         }
                     });
+                }
+
+                // Draw route line if we have at least 2 coordinates
+                if (routeCoordinates.length >= 2) {
+                    const routeLine = L.polyline(routeCoordinates, {
+                        color: `#${route.route_color || '6A63F6'}`,
+                        weight: 4,
+                        opacity: 0.6,
+                        smoothFactor: 1
+                    }).addTo(map);
+
+                    // Store reference to route line for potential future clearing
+                    routeMarkers.push(routeLine);
                 }
             });
         }
