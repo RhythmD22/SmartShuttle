@@ -624,6 +624,44 @@ async function fetchRealTimeBuses(lat, lng) {
     }
 }
 
+// Function to decode polyline encoded strings (Google's encoded polyline algorithm)
+function decodePolyline(encoded) {
+    let index = 0;
+    let lat = 0;
+    let lng = 0;
+    const coordinates = [];
+
+    while (index < encoded.length) {
+        let b;
+        let shift = 0;
+        let result = 0;
+
+        // Decode latitude
+        do {
+            b = encoded.charCodeAt(index++) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+        } while (b >= 0x20);
+        const deltaLat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+        lat += deltaLat;
+
+        // Decode longitude
+        shift = 0;
+        result = 0;
+        do {
+            b = encoded.charCodeAt(index++) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+        } while (b >= 0x20);
+        const deltaLng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+        lng += deltaLng;
+
+        coordinates.push([lat / 1e5, lng / 1e5]);
+    }
+
+    return coordinates;
+}
+
 // Function to process route data and display on the map
 function processRoutesData(routes) {
     // For each route, extract stops and possible vehicle positions
@@ -665,6 +703,21 @@ function processRoutesData(routes) {
                             }
                         }
                     });
+                }
+
+                // Try to extract route shape if available (this provides the actual route path)
+                // According to the API documentation, itineraries may have a shape property
+                if (itinerary.shape) {
+                    try {
+                        // Decode the polyline shape using our built-in function
+                        const decodedPath = decodePolyline(itinerary.shape);
+                        if (decodedPath && decodedPath.length > 0) {
+                            // Add decoded path coordinates to routeCoordinates for drawing
+                            routeCoordinates.push(...decodedPath);
+                        }
+                    } catch (e) {
+                        console.error('Error decoding polyline shape:', e);
+                    }
                 }
 
                 // Process stops for this itinerary as fallback - create stop marker first if it doesn't exist yet
@@ -749,6 +802,10 @@ function processRoutesData(routes) {
 
                 // Draw route line if we have at least 2 coordinates
                 if (routeCoordinates.length >= 2) {
+                    // Sort coordinates to maintain route order if we're using the shape path
+                    // This attempts to create a continuous route line following the actual path
+
+                    // Create route line with coordinates in order
                     const routeLine = L.polyline(routeCoordinates, {
                         color: `#${route.route_color || '6A63F6'}`,
                         weight: 4,
