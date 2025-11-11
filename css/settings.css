@@ -153,6 +153,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: 1;
 }
 
 .live-indicator {
@@ -216,8 +217,8 @@ body {
 
 .alert-filter-container {
     display: flex;
-    gap: 5px;
-    margin-left: auto;
+    gap: 8px;
+    margin-left: 15px;
 }
 
 .alert-filter-btn {
