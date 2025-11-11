@@ -124,15 +124,16 @@ function initializeSearch() {
     // Perform search using Nominatim API
     async function performSearch(query) {
         try {
-            // Fetch both bus stops and general locations in parallel
+            // Fetch both bus stops and general locations in parallel to improve performance
+            // For bus stops, we use the query parameter alone to avoid the structured query error
             const [busStopResponse, generalResponse] = await Promise.all([
-                fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=US&format=json&limit=10&addressdetails=1&amenity=bus_stop`, {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}+bus+stop&countrycodes=US&limit=10&addressdetails=1`, {
                     method: 'GET',
                     headers: {
                         'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
                     }
                 }),
-                fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=US&format=json&limit=10&addressdetails=1`, {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=US&limit=10&addressdetails=1`, {
                     method: 'GET',
                     headers: {
                         'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
@@ -235,7 +236,7 @@ function initializeSearch() {
                     return; // Don't proceed with invalid coordinates
                 }
 
-                // Save the selected location to localStorage (unique to notifications page)
+                // Save the selected location to localStorage
                 const selectedLocation = {
                     lat: lat,
                     lon: lon,
@@ -257,7 +258,7 @@ function initializeSearch() {
                 searchModal.style.display = 'none';
                 clearSearchResults();
 
-                // Fetch and display real-time buses for the selected location
+                // Find and display nearby shuttles at the new location
                 fetchRealTimeBuses(lat, lon);
             });
 
@@ -366,7 +367,7 @@ function initializeSearch() {
         clearSearchResults();
 
         // Add user location marker
-        addUserLocationMarker(lat, lng, position);
+        addUserLocationMarker(lat, lng);
 
         // Fetch and display real-time buses for the current location
         fetchRealTimeBuses(lat, lng);
