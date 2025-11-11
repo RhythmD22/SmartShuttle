@@ -643,10 +643,10 @@ function initializeSearch() {
         clearSearchResults();
 
         // Add user location marker
-        addUserLocationMarker(lat, lng, position);
+        addUserLocationMarker(lat, lng);
 
         // Find and display nearby shuttles at the new location
-        findNearbyShuttles(lat, lon);
+        findNearbyShuttles(lat, lng);
     }
 
     // Function to add user location marker to the map
