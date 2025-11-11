@@ -624,197 +624,42 @@ async function fetchRealTimeBuses(lat, lng) {
     }
 }
 
-// Function to decode polyline encoded strings (Google's encoded polyline algorithm)
-function decodePolyline(encoded) {
-    let index = 0;
-    let lat = 0;
-    let lng = 0;
-    const coordinates = [];
-
-    while (index < encoded.length) {
-        let b;
-        let shift = 0;
-        let result = 0;
-
-        // Decode latitude
-        do {
-            b = encoded.charCodeAt(index++) - 63;
-            result |= (b & 0x1f) << shift;
-            shift += 5;
-        } while (b >= 0x20);
-        const deltaLat = ((result & 1) ? ~(result >> 1) : (result >> 1));
-        lat += deltaLat;
-
-        // Decode longitude
-        shift = 0;
-        result = 0;
-        do {
-            b = encoded.charCodeAt(index++) - 63;
-            result |= (b & 0x1f) << shift;
-            shift += 5;
-        } while (b >= 0x20);
-        const deltaLng = ((result & 1) ? ~(result >> 1) : (result >> 1));
-        lng += deltaLng;
-
-        coordinates.push([lat / 1e5, lng / 1e5]);
-    }
-
-    return coordinates;
-}
-
 // Function to process route data and display on the map
 function processRoutesData(routes) {
     // For each route, extract stops and possible vehicle positions
     routes.forEach((route, index) => {
         if (route.itineraries && route.itineraries.length > 0) {
             route.itineraries.forEach((itinerary, itineraryIndex) => {
-                // Set to track unique stops and avoid duplicate coordinates in the route line
-                const uniqueStops = new Set();
-                // Array to hold stop coordinates for drawing route line in order
-                const routeCoordinates = [];
-
-                // Process all stops in the itinerary to get the complete route path
-                // According to the API documentation, itinerary should have a stops array
-                if (itinerary.stops && Array.isArray(itinerary.stops)) {
-                    // Process all stops in the route to create the complete path
-                    itinerary.stops.forEach(stop => {
-                        if (stop.stop_lat && stop.stop_lon) {
-                            const stopKey = `${stop.stop_lat.toFixed(6)},${stop.stop_lon.toFixed(6)}`; // Use fixed precision to handle floating point precision
-
-                            // Add stop to coordinates list for route line if unique
-                            if (!uniqueStops.has(stopKey)) {
-                                uniqueStops.add(stopKey);
-                                routeCoordinates.push([stop.stop_lat, stop.stop_lon]);
-
-                                // Create a stop marker on the map
-                                const stopIcon = L.divIcon({
-                                    className: 'stop-marker',
-                                    html: `<div style="background-color: #${route.route_color || '6A63F6'}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
-                                    iconSize: [16, 16],
-                                    iconAnchor: [8, 8]
-                                });
-
-                                const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], { icon: stopIcon })
-                                    .addTo(map)
-                                    .bindPopup(`<b>${route.route_short_name || route.real_time_route_id}</b><br>${stop.stop_name}`);
-
-                                // Store reference to route markers for potential future clearing
-                                routeMarkers.push(stopMarker);
-                            }
-                        }
-                    });
-                }
-
-                // Try to extract route shape if available (this provides the actual route path)
-                // According to the API documentation, itineraries may have a shape property
-                if (itinerary.shape) {
-                    try {
-                        // Decode the polyline shape using our built-in function
-                        const decodedPath = decodePolyline(itinerary.shape);
-                        if (decodedPath && decodedPath.length > 0) {
-                            // Add decoded path coordinates to routeCoordinates for drawing
-                            routeCoordinates.push(...decodedPath);
-                        }
-                    } catch (e) {
-                        console.error('Error decoding polyline shape:', e);
-                    }
-                }
-
-                // Process stops for this itinerary as fallback - create stop marker first if it doesn't exist yet
+                // Process stops for this itinerary
                 if (itinerary.closest_stop) {
                     const stop = itinerary.closest_stop;
-                    const stopKey = `${stop.stop_lat.toFixed(6)},${stop.stop_lon.toFixed(6)}`; // Use fixed precision to handle floating point precision
 
-                    // Add stop to coordinates list if unique
-                    if (!uniqueStops.has(stopKey)) {
-                        uniqueStops.add(stopKey);
-                        routeCoordinates.push([stop.stop_lat, stop.stop_lon]);
+                    // Create a stop marker on the map
+                    const stopIcon = L.divIcon({
+                        className: 'stop-marker',
+                        html: `<div style="background-color: #${route.route_color || '6A63F6'}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8]
+                    });
 
-                        // Create a stop marker on the map
-                        const stopIcon = L.divIcon({
-                            className: 'stop-marker',
-                            html: `<div style="background-color: #${route.route_color || '6A63F6'}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
-                            iconSize: [16, 16],
-                            iconAnchor: [8, 8]
-                        });
+                    const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], { icon: stopIcon })
+                        .addTo(map)
+                        .bindPopup(`<b>${route.route_short_name || route.real_time_route_id}</b><br>${stop.stop_name}`);
 
-                        const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], { icon: stopIcon })
-                            .addTo(map)
-                            .bindPopup(`<b>${route.route_short_name || route.real_time_route_id}</b><br>${stop.stop_name}`);
-
-                        // Store reference to route markers for potential future clearing
-                        routeMarkers.push(stopMarker);
-                    }
+                    // Store reference to route markers for potential future clearing
+                    routeMarkers.push(stopMarker);
                 }
 
-                // Process schedule items which may contain real-time departure information
+                // Process schedule items (bus arrival times)
                 if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
                     itinerary.schedule_items.forEach(scheduleItem => {
-                        if (itinerary.closest_stop) {
-                            const stop = itinerary.closest_stop;
-                            const stopKey = `${stop.stop_lat.toFixed(6)},${stop.stop_lon.toFixed(6)}`; // Use fixed precision to handle floating point precision
-
-                            // Add stop to coordinates list if unique
-                            if (!uniqueStops.has(stopKey)) {
-                                uniqueStops.add(stopKey);
-                                routeCoordinates.push([stop.stop_lat, stop.stop_lon]);
-                            }
-
-                            // Create markers for active buses at stops with real-time departures
-                            let markerType = scheduleItem.is_real_time ? 'Active Bus' : 'Bus';
-
-                            // Create a bus marker on the map
-                            const busIcon = L.divIcon({
-                                className: 'bus-marker',
-                                html: `<div style="background-color: #${route.route_color || '6A63F6'}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
-                                iconSize: [16, 16],
-                                iconAnchor: [8, 8]
-                            });
-
-                            const marker = L.marker([stop.stop_lat, stop.stop_lon], {
-                                icon: busIcon,
-                                purpose: 'active-bus'
-                            }).addTo(map);
-
-                            // Create popup content with bus information
-                            let popupContent = `<b>${markerType}</b>`;
-                            if (route.route_short_name) {
-                                popupContent += `<br>Route: ${route.route_short_name}`;
-                            }
-                            if (itinerary.headsign) {
-                                popupContent += `<br>Direction: ${itinerary.headsign}`;
-                            }
-                            if (scheduleItem.departure_time) {
-                                const departureTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
-                                popupContent += `<br>Departure: ${departureTime}`;
-                            }
-                            if (scheduleItem.rt_trip_id) {
-                                popupContent += `<br>Trip: ${scheduleItem.rt_trip_id}`;
-                            }
-
-                            marker.bindPopup(popupContent);
-
-                            // Store reference to route markers for efficient cleanup
-                            routeMarkers.push(marker);
+                        // Process real-time data if available
+                        if (scheduleItem.is_real_time && scheduleItem.departure_time) {
+                            // In a real implementation, this would show vehicle positions
+                            // For now, we'll just log for demonstration
+                            console.log(`Real-time bus for route ${route.route_short_name || route.real_time_route_id}: ${new Date(scheduleItem.departure_time * 1000).toLocaleTimeString()}`);
                         }
                     });
-                }
-
-                // Draw route line if we have at least 2 coordinates
-                if (routeCoordinates.length >= 2) {
-                    // Sort coordinates to maintain route order if we're using the shape path
-                    // This attempts to create a continuous route line following the actual path
-
-                    // Create route line with coordinates in order
-                    const routeLine = L.polyline(routeCoordinates, {
-                        color: `#${route.route_color || '6A63F6'}`,
-                        weight: 4,
-                        opacity: 0.6,
-                        smoothFactor: 1
-                    }).addTo(map);
-
-                    // Store reference to route line for potential future clearing
-                    routeMarkers.push(routeLine);
                 }
             });
         }
