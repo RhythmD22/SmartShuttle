@@ -75,9 +75,6 @@ function initShuttleFinder() {
 
                                         // Create popup content with shuttle information
                                         let popupContent = `<b>Active Shuttle</b>`;
-                                        if (route.route_short_name) {
-                                            popupContent += `<br>Route: ${route.route_short_name}`;
-                                        }
                                         if (itinerary.headsign) {
                                             popupContent += `<br>Direction: ${itinerary.headsign}`;
                                         }
@@ -112,9 +109,6 @@ function initShuttleFinder() {
 
                                         // Create popup content with shuttle information
                                         let popupContent = `<b>Shuttle</b>`;
-                                        if (route.route_short_name) {
-                                            popupContent += `<br>Route: ${route.route_short_name}`;
-                                        }
                                         if (itinerary.headsign) {
                                             popupContent += `<br>Direction: ${itinerary.headsign}`;
                                         }
