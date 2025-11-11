@@ -171,9 +171,10 @@ function addAlertToFeed(alert, route) {
             title = alert.title || 'Service Alert';
     }
 
-    // Create alert element
+    // Create alert element with data attribute for filtering
     const alertElement = document.createElement('div');
     alertElement.className = 'live-alert-item';
+    alertElement.dataset.effect = alert.effect || 'OTHER_EFFECT';
     alertElement.innerHTML = `
         <img src="images/${icon}" alt="${title}" class="live-alert-icon">
         <div class="live-alert-text">
@@ -186,10 +187,51 @@ function addAlertToFeed(alert, route) {
     container.appendChild(alertElement);
 }
 
+// Initialize alert filter functionality
+function initializeAlertFilters() {
+    const filterButtons = document.querySelectorAll('.alert-filter-btn');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Remove active class from all buttons
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+
+            // Add active class to clicked button
+            this.classList.add('active');
+
+            // Apply filter
+            const filterValue = this.getAttribute('data-filter');
+            applyAlertFilter(filterValue);
+        });
+    });
+}
+
+// Apply the selected filter to show only matching alerts
+function applyAlertFilter(filterValue) {
+    const alertItems = document.querySelectorAll('.live-alert-item');
+
+    alertItems.forEach(item => {
+        const alertEffect = item.dataset.effect || '';
+
+        if (filterValue === 'all') {
+            // Show all items
+            item.style.display = 'flex';
+        } else {
+            // Show only items that match the filter
+            if (alertEffect === filterValue) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        }
+    });
+}
+
 // Update live feed periodically (every 5 minutes)
 function setupLiveFeedUpdates() {
     // Initial load
     initializeLiveFeed();
+    initializeAlertFilters(); // Initialize filters after live feed is loaded
 
     // Update every 5 minutes
     setInterval(initializeLiveFeed, 5 * 60 * 1000);
