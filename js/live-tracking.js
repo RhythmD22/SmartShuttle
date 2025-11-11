@@ -53,22 +53,22 @@ function initShuttleFinder() {
                 transitData.routes.forEach(route => {
                     if (route.itineraries && route.itineraries.length > 0) {
                         route.itineraries.forEach(itinerary => {
-                            // Process schedule items which may contain real-time vehicle positions
+                            // Process schedule items which may contain real-time departure information
                             if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
                                 itinerary.schedule_items.forEach(scheduleItem => {
-                                    // Create markers for active shuttles if real-time data exists
-                                    if (scheduleItem.is_real_time && scheduleItem.vehicle_position) {
-                                        const position = scheduleItem.vehicle_position;
+                                    // Create markers for active shuttles at stops with real-time departures
+                                    if (scheduleItem.is_real_time && itinerary.closest_stop) {
+                                        const stop = itinerary.closest_stop;
 
                                         // Create a shuttle marker using stop.svg icon
                                         const shuttleIcon = L.divIcon({
                                             className: 'shuttle-icon',
-                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px; transform: rotate(${position.bearing || 0}deg);">`,
+                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px;">`,
                                             iconSize: [24, 24],
                                             iconAnchor: [12, 12]
                                         });
 
-                                        const marker = L.marker([position.lat, position.lon], {
+                                        const marker = L.marker([stop.stop_lat, stop.stop_lon], {
                                             icon: shuttleIcon,
                                             purpose: 'active-shuttle'
                                         }).addTo(map);
@@ -82,30 +82,30 @@ function initShuttleFinder() {
                                             popupContent += `<br>Direction: ${itinerary.headsign}`;
                                         }
                                         if (scheduleItem.departure_time) {
-                                            const arrivalTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
-                                            popupContent += `<br>Arrival: ${arrivalTime}`;
+                                            const departureTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
+                                            popupContent += `<br>Departure: ${departureTime}`;
                                         }
-                                        if (scheduleItem.vehicle_id) {
-                                            popupContent += `<br>Vehicle: ${scheduleItem.vehicle_id}`;
+                                        if (scheduleItem.rt_trip_id) {
+                                            popupContent += `<br>Trip: ${scheduleItem.rt_trip_id}`;
                                         }
 
                                         marker.bindPopup(popupContent);
 
                                         // Store reference to marker for efficient cleanup
                                         shuttleMarkers.push(marker);
-                                    } else if (scheduleItem.vehicle_position) {
-                                        // Show shuttle even if not marked as real-time but has position
-                                        const position = scheduleItem.vehicle_position;
+                                    } else if (itinerary.closest_stop) {
+                                        // Show shuttle even if not marked as real-time but at a stop with schedule
+                                        const stop = itinerary.closest_stop;
 
                                         // Create a shuttle marker using stop.svg icon
                                         const shuttleIcon = L.divIcon({
                                             className: 'shuttle-icon',
-                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px; transform: rotate(${position.bearing || 0}deg);">`,
+                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px;">`,
                                             iconSize: [24, 24],
                                             iconAnchor: [12, 12]
                                         });
 
-                                        const marker = L.marker([position.lat, position.lon], {
+                                        const marker = L.marker([stop.stop_lat, stop.stop_lon], {
                                             icon: shuttleIcon,
                                             purpose: 'active-shuttle'
                                         }).addTo(map);
@@ -119,8 +119,8 @@ function initShuttleFinder() {
                                             popupContent += `<br>Direction: ${itinerary.headsign}`;
                                         }
                                         if (scheduleItem.departure_time) {
-                                            const arrivalTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
-                                            popupContent += `<br>Arrival: ${arrivalTime}`;
+                                            const departureTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
+                                            popupContent += `<br>Departure: ${departureTime}`;
                                         }
 
                                         marker.bindPopup(popupContent);
