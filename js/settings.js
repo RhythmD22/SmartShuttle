@@ -83,7 +83,43 @@ function initializeLiveFeed() {
             console.error('Error parsing saved location:', e);
         }
     } else {
-        // If no saved location, display message to select location in live notifications
+        // If no saved location, try to get current location
+        getCurrentLocation();
+    }
+}
+
+// Get the user's current location
+function getCurrentLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                // Save the current location to localStorage
+                const selectedLocation = {
+                    lat: userLat,
+                    lon: userLng,
+                    displayName: 'Current Location',
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('selectedNotificationLocation', JSON.stringify(selectedLocation));
+
+                // Fetch alerts for current location
+                fetchLiveAlerts(userLat, userLng);
+            },
+            error => {
+                console.error('Error getting current location:', error);
+                displayNoLocationMessage();
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000 // 1 minute
+            }
+        );
+    } else {
+        console.error('Geolocation is not supported by this browser.');
         displayNoLocationMessage();
     }
 }
@@ -117,13 +153,22 @@ async function fetchLiveAlerts(lat, lon) {
             const routesWithAlerts = data.routes.filter(route => route.alerts && route.alerts.length > 0);
 
             if (routesWithAlerts.length > 0) {
-                // Process each route's alerts
+                // Process each route's alerts while avoiding duplicates
                 let alertsFound = false;
+                const displayedAlerts = new Set(); // To track unique alerts
+
                 routesWithAlerts.forEach(route => {
                     if (route.alerts && route.alerts.length > 0) {
                         route.alerts.forEach(alert => {
-                            addAlertToFeed(alert, route);
-                            alertsFound = true;
+                            // Create a unique identifier for the alert to check for duplicates
+                            const alertIdentifier = `${alert.effect}-${alert.title || ''}-${alert.description || ''}`;
+
+                            // Only add if we haven't seen this alert before
+                            if (!displayedAlerts.has(alertIdentifier)) {
+                                displayedAlerts.add(alertIdentifier);
+                                addAlertToFeed(alert, route);
+                                alertsFound = true;
+                            }
                         });
                     }
                 });
