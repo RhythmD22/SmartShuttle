@@ -147,6 +147,22 @@ body {
     color: #fff;
     margin-bottom: 10px;
     padding-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.live-feed-section .section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert-filter-container {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0 15px 0;
+    justify-content: flex-end;
 }
 
 .live-indicator-container {
@@ -219,6 +235,7 @@ body {
     display: flex;
     gap: 8px;
     margin-left: 15px;
+    align-self: center;
 }
 
 .alert-filter-btn {
