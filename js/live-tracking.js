@@ -57,10 +57,11 @@ function initShuttleFinder() {
                             if (itinerary.closest_stop) {
                                 const stop = itinerary.closest_stop;
 
-                                // Create a bus stop marker using a different icon
+                                // Create a bus stop marker using API route color
+                                const routeColor = route.route_color || '413C96'; // Use route color or default purple
                                 const stopIcon = L.divIcon({
                                     className: 'stop-icon',
-                                    html: `<div style="background-color: #413C96; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+                                    html: `<div style="background-color: #${routeColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
                                     iconSize: [16, 16],
                                     iconAnchor: [8, 8]
                                 });
