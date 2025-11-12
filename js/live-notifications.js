@@ -970,3 +970,73 @@ function initializeFeedbackButton() {
         });
     }
 }
+
+// Initialize refresh button functionality
+function initializeRefreshButton() {
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function () {
+            // Add visual feedback for the refresh action
+            const refreshIcon = refreshBtn.querySelector('.icon');
+            refreshIcon.style.transition = 'transform 0.3s ease';
+            refreshIcon.style.transform = 'rotate(360deg)';
+
+            // Reset the rotation after the animation completes
+            setTimeout(() => {
+                refreshIcon.style.transform = 'rotate(0deg)';
+            }, 300);
+
+            // Perform the refresh action
+            refreshPageData();
+        });
+    }
+}
+
+// Refresh function to update all map data and alerts
+async function refreshPageData() {
+    // Get current map center
+    const center = map.getCenter();
+
+    // Clear existing markers
+    clearBusMarkers();
+
+    // Fetch and display real-time buses for current location
+    fetchRealTimeBuses(center.lat, center.lng);
+
+    // Update the location display
+    try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${center.lat}&lon=${center.lng}`);
+        const data = await response.json();
+
+        // Update the header to show the actual location name
+        const locationDisplay = document.getElementById('selectedLocationDisplay');
+        if (locationDisplay) {
+            if (data && data.display_name) {
+                // Extract a shorter, more readable location name (e.g. city, state)
+                const addressParts = data.display_name.split(',');
+                if (addressParts.length >= 3) {
+                    // Show the first few parts of the address (e.g., neighborhood, city, state)
+                    locationDisplay.textContent = `${addressParts[0].trim()}, ${addressParts[1].trim()}`;
+                } else {
+                    locationDisplay.textContent = addressParts[0].trim() || 'Current Location';
+                }
+            } else {
+                locationDisplay.textContent = 'Current Location';
+            }
+        }
+    } catch (error) {
+        console.error('Error getting location name:', error);
+
+        // Update the header to show "Current Location" as fallback
+        const locationDisplay = document.getElementById('selectedLocationDisplay');
+        if (locationDisplay) {
+            locationDisplay.textContent = 'Current Location';
+        }
+    }
+}
+
+// Initialize the refresh functionality when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function () {
+    initializeRefreshButton();
+});

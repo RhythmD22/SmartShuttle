@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDesktopNotification();
     initializeFeedbackButton();
     initializeThemeToggle();
+    initializeRefreshButton();
     setupLiveFeedUpdates();
 
 });
@@ -270,6 +271,47 @@ function applyAlertFilter(filterValue) {
             }
         }
     });
+}
+
+// Initialize refresh button functionality
+function initializeRefreshButton() {
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function () {
+            // Add visual feedback for the refresh action
+            const refreshIcon = refreshBtn.querySelector('.icon');
+            refreshIcon.style.transition = 'transform 0.3s ease';
+            refreshIcon.style.transform = 'rotate(360deg)';
+
+            // Reset the rotation after the animation completes
+            setTimeout(() => {
+                refreshIcon.style.transform = 'rotate(0deg)';
+            }, 300);
+
+            // Perform the refresh action
+            refreshLiveAlerts();
+        });
+    }
+}
+
+// Refresh function to update live alerts
+function refreshLiveAlerts() {
+    // Get saved location from localStorage (from live notifications page)
+    const savedLocation = localStorage.getItem('selectedNotificationLocation');
+
+    if (savedLocation) {
+        try {
+            const locationData = JSON.parse(savedLocation);
+            fetchLiveAlerts(locationData.lat, locationData.lon);
+        } catch (e) {
+            console.error('Error parsing saved location:', e);
+            getCurrentLocation();
+        }
+    } else {
+        // If no saved location, try to get current location
+        getCurrentLocation();
+    }
 }
 
 // Update live feed periodically (every 5 minutes)
