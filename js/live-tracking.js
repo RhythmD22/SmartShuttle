@@ -32,14 +32,14 @@ function debounce(func, wait) {
     };
 }
 
-// Debounced version of finding shuttles - moved to global scope
+// Debounced version of finding bus stops - moved to global scope
 function initShuttleFinder() {
     debouncedFindShuttles = debounce(async function (lat, lng) {
         // Clear existing shuttle markers
         clearShuttleMarkers();
 
         try {
-            // Use the Transit API to get real-time shuttle locations
+            // Use the Transit API to get nearby transit stops
             const transitResponse = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`);
 
             if (!transitResponse.ok) {
@@ -49,89 +49,93 @@ function initShuttleFinder() {
             const transitData = await transitResponse.json();
 
             if (transitData.routes && transitData.routes.length > 0) {
-                // Process each route to find active shuttles
+                // Process each route to find stops
                 transitData.routes.forEach(route => {
                     if (route.itineraries && route.itineraries.length > 0) {
                         route.itineraries.forEach(itinerary => {
-                            // Process schedule items which may contain real-time departure information
-                            if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
-                                itinerary.schedule_items.forEach(scheduleItem => {
-                                    // Create markers for active shuttles at stops with real-time departures
-                                    if (scheduleItem.is_real_time && itinerary.closest_stop) {
-                                        const stop = itinerary.closest_stop;
+                            // Process stops regardless of active shuttle status to create bus stop markers
+                            if (itinerary.closest_stop) {
+                                const stop = itinerary.closest_stop;
 
-                                        // Create a shuttle marker using stop.svg icon
-                                        const shuttleIcon = L.divIcon({
-                                            className: 'shuttle-icon',
-                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px;">`,
-                                            iconSize: [24, 24],
-                                            iconAnchor: [12, 12]
-                                        });
-
-                                        const marker = L.marker([stop.stop_lat, stop.stop_lon], {
-                                            icon: shuttleIcon,
-                                            purpose: 'active-shuttle'
-                                        }).addTo(map);
-
-                                        // Create popup content with shuttle information
-                                        let popupContent = `<b>Active Shuttle</b>`;
-                                        if (itinerary.headsign) {
-                                            popupContent += `<br>Direction: ${itinerary.headsign}`;
-                                        }
-                                        if (scheduleItem.departure_time) {
-                                            const departureTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
-                                            popupContent += `<br>Departure: ${departureTime}`;
-                                        }
-                                        if (scheduleItem.rt_trip_id) {
-                                            popupContent += `<br>Trip: ${scheduleItem.rt_trip_id}`;
-                                        }
-
-                                        marker.bindPopup(popupContent);
-
-                                        // Store reference to marker for efficient cleanup
-                                        shuttleMarkers.push(marker);
-                                    } else if (itinerary.closest_stop) {
-                                        // Show shuttle even if not marked as real-time but at a stop with schedule
-                                        const stop = itinerary.closest_stop;
-
-                                        // Create a shuttle marker using stop.svg icon
-                                        const shuttleIcon = L.divIcon({
-                                            className: 'shuttle-icon',
-                                            html: `<img src="images/stop.svg" style="width: 24px; height: 24px;">`,
-                                            iconSize: [24, 24],
-                                            iconAnchor: [12, 12]
-                                        });
-
-                                        const marker = L.marker([stop.stop_lat, stop.stop_lon], {
-                                            icon: shuttleIcon,
-                                            purpose: 'active-shuttle'
-                                        }).addTo(map);
-
-                                        // Create popup content with shuttle information
-                                        let popupContent = `<b>Shuttle</b>`;
-                                        if (itinerary.headsign) {
-                                            popupContent += `<br>Direction: ${itinerary.headsign}`;
-                                        }
-                                        if (scheduleItem.departure_time) {
-                                            const departureTime = new Date(scheduleItem.departure_time * 1000).toLocaleTimeString();
-                                            popupContent += `<br>Departure: ${departureTime}`;
-                                        }
-
-                                        marker.bindPopup(popupContent);
-
-                                        // Store reference to marker for efficient cleanup
-                                        shuttleMarkers.push(marker);
-                                    }
+                                // Create a bus stop marker using a different icon
+                                const stopIcon = L.divIcon({
+                                    className: 'stop-icon',
+                                    html: `<div style="background-color: #413C96; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+                                    iconSize: [16, 16],
+                                    iconAnchor: [8, 8]
                                 });
+
+                                // Gather all schedule items for next arrival times
+                                let nextArrivalTime = 'No schedule available';
+                                let isRealTime = false;
+                                let tripInfo = '';
+
+                                if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
+                                    const nextDeparture = itinerary.schedule_items[0]; // Get first schedule item
+                                    if (nextDeparture.departure_time) {
+                                        const now = Date.now() / 1000; // Current time in seconds
+                                        const timeDiff = Math.max(0, nextDeparture.departure_time - now);
+                                        const minutes = Math.ceil(timeDiff / 60);
+
+                                        if (minutes === 0) {
+                                            nextArrivalTime = 'Arriving now';
+                                        } else {
+                                            nextArrivalTime = `Arriving in ${minutes} min`;
+                                        }
+
+                                        isRealTime = nextDeparture.is_real_time || false;
+                                        tripInfo = nextDeparture.rt_trip_id ? `<br>Trip: ${nextDeparture.rt_trip_id}` : '';
+                                    }
+                                }
+
+                                // Create detailed popup content for bus stop
+                                const popupContent = `
+                                    <div class="bus-stop-popup">
+                                        <h3 class="stop-name">${stop.stop_name}</h3>
+                                        <div class="popup-details">
+                                            <div class="stop-info">
+                                                <span class="stop-code">Stop: ${stop.stop_code || 'N/A'}</span>
+                                            </div>
+                                            
+                                            <div class="routes-serving">
+                                                <div><strong>Routes serving:</strong></div>
+                                                <div class="route-list">
+                                                    <span class="route-item" style="background-color: #${route.route_color || '6A63F6'};">
+                                                        ${route.route_short_name || route.real_time_route_id}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="arrival-info">
+                                                <strong>Next arrival:</strong><br>
+                                                <span class="next-arrival">${nextArrivalTime}</span>
+                                                <span class="real-time-indicator">${isRealTime ? '• Real-time' : '• Scheduled'}</span>
+                                            </div>
+                                            
+                                            <div class="accessibility-info">
+                                                <strong>Accessibility:</strong> 
+                                                ${stop.wheelchair_boarding === 1 ? '♿ Accessible' : stop.wheelchair_boarding === 2 ? '♿ Not Accessible' : '♿ Unknown'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+
+                                const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], {
+                                    icon: stopIcon,
+                                    purpose: 'bus-stop'
+                                }).addTo(map).bindPopup(popupContent);
+
+                                // Store reference to marker for efficient cleanup
+                                shuttleMarkers.push(stopMarker);
                             }
                         });
                     }
                 });
             } else {
-                console.log('No active shuttles found in the area');
+                console.log('No bus stops found in the area');
             }
         } catch (error) {
-            console.error('Error finding nearby shuttles:', error);
+            console.error('Error finding nearby bus stops:', error);
         }
     }, 800); // Wait 800ms after the last call before executing
 }
