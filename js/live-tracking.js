@@ -96,25 +96,16 @@ function initShuttleFinder() {
                                             <div class="stop-info">
                                                 <span class="stop-code">Stop: ${stop.stop_code || 'N/A'}</span>
                                             </div>
-                                            
-                                            <div class="routes-serving">
-                                                <div><strong>Routes serving:</strong></div>
-                                                <div class="route-list">
-                                                    <span class="route-item" style="background-color: #${route.route_color || '6A63F6'};">
-                                                        ${route.route_short_name || route.real_time_route_id}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            
                                             <div class="arrival-info">
-                                                <strong>Next arrival:</strong><br>
-                                                <span class="next-arrival">${nextArrivalTime}</span>
-                                                <span class="real-time-indicator">${isRealTime ? '• Real-time' : '• Scheduled'}</span>
+                                                <span class="next-arrival">
+                                                    ${nextArrivalTime}
+                                                </span>
+                                                <span class="real-time-indicator" style="color: ${isRealTime ? '#06d6a0' : '#C8C7C5'};">
+                                                    ${isRealTime ? '• Real-time' : '• Scheduled'}
+                                                </span>
                                             </div>
-                                            
                                             <div class="accessibility-info">
-                                                <strong>Accessibility:</strong> 
-                                                ${stop.wheelchair_boarding === 1 ? '♿ Accessible' : stop.wheelchair_boarding === 2 ? '♿ Not Accessible' : '♿ Unknown'}
+                                                ${stop.wheelchair_boarding === 1 ? 'Accessibility: Accessible' : stop.wheelchair_boarding === 2 ? 'Accessibility: Not Accessible' : 'Accessibility: Unknown'}
                                             </div>
                                         </div>
                                     </div>

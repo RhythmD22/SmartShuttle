@@ -683,7 +683,7 @@ function processRoutesData(routes) {
                                     </span>
                                 </div>
                                 <div class="accessibility-info">
-                                    ${stop.wheelchair_boarding === 1 ? '♿ Accessible' : stop.wheelchair_boarding === 2 ? '♿ Not Accessible' : '♿ Unknown Accessibility'}
+                                    ${stop.wheelchair_boarding === 1 ? 'Accessibility: Accessible' : stop.wheelchair_boarding === 2 ? 'Accessibility: Not Accessible' : 'Accessibility: Unknown'}
                                 </div>
                             </div>
                         </div>
