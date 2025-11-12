@@ -286,6 +286,82 @@ body {
     margin-bottom: 15px;
 }
 
+.bus-stop-popup {
+    color: #181a1b;
+}
+
+.bus-stop-popup h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #181a1b;
+}
+
+.bus-stop-popup .popup-details {
+    font-size: 14px;
+}
+
+.bus-stop-popup .stop-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.bus-stop-popup .stop-code {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.bus-stop-popup .stop-name {
+    font-weight: 500;
+}
+
+.bus-stop-popup .routes-serving {
+    margin: 8px 0;
+}
+
+.bus-stop-popup .route-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 4px 0;
+}
+
+.bus-stop-popup .route-item {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.bus-stop-popup .arrival-info {
+    display: flex;
+    flex-direction: column;
+    margin: 8px 0;
+}
+
+.bus-stop-popup .next-arrival {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.bus-stop-popup .real-time-indicator {
+    font-size: 12px;
+    color: #06d6a0;
+}
+
+.bus-stop-popup .accessibility-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
 .schedule-item {
     display: flex;
     justify-content: space-between;
