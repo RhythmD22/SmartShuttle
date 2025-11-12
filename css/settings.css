@@ -448,6 +448,29 @@ body {
     float: right;
 }
 
+/* Refresh button styles */
+.refresh-btn {
+    background: #6A63F6;
+    border: 1px solid #6A63F6;
+    cursor: pointer;
+    padding: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    backdrop-filter: blur(4px);
+    margin-left: 25px;
+}
+
+.refresh-btn .icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+    filter: brightness(0) invert(1);
+}
+
 /* Show notification only on desktop screens */
 @media (min-width: 768px) {
     .desktop-notification {

@@ -843,6 +843,33 @@ body {
     background-color: #2a2d2e;
 }
 
+/* Refresh button styles */
+.refresh-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    background: rgba(106, 99, 246, 1);
+    /* #6A63F6 full opacity as default */
+    border: 1px solid #6A63F6;
+    cursor: pointer;
+    padding: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    backdrop-filter: blur(5px);
+    /* Slightly stronger blur */
+}
+
+.refresh-btn .icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+}
+
 /* Show notification only on desktop screens */
 @media (min-width: 768px) {
     .desktop-notification {
