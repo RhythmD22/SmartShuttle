@@ -37,8 +37,6 @@ const urlsToCache = [
   '/images/location.svg',
   '/images/map.svg',
   '/images/notification.svg',
-  '/images/offstatus.svg',
-  '/images/onstatus.svg',
   '/images/search.svg',
   '/images/stop.svg',
 ];
