@@ -1,5 +1,8 @@
 // JavaScript for Settings page
 
+// Variable to track the currently selected filter
+let currentFilter = 'all';
+
 document.addEventListener('DOMContentLoaded', function () {
     initializeDesktopNotification();
     initializeFeedbackButton();
@@ -129,6 +132,9 @@ function getCurrentLocation() {
 function displayNoLocationMessage() {
     const container = document.getElementById('liveAlertsContainer');
     container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No location selected</div><div class="live-alert-description">Please select a location in Live Notifications first</div></div></div>';
+
+    // Apply the current filter even for location messages
+    applyAlertFilter(currentFilter);
 }
 
 // Fetch live alerts from Transit API
@@ -184,9 +190,15 @@ async function fetchLiveAlerts(lat, lon) {
         } else {
             container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No routes found</div><div class="live-alert-description">No transit routes found in your area</div></div></div>';
         }
+
+        // Apply the current filter after all alerts have been added to the feed
+        applyAlertFilter(currentFilter);
     } catch (error) {
         console.error('Error fetching live alerts:', error);
         container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">Error loading alerts</div><div class="live-alert-description">Could not fetch service alerts. Please check your connection.</div></div></div>';
+
+        // Apply the current filter even for error messages
+        applyAlertFilter(currentFilter);
     }
 }
 
@@ -246,8 +258,8 @@ function initializeAlertFilters() {
             this.classList.add('active');
 
             // Apply filter
-            const filterValue = this.getAttribute('data-filter');
-            applyAlertFilter(filterValue);
+            currentFilter = this.getAttribute('data-filter');
+            applyAlertFilter(currentFilter);
         });
     });
 }
@@ -316,6 +328,9 @@ function refreshLiveAlerts() {
 
 // Update live feed periodically (every 5 minutes)
 function setupLiveFeedUpdates() {
+    // Set default filter to 'all' on initial load
+    currentFilter = 'all';
+
     // Initial load
     initializeLiveFeed();
     initializeAlertFilters(); // Initialize filters after live feed is loaded
