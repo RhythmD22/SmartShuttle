@@ -634,6 +634,27 @@ function processRoutesData(routes) {
                 if (itinerary.closest_stop) {
                     const stop = itinerary.closest_stop;
 
+                    // Determine next departure time and real-time status
+                    let nextDepartureTime = 'No schedule available';
+                    let isRealTime = false;
+
+                    if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
+                        const nextDeparture = itinerary.schedule_items[0]; // Get first schedule item
+                        if (nextDeparture.departure_time) {
+                            const now = Date.now() / 1000; // Current time in seconds
+                            const timeDiff = Math.max(0, nextDeparture.departure_time - now);
+                            const minutes = Math.ceil(timeDiff / 60);
+
+                            if (minutes === 0) {
+                                nextDepartureTime = 'Arriving now';
+                            } else {
+                                nextDepartureTime = `Arriving in ${minutes} min`;
+                            }
+
+                            isRealTime = nextDeparture.is_real_time || false;
+                        }
+                    }
+
                     // Create a stop marker on the map
                     const stopIcon = L.divIcon({
                         className: 'stop-marker',
@@ -642,9 +663,35 @@ function processRoutesData(routes) {
                         iconAnchor: [8, 8]
                     });
 
+                    // Create detailed popup content
+                    const popupContent = `
+                        <div class="stop-popup">
+                            <h3 class="stop-name">${stop.stop_name}</h3>
+                            <div class="popup-details">
+                                <div class="route-info">
+                                    <span class="route-number" style="background-color: #${route.route_color || '6A63F6'}; color: ${route.route_text_color || 'white'}; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                                        ${route.route_short_name || route.real_time_route_id}
+                                    </span>
+                                    <span class="direction">${itinerary.headsign || 'Direction Unknown'}</span>
+                                </div>
+                                <div class="departure-info">
+                                    <span class="next-departure">
+                                        ${nextDepartureTime}
+                                    </span>
+                                    <span class="real-time-badge" style="color: ${isRealTime ? '#06d6a0' : '#C8C7C5'};">
+                                        ${isRealTime ? '• Real-time' : '• Scheduled'}
+                                    </span>
+                                </div>
+                                <div class="accessibility-info">
+                                    ${stop.wheelchair_boarding === 1 ? '♿ Accessible' : stop.wheelchair_boarding === 2 ? '♿ Not Accessible' : '♿ Unknown Accessibility'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
                     const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], { icon: stopIcon })
                         .addTo(map)
-                        .bindPopup(`<b>${route.route_short_name || route.real_time_route_id}</b><br>${stop.stop_name}`);
+                        .bindPopup(popupContent);
 
                     // Store reference to route markers for potential future clearing
                     routeMarkers.push(stopMarker);
