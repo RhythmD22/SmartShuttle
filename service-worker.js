@@ -38,7 +38,6 @@ const urlsToCache = [
   '/images/map.svg',
   '/images/notification.svg',
   '/images/search.svg',
-  '/images/stop.svg',
 ];
 
 self.addEventListener('install', event => {
