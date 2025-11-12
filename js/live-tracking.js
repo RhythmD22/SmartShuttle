@@ -65,8 +65,8 @@ function initShuttleFinder() {
                                     iconAnchor: [8, 8]
                                 });
 
-                                // Gather all schedule items for next arrival times
-                                let nextArrivalTime = 'No schedule available';
+                                // Gather all schedule items for next departure times
+                                let nextDepartureTime = 'No schedule available';
                                 let isRealTime = false;
                                 let tripInfo = '';
 
@@ -78,9 +78,9 @@ function initShuttleFinder() {
                                         const minutes = Math.ceil(timeDiff / 60);
 
                                         if (minutes === 0) {
-                                            nextArrivalTime = 'Arriving now';
+                                            nextDepartureTime = 'Departing now';
                                         } else {
-                                            nextArrivalTime = `Arriving in ${minutes} min`;
+                                            nextDepartureTime = `Departing in ${minutes} min`;
                                         }
 
                                         isRealTime = nextDeparture.is_real_time || false;
@@ -96,9 +96,9 @@ function initShuttleFinder() {
                                             <div class="stop-info">
                                                 <span class="stop-code">Stop: ${stop.stop_code || 'N/A'}</span>
                                             </div>
-                                            <div class="arrival-info">
-                                                <span class="next-arrival">
-                                                    ${nextArrivalTime}
+                                            <div class="departure-info">
+                                                <span class="next-departure">
+                                                    ${nextDepartureTime}
                                                 </span>
                                                 <span class="real-time-indicator" style="color: ${isRealTime ? '#06d6a0' : '#C8C7C5'};">
                                                     ${isRealTime ? '• Real-time' : '• Scheduled'}
