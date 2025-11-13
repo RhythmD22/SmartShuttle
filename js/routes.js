@@ -676,7 +676,7 @@ function processRoutesData(routes) {
                                 </div>
                                 <div class="vehicle-type">
                                     <span class="vehicle-type-label">Vehicle:</span>
-                                    <span class="vehicle-type-value">${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}</span>
+                                    <span class="vehicle-type-value ${getVehicleTypeClass(route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus')))}">${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}</span>
                                 </div>
                                 <div class="departure-info">
                                     <span class="next-departure">
@@ -840,6 +840,20 @@ function getRouteTypeText(routeType) {
     };
 
     return routeTypes[routeType] || `Unknown (${routeType})`;
+}
+
+// Helper function to get CSS class for vehicle type
+function getVehicleTypeClass(vehicleType) {
+    const type = vehicleType.toLowerCase();
+
+    if (type.includes('bus')) return 'bus';
+    if (type.includes('rail') || type.includes('light rail')) return 'rail';
+    if (type.includes('subway') || type.includes('metro')) return 'subway';
+    if (type.includes('tram') || type.includes('streetcar')) return 'tram';
+    if (type.includes('ferry')) return 'ferry';
+
+    // Default to bus for unknown types
+    return 'bus';
 }
 
 // Handle browser back button
