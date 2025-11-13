@@ -396,7 +396,7 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-size: 14px;
     margin-top: 6px;
 }
 
@@ -404,6 +404,8 @@ body {
     font-weight: 600;
     color: #181a1b;
     /* Dark color like vehicle label */
+    font-size: inherit;
+    /* Match the size of other labels */
 }
 
 .bus-stop-popup .accessibility-value {
@@ -415,6 +417,7 @@ body {
     border-radius: 12px;
     font-weight: 500;
     font-size: 12px;
+    /* Keep badge font smaller */
 }
 
 .bus-stop-popup .accessibility-value.accessible {
