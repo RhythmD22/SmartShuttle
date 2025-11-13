@@ -676,7 +676,7 @@ function processRoutesData(routes) {
                                 </div>
                                 <div class="vehicle-type">
                                     <span class="vehicle-type-label">Vehicle:</span>
-                                    <span class="vehicle-type-value">${getRouteTypeText(route.route_type || 3)}</span>
+                                    <span class="vehicle-type-value">${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}</span>
                                 </div>
                                 <div class="departure-info">
                                     <span class="next-departure">
@@ -776,7 +776,7 @@ function updateRouteArrivalsSection(routes) {
 
                     routeRow.innerHTML = `
                         <div class="route-info">
-                            ${routeName} (${getRouteTypeText(route.route_type || 3)}) - ${itinerary.headsign || 'Direction Unknown'}
+                            ${routeName} (${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}) - ${itinerary.headsign || 'Direction Unknown'}
                         </div>
                         <div class="arrival-info">${arrivalText}</div>
                     `;

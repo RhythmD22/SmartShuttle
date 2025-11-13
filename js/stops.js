@@ -117,7 +117,7 @@ function initShuttleFinder() {
                                             </div>
                                             <div class="vehicle-type">
                                                 <span class="vehicle-type-label">Vehicle:</span>
-                                                <span class="vehicle-type-value">${getRouteTypeText(route.route_type || 3)}</span>
+                                                <span class="vehicle-type-value">${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}</span>
                                             </div>
                                             <div class="departure-info">
                                                 <span class="next-departure">
