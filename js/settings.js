@@ -210,29 +210,52 @@ function addAlertToFeed(alert, route) {
     let icon = 'alert.svg';
     let title = alert.title || 'Service Alert';
 
+    // Determine display category for filtering (grouping service-related effects)
+    let displayEffect = alert.effect || 'OTHER_EFFECT';
+
     // Determine icon based on alert effect
     switch (alert.effect) {
         case 'NO_SERVICE':
+        case 'REDUCED_SERVICE':
+        case 'ADDITIONAL_SERVICE':
+        case 'MODIFIED_SERVICE':
             icon = 'alert.svg';
-            title = 'No Service';
+            // Set a generic title for all service-related alerts under "Service" filter
+            title = 'Service Alert'; // Or use the original title if available
+            if (alert.title) {
+                title = alert.title;
+            } else {
+                // Use specific names if no title provided
+                switch (alert.effect) {
+                    case 'NO_SERVICE': title = 'No Service'; break;
+                    case 'REDUCED_SERVICE': title = 'Reduced Service'; break;
+                    case 'ADDITIONAL_SERVICE': title = 'Additional Service'; break;
+                    case 'MODIFIED_SERVICE': title = 'Modified Service'; break;
+                    default: title = 'Service Alert'; break;
+                }
+            }
+            displayEffect = 'SERVICE'; // Group all service-related effects under "Service" filter
             break;
         case 'SIGNIFICANT_DELAYS':
             icon = 'clock.svg';
             title = 'Significant Delays';
+            displayEffect = 'SIGNIFICANT_DELAYS';
             break;
         case 'DETOUR':
             icon = 'directions.svg';
             title = 'Detour';
+            displayEffect = 'DETOUR';
             break;
         default:
             icon = 'alert.svg';
             title = alert.title || 'Service Alert';
+            displayEffect = 'OTHER_EFFECT';
     }
 
     // Create alert element with data attribute for filtering
     const alertElement = document.createElement('div');
     alertElement.className = 'live-alert-item';
-    alertElement.dataset.effect = alert.effect || 'OTHER_EFFECT';
+    alertElement.dataset.effect = displayEffect;
     alertElement.innerHTML = `
         <img src="images/${icon}" alt="${title}" class="live-alert-icon">
         <div class="live-alert-text">
