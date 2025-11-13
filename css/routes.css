@@ -514,18 +514,31 @@ body {
 }
 
 .accessibility-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 12px;
+    margin-top: 6px;
+}
+
+.accessibility-label {
+    font-weight: 600;
+    color: #181a1b;
+    /* Dark color like vehicle label */
+}
+
+.accessibility-value {
     color: #000000;
     /* Keep it black as requested */
     background-color: #f0f0f0;
     /* Light gray background for consistency */
     padding: 2px 8px;
     border-radius: 12px;
-    display: inline-block;
     font-weight: 500;
+    font-size: 12px;
 }
 
-.accessibility-info.accessible {
+.accessibility-value.accessible {
     color: #0066cc;
     /* Blue color for accessible */
     background-color: #e6f0ff;
