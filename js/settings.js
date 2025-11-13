@@ -249,7 +249,7 @@ function addAlertToFeed(alert, route) {
         default:
             icon = 'alert.svg';
             title = alert.title || 'Service Alert';
-            displayEffect = 'OTHER_EFFECT';
+            displayEffect = 'SERVICE'; // Default to service for other effects
     }
 
     // Create alert element with data attribute for filtering
