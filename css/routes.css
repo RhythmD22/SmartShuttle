@@ -485,12 +485,43 @@ body {
 .vehicle-type-value {
     font-weight: 500;
     color: #6A63F6;
-    /* Using the app's purple color for better visibility */
+    /* Default purple color for buses */
     background-color: #e0e0ff;
-    /* Light purple background for contrast */
+    /* Light purple background */
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 12px;
+}
+
+.vehicle-type-value.bus {
+    color: #6A63F6;
+    /* Keep purple for buses */
+    background-color: #e0e0ff;
+    /* Keep light purple for buses */
+}
+
+.vehicle-type-value.rail {
+    color: #d32f2f;
+    /* Red for rail */
+    background-color: #ffebee;
+}
+
+.vehicle-type-value.subway {
+    color: #e64a19;
+    /* Orange for subway */
+    background-color: #ffe0b2;
+}
+
+.vehicle-type-value.tram {
+    color: #388e3c;
+    /* Green for tram */
+    background-color: #e8f5e9;
+}
+
+.vehicle-type-value.ferry {
+    color: #0288d1;
+    /* Light blue for ferry */
+    background-color: #e1f5fe;
 }
 
 .direction {
