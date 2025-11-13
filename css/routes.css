@@ -474,18 +474,23 @@ body {
     gap: 8px;
     margin-bottom: 6px;
     font-size: 14px;
-    color: #4a90e2;
-    /* Using a distinctive color for vehicle type */
 }
 
 .vehicle-type-label {
     font-weight: 600;
-    color: #C8C7C5;
+    color: #181a1b;
+    /* Dark color for better readability on white background */
 }
 
 .vehicle-type-value {
     font-weight: 500;
-    color: #ffffff;
+    color: #6A63F6;
+    /* Using the app's purple color for better visibility */
+    background-color: #e0e0ff;
+    /* Light purple background for contrast */
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
 }
 
 .direction {
