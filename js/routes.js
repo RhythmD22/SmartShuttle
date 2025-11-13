@@ -682,7 +682,7 @@ function processRoutesData(routes) {
                                     <span class="next-departure">
                                         ${nextDepartureTime}
                                     </span>
-                                    <span class="real-time-badge" style="color: ${isRealTime ? '#06d6a0' : '#C8C7C5'};">
+                                    <span class="${isRealTime ? 'real-time-badge' : 'scheduled-badge'}">
                                         ${isRealTime ? '• Real-time' : '• Scheduled'}
                                     </span>
                                 </div>
