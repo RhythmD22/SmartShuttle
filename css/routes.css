@@ -468,6 +468,26 @@ body {
     font-size: 12px;
 }
 
+.vehicle-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #4a90e2;
+    /* Using a distinctive color for vehicle type */
+}
+
+.vehicle-type-label {
+    font-weight: 600;
+    color: #C8C7C5;
+}
+
+.vehicle-type-value {
+    font-weight: 500;
+    color: #ffffff;
+}
+
 .direction {
     font-weight: 500;
 }

@@ -367,6 +367,26 @@ body {
     color: #06d6a0;
 }
 
+.bus-stop-popup .vehicle-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #4a90e2;
+    /* Using a distinctive color for vehicle type */
+}
+
+.bus-stop-popup .vehicle-type-label {
+    font-weight: 600;
+    color: #C8C7C5;
+}
+
+.bus-stop-popup .vehicle-type-value {
+    font-weight: 500;
+    color: #ffffff;
+}
+
 .bus-stop-popup .accessibility-info {
     font-size: 12px;
     color: #666;
