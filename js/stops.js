@@ -127,7 +127,7 @@ function initShuttleFinder() {
                                                     ${isRealTime ? '• Real-time' : '• Scheduled'}
                                                 </span>
                                             </div>
-                                            <div class="accessibility-info">
+                                            <div class="accessibility-info ${stop.wheelchair_boarding === 1 ? 'accessible' : ''}">
                                                 ${stop.wheelchair_boarding === 1 ? 'Accessibility: Accessible' : stop.wheelchair_boarding === 2 ? 'Accessibility: Not Accessible' : 'Accessibility: Unknown'}
                                             </div>
                                         </div>
