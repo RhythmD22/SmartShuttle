@@ -569,7 +569,7 @@ input:checked+.slider:before {
 .bottom-nav .nav-rectangle {
     position: absolute;
     left: calc(50% - 110px);
-    /* Same distance as in live notifications */
+    /* Same distance as in routes */
     top: -2px;
     height: 45px;
 }

@@ -1,0 +1,772 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Ensure no scrolling in any circumstance */
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #181a1b;
+    color: #fff;
+    line-height: 1.2;
+    width: 100vw;
+    height: 100dvh;
+    max-width: 100vw;
+    max-height: 100dvh;
+}
+
+/* Container */
+.container {
+    max-width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0 auto;
+    /* Center container if needed */
+    background: #181a1b;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #333;
+    min-height: 70px;
+    /* Increase min height to accommodate multi-line text */
+    flex-shrink: 0;
+    position: relative;
+    /* Allow for proper layout */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin-right: auto;
+    /* Push the center content away */
+}
+
+.header-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    /* Take up remaining space */
+    margin: 0 20px;
+    /* Add space between elements */
+    text-align: center;
+    min-height: 0;
+    min-width: 0;
+    gap: 4px;
+    /* Add space between the LIVE indicator and the location text */
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin-left: auto;
+    /* Push the center content away */
+}
+
+.header .header-center .current-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+    /* Add small top margin for spacing */
+    color: #fff;
+    font-size: 13px;
+    /* Smaller font for longer addresses */
+    max-width: 100%;
+    /* Ensure it stays within container */
+    word-wrap: break-word;
+    /* Allow wrapping of long words */
+    white-space: normal;
+    /* Allow the text to wrap */
+    line-height: 1.2;
+    /* Compact line height */
+    /* Remove max-height and overflow to allow proper multi-line display */
+}
+
+.header .header-center .current-location span {
+    flex: 1;
+    /* Allow the text to take available space */
+    word-wrap: break-word;
+    /* Allow wrapping of long words */
+    white-space: normal;
+    /* Allow the text to wrap */
+    max-width: 100%;
+    /* Ensure it doesn't exceed container */
+    display: block;
+    /* Ensure proper display */
+    font-size: 13px;
+    /* Ensure span has same small font size */
+}
+
+/* Make the header center more compact by adjusting line spacing */
+.header-center>* {
+    line-height: 1.2;
+}
+
+.live-indicator-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    /* Add space between indicator and text */
+}
+
+.live-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #F8312F;
+    animation: blink 1s infinite;
+}
+
+/* Icon styles */
+.icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.search-btn,
+.menu-btn {
+    background: none;
+    border: 1px solid white;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: auto;
+    width: 40px;
+    height: 40px;
+}
+
+
+
+
+
+.live-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #F8312F;
+    margin-right: 8px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.header-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.status-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.status-label {
+    font-size: 20px;
+    font-weight: 600;
+    color: #C8C7C5;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #F8312F;
+    animation: blink 1s infinite;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff;
+    margin: 0;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    /* Remove padding to allow map to stretch to edges */
+    margin-top: 5px;
+    margin-bottom: 100px;
+    /* Space for footer (reduced since footer is now higher) */
+    overflow: hidden;
+    position: relative;
+}
+
+/* Map Container */
+.map-container {
+    flex: 1 1 auto;
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+    /* Remove border radius to allow full screen stretch */
+    z-index: 0;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+    /* Allow flex item to shrink */
+}
+
+/* User location icon */
+.user-location-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-location-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #6A63F6;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Bus icon */
+.bus-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.schedule-info {
+    margin-top: 20px;
+}
+
+.schedule-header {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.bus-stop-popup {
+    color: #181a1b;
+}
+
+.bus-stop-popup h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #181a1b;
+}
+
+.bus-stop-popup .popup-details {
+    font-size: 14px;
+}
+
+.bus-stop-popup .stop-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.bus-stop-popup .stop-code {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.bus-stop-popup .stop-name {
+    font-weight: 500;
+}
+
+.bus-stop-popup .routes-serving {
+    margin: 8px 0;
+}
+
+.bus-stop-popup .route-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 4px 0;
+}
+
+.bus-stop-popup .route-item {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.bus-stop-popup .arrival-info {
+    display: flex;
+    flex-direction: column;
+    margin: 8px 0;
+}
+
+.bus-stop-popup .next-arrival {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.bus-stop-popup .departure-info {
+    display: flex;
+    flex-direction: column;
+    margin: 8px 0;
+}
+
+.bus-stop-popup .next-departure {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.bus-stop-popup .real-time-indicator {
+    font-size: 12px;
+    color: #06d6a0;
+}
+
+.bus-stop-popup .accessibility-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.bus-stop-popup .route-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.bus-stop-popup .route-number {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.bus-stop-popup .direction {
+    font-weight: 500;
+}
+
+.bus-stop-popup .arrival-info {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 6px;
+}
+
+.bus-stop-popup .next-arrival {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.bus-stop-popup .real-time-indicator {
+    font-size: 12px;
+    color: #06d6a0;
+}
+
+.schedule-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+}
+
+.schedule-time {
+    font-weight: bold;
+    color: #fff;
+}
+
+.schedule-location {
+    color: #C8C7C5;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+    .container {
+        max-width: 500px;
+        margin: 0 auto;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .page-title {
+        font-size: 36px;
+    }
+
+    .bus-number {
+        font-size: 28px;
+    }
+}
+
+/* Bottom navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 75px;
+    left: 0;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    z-index: 100;
+    background-color: #181a1b;
+    border-top: 1px solid #333;
+    padding: 10px 0;
+    height: auto;
+    box-sizing: content-box;
+}
+
+.bottom-nav-content {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.nav-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #6A63F6;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-rectangle {
+    width: 35px;
+    height: 45px;
+    background-color: #413C96;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 8px;
+    margin: 4px;
+}
+
+.bottom-nav .nav-icon {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.bottom-nav .nav-rectangle {
+    position: absolute;
+    left: calc(50% + 55px);
+    top: -2px;
+    height: 45px;
+}
+
+
+
+.nav-icon-img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+    /* Makes the icon white */
+    box-sizing: content-box;
+    padding: 4px;
+}
+
+/* Specific border for the map icon only */
+.bottom-nav-content>.nav-icon:first-child .nav-icon-img {
+    border: 1px solid white;
+    border-radius: 2px;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.footer-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #6A63F6;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.footer-rectangle {
+    width: 40px;
+    height: 50px;
+    background-color: #413C96;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: calc(50% + 55px);
+}
+
+@media (max-width: 480px) {
+    .bus-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .page-title {
+        font-size: 28px;
+    }
+
+    .status-label {
+        font-size: 18px;
+    }
+}
+
+/* Desktop notification banner */
+.desktop-notification {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #6A63F6;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    z-index: 9999;
+    font-size: 14px;
+}
+
+.desktop-notification p {
+    margin: 0;
+    display: inline-block;
+}
+
+.desktop-notification button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 10px;
+    margin-left: 10px;
+    float: right;
+}
+
+/* Search Modal Styles */
+.search-modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.search-modal-content {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    background-color: #181a1b;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    max-height: 80vh;
+    /* Prevents the modal from being too tall on small screens */
+    display: flex;
+    flex-direction: column;
+}
+
+.search-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #2a2d2e;
+    position: relative;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #3a3d3e;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-input:focus {
+    background-color: #4a4d4e;
+}
+
+.close-search-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0 10px;
+    margin-left: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-search-btn:hover {
+    background-color: #444;
+}
+
+.search-results {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 8px 0;
+    flex: 1;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.search-result-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    /* Reduced base font size */
+    transition: background-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    min-height: 50px;
+    /* Ensure minimum height for touch targets */
+    max-width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+    /* Force breaking of long words */
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: #2a2d2e;
+}
+
+.search-result-item .result-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    font-size: 14px;
+    /* Even smaller for longer text */
+    line-height: 1.3;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.search-result-item .result-address {
+    font-size: 12px;
+    /* Even smaller font for addresses */
+    color: #aaa;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.3;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Refresh button styles */
+.refresh-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    background: rgba(106, 99, 246, 1);
+    /* #6A63F6 full opacity as default */
+    border: 1px solid #6A63F6;
+    cursor: pointer;
+    padding: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    backdrop-filter: blur(5px);
+    /* Slightly stronger blur */
+}
+
+.refresh-btn .icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+}
+
+/* Show notification only on desktop screens */
+@media (min-width: 768px) {
+    .desktop-notification {
+        display: block;
+    }
+
+    /* Hide the main content on desktop */
+    .container {
+        display: none;
+    }
+}
