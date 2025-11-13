@@ -238,15 +238,28 @@ body {
     align-self: center;
 }
 
+/* Specific to the settings page only */
 .alert-filter-btn {
     background-color: transparent;
     border: 1px solid #6A63F6;
     color: #6A63F6;
-    padding: 4px 8px;
-    border-radius: 12px;
+    padding: 2px 12px;
+    /* Gradually increased vertical padding */
+    border-radius: 15px;
+    /* Keep border radius for pill-like appearance */
     font-size: 12px;
+    /* Maintain original font size */
     cursor: pointer;
     transition: all 0.3s ease;
+    display: inline-flex;
+    /* Changed to inline-flex for tighter fit */
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    height: auto;
+    /* Allow height to adjust to content */
+    max-height: 22px;
+    /* Increased max height */
 }
 
 .alert-filter-btn:hover {
@@ -448,7 +461,7 @@ body {
     float: right;
 }
 
-/* Refresh button styles */
+/* Refresh button styles - moved up to align with filter buttons */
 .refresh-btn {
     background: #6A63F6;
     border: 1px solid #6A63F6;
@@ -462,6 +475,8 @@ body {
     height: 48px;
     backdrop-filter: blur(4px);
     margin-left: 25px;
+    margin-top: -12px;
+    /* Move the button up */
 }
 
 .refresh-btn .icon {
