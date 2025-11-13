@@ -338,4 +338,3 @@ function setupLiveFeedUpdates() {
     // Update every 5 minutes
     setInterval(initializeLiveFeed, 5 * 60 * 1000);
 }
-
