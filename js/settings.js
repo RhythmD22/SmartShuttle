@@ -156,34 +156,33 @@ async function fetchLiveAlerts(lat, lon) {
         container.innerHTML = '';
 
         if (data.routes && data.routes.length > 0) {
-            // Filter routes that have alerts
-            const routesWithAlerts = data.routes.filter(route => route.alerts && route.alerts.length > 0);
+            // Collect all alerts from all routes and deduplicate them
+            let allAlerts = [];
+            const displayedAlerts = new Set(); // To track unique alerts globally
 
-            if (routesWithAlerts.length > 0) {
-                // Process each route's alerts while avoiding duplicates
-                let alertsFound = false;
-                const displayedAlerts = new Set(); // To track unique alerts
+            data.routes.forEach(route => {
+                if (route.alerts && route.alerts.length > 0) {
+                    route.alerts.forEach(alert => {
+                        // Create a unique identifier for the alert to check for duplicates
+                        // Use the alert ID if available, otherwise create a hash from available fields
+                        const alertIdentifier = alert.id ||
+                            `${alert.effect}-${alert.title || ''}-${alert.description || ''}-${JSON.stringify(alert.informed_entities || [])}`;
 
-                routesWithAlerts.forEach(route => {
-                    if (route.alerts && route.alerts.length > 0) {
-                        route.alerts.forEach(alert => {
-                            // Create a unique identifier for the alert to check for duplicates
-                            // Include route information to differentiate between alerts on different routes
-                            const alertIdentifier = `${alert.id || ''}-${route.route_id || route.real_time_route_id || ''}-${alert.effect}-${alert.title || ''}-${alert.description || ''}`;
-
-                            // Only add if we haven't seen this alert before
-                            if (!displayedAlerts.has(alertIdentifier)) {
-                                displayedAlerts.add(alertIdentifier);
-                                addAlertToFeed(alert, route);
-                                alertsFound = true;
-                            }
-                        });
-                    }
-                });
-
-                if (!alertsFound) {
-                    container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No service alerts</div><div class="live-alert-description">No service disruptions in your area at this time</div></div></div>';
+                        // Only add if we haven't seen this alert before
+                        if (!displayedAlerts.has(alertIdentifier)) {
+                            displayedAlerts.add(alertIdentifier);
+                            // Include route information with the alert for display purposes
+                            allAlerts.push({ alert, route });
+                        }
+                    });
                 }
+            });
+
+            if (allAlerts.length > 0) {
+                // Add all unique alerts to the feed
+                allAlerts.forEach(({ alert, route }) => {
+                    addAlertToFeed(alert, route);
+                });
             } else {
                 // If no alerts found in nearby routes, show a message
                 container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No service alerts</div><div class="live-alert-description">No service disruptions in your area at this time</div></div></div>';
