@@ -515,7 +515,21 @@ body {
 
 .accessibility-info {
     font-size: 12px;
-    color: #666;
+    color: #000000;
+    /* Keep it black as requested */
+    background-color: #f0f0f0;
+    /* Light gray background for consistency */
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    font-weight: 500;
+}
+
+.accessibility-info.accessible {
+    color: #0066cc;
+    /* Blue color for accessible */
+    background-color: #e6f0ff;
+    /* Light blue background for accessible */
 }
 
 .schedule-item {
