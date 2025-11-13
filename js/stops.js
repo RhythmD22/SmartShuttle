@@ -126,9 +126,6 @@ function initShuttleFinder() {
                                     <div class="bus-stop-popup">
                                         <h3 class="stop-name">${stop.stop_name}</h3>
                                         <div class="popup-details">
-                                            <div class="stop-info">
-                                                <span class="stop-code">Stop: ${stop.stop_code || 'N/A'}</span>
-                                            </div>
                                             <div class="vehicle-type">
                                                 <span class="vehicle-type-label">Vehicle:</span>
                                                 <span class="vehicle-type-value ${getVehicleTypeClass(route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus')))}">${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}</span>
