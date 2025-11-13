@@ -168,7 +168,8 @@ async function fetchLiveAlerts(lat, lon) {
                     if (route.alerts && route.alerts.length > 0) {
                         route.alerts.forEach(alert => {
                             // Create a unique identifier for the alert to check for duplicates
-                            const alertIdentifier = `${alert.effect}-${alert.title || ''}-${alert.description || ''}`;
+                            // Include route information to differentiate between alerts on different routes
+                            const alertIdentifier = `${alert.id || ''}-${route.route_id || route.real_time_route_id || ''}-${alert.effect}-${alert.title || ''}-${alert.description || ''}`;
 
                             // Only add if we haven't seen this alert before
                             if (!displayedAlerts.has(alertIdentifier)) {
