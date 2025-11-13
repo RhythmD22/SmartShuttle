@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const nextButton = document.getElementById('nextButton');
     if (nextButton) {
         nextButton.addEventListener('click', function () {
-            // Navigate to the Live Tracking page
-            window.location.href = 'live-tracking.html';
+            // Navigate to the Stops page
+            window.location.href = 'Stops.html';
         });
     }
 

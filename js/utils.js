@@ -26,7 +26,7 @@ function initializeDesktopNotification() {
 }
 
 // Initialize feedback button functionality
-function initializeFeedbackButton(page = 'feedback.html') {
+function initializeFeedbackButton(page = 'Feedback.html') {
     const feedbackBtn = document.querySelector('.feedback-btn') || document.querySelector('.menu-btn');
 
     if (feedbackBtn) {
