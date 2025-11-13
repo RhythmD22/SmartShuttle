@@ -542,6 +542,13 @@ body {
 .real-time-badge {
     font-size: 12px;
     color: #06d6a0;
+    /* Green for real-time */
+}
+
+.scheduled-badge {
+    font-size: 12px;
+    color: #595959;
+    /* Gray for scheduled */
 }
 
 .accessibility-info {

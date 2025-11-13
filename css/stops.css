@@ -365,6 +365,13 @@ body {
 .bus-stop-popup .real-time-indicator {
     font-size: 12px;
     color: #06d6a0;
+    /* Green for real-time */
+}
+
+.bus-stop-popup .scheduled-indicator {
+    font-size: 12px;
+    color: #595959;
+    /* Gray for scheduled */
 }
 
 .bus-stop-popup .vehicle-type {
