@@ -7,6 +7,24 @@ let shuttleMarkers = []; // Store shuttle markers for efficient cleanup
 // Debounced version of finding shuttles - moved to global scope
 let debouncedFindShuttles;
 
+// Helper function to get human-readable route type text
+function getRouteTypeText(routeType) {
+    const routeTypes = {
+        0: 'Tram, Streetcar, Light rail',
+        1: 'Subway, Metro',
+        2: 'Rail',
+        3: 'Bus',
+        4: 'Ferry',
+        5: 'Cable tram',
+        6: 'Aerial lift, suspended cable car',
+        7: 'Funicular',
+        11: 'Trolleybus',
+        12: 'Monorail'
+    };
+
+    return routeTypes[routeType] || `Unknown (${routeType})`;
+}
+
 // Initialize the map on page load
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize the map directly without API key check
@@ -96,6 +114,10 @@ function initShuttleFinder() {
                                         <div class="popup-details">
                                             <div class="stop-info">
                                                 <span class="stop-code">Stop: ${stop.stop_code || 'N/A'}</span>
+                                            </div>
+                                            <div class="vehicle-type">
+                                                <span class="vehicle-type-label">Vehicle:</span>
+                                                <span class="vehicle-type-value">${getRouteTypeText(route.route_type || 3)}</span>
                                             </div>
                                             <div class="departure-info">
                                                 <span class="next-departure">
