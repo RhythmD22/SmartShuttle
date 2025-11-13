@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Real-time shuttle tracking application">
+    <meta name="theme-color" content="#6A63F6">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SmartShuttle">
+
+    <title>SmartShuttle - Feedback</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/feedback.css">
+</head>
+
+<body>
+    <div class="desktop-notification" id="desktopNotification">
+        <p>For the best experience, please use your mobile device</p>
+        <button id="closeNotification">&times;</button>
+    </div>
+    <div class="container feedback-page">
+        <header class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="window.history.back()">
+                    <img src="images/back.svg" alt="Back" class="icon">
+                </button>
+            </div>
+            <div class="header-center">
+                <div class="header-center-content">
+                    <img src="images/icon.svg" alt="SmartShuttle" class="app-icon">
+                    <h1 class="header-text">SmartShuttle</h1>
+                </div>
+            </div>
+
+        </header>
+        <main class="main-content">
+            <div class="feedback-title-container">
+                <h2 class="feedback-title">Feedback</h2>
+            </div>
+            <div class="issue-type-container">
+                <p class="issue-type-label">Type of Issue</p>
+                <div class="dropdown-container">
+                    <select id="issueType" class="issue-dropdown">
+                        <option value="">Select an issue...</option>
+                        <option value="delay">Delay</option>
+                        <option value="route-change">Route Change</option>
+                        <option value="stop-change">Stop Change</option>
+                        <option value="overcrowding">Overcrowding</option>
+                        <option value="arrival-time">Arrival Time Inaccuracy</option>
+                        <option value="location-tracking">Location Tracking Issue</option>
+                        <option value="app-bug">App Bug</option>
+                        <option value="safety-concern">Safety Concern</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <div class="dropdown-arrow"></div>
+                </div>
+                <div class="description-container">
+                    <p class="description-label">Description</p>
+                    <textarea id="descriptionText" class="description-textarea"
+                        placeholder="Describe the issue..."></textarea>
+                </div>
+                <div class="attachment-container">
+                    <p class="attachment-label">Add Attachment</p>
+                    <label for="attachmentInput" class="attachment-wrapper" id="attachmentLabel">
+                        <img src="images/attach.svg" alt="Attach" class="attach-icon">
+                        <span class="attach-text">Attach file</span>
+                    </label>
+                    <input type="file" id="attachmentInput" class="attachment-input"
+                        accept="image/*,.pdf,.doc,.docx,.txt">
+                    <div id="attachmentPreview" class="attachment-preview" style="display: none;">
+                        <div class="attachment-preview-content">
+                            <span class="attachment-preview-icon">📄</span>
+                            <span class="attachment-preview-text">Attached</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feedback-section">
+                <div class="feedback-form">
+                    <button id="submitFeedback" class="submit-btn">Submit Feedback</button>
+                    <p class="privacy-text">Your feedback is anonymized to ensure your privacy.</p>
+                    <p class="thank-you-text">Thank you for helping us improve our service.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- EmailJS library for sending emails from frontend -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/feedback.js"></script>
+</body>
+
+</html>
