@@ -8,7 +8,6 @@
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-PYM3FNRD4T');
     </script>
 
@@ -21,44 +20,44 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SmartShuttle">
 
-    <title>SmartShuttle</title>
+    <title>SmartShuttle - Live Shuttle Tracker</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css">
-    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js" type="module"></script>
 </head>
 
 <body>
     <div class="desktop-notification" id="desktopNotification">
         <p>For the best experience, please use your mobile device</p>
-        <button id="closeNotification">&times;</button>
+        <button id="closeNotification" aria-label="Close notification">&times;</button>
     </div>
+
     <div class="container">
         <header class="header">
             <h1 class="app-title">SmartShuttle</h1>
             <div class="status-container">
-                <div class="status-indicator" id="statusIndicator"></div>
+                <div class="status-indicator" id="statusIndicator" aria-hidden="true"></div>
                 <div class="status-label">LIVE Tracker</div>
             </div>
         </header>
 
         <main class="main-content">
-
-            <div class="bus-image-container" style="overflow: visible; padding: 0; margin: 0;">
-                <dotlottie-wc src="https://lottie.host/4ac75cf3-6c0b-4e05-8bb8-61e6903fb0b2/1oPwlK41RN.lottie"
-                    style="width: 160vw; height: 320px; display: block; margin-left: -30vw;" autoplay
-                    loop></dotlottie-wc>
+            <div class="bus-image-container">
+                <dotlottie-wc src="https://lottie.host/4ac75cf3-6c0b-4e05-8bb8-61e6903fb0b2/1oPwlK41RN.lottie" autoplay
+                    loop>
+                </dotlottie-wc>
             </div>
 
-            <button class="next-button" id="nextButton">
+            <button class="next-button" id="nextButton" aria-label="Next">
                 <img src="images/arrow.svg" alt="Next" class="arrow-icon">
             </button>
         </main>
     </div>
 
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js" type="module"></script>
     <script src="js/index.js"></script>
 </body>
 

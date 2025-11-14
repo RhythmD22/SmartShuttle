@@ -8,7 +8,6 @@
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-PYM3FNRD4T');
     </script>
 
@@ -33,8 +32,9 @@
 <body>
     <div class="desktop-notification" id="desktopNotification">
         <p>For the best experience, please use your mobile device</p>
-        <button id="closeNotification">&times;</button>
+        <button id="closeNotification" aria-label="Close notification">&times;</button>
     </div>
+
     <div class="container">
         <header class="header">
             <div class="header-left">
@@ -44,14 +44,14 @@
                 <h1 class="header-text">SmartShuttle</h1>
             </div>
             <div class="header-right">
-                <button class="feedback-btn">
+                <button class="feedback-btn" aria-label="Feedback">
                     <img src="images/feedback.svg" alt="Feedback" class="icon">
                 </button>
             </div>
         </header>
 
         <main class="main-content">
-            <div class="notifications-section">
+            <section class="notifications-section">
                 <h2 class="section-title">Notification Types</h2>
                 <div class="notification-rectangle">
                     <img src="images/alert.svg" alt="Alert" class="notification-icon">
@@ -74,44 +74,44 @@
                         <div class="expected-delay-text">Route change due to construction</div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="live-feed-section">
+            <section class="live-feed-section">
                 <h2 class="section-title">
                     <div class="live-indicator-container">
-                        <div class="live-indicator"></div>
+                        <div class="live-indicator" aria-hidden="true"></div>
                         <span>LIVE Feed</span>
                     </div>
                 </h2>
 
                 <div class="alert-filter-container">
-                    <button class="alert-filter-btn active" data-filter="all">All</button>
-                    <button class="alert-filter-btn" data-filter="SERVICE">Service</button>
-                    <button class="alert-filter-btn" data-filter="SIGNIFICANT_DELAYS">Delays</button>
-                    <button class="alert-filter-btn" data-filter="DETOUR">Detour</button>
-                    <button class="refresh-btn" id="refreshBtn">
+                    <button class="alert-filter-btn active" data-filter="all" aria-pressed="true">All</button>
+                    <button class="alert-filter-btn" data-filter="SERVICE" aria-pressed="false">Service</button>
+                    <button class="alert-filter-btn" data-filter="SIGNIFICANT_DELAYS"
+                        aria-pressed="false">Delays</button>
+                    <button class="alert-filter-btn" data-filter="DETOUR" aria-pressed="false">Detour</button>
+                    <button class="refresh-btn" id="refreshBtn" aria-label="Refresh alerts">
                         <img src="images/refresh.svg" alt="Refresh" class="icon">
                     </button>
                 </div>
 
-                <div id="liveAlertsContainer">
+                <div id="liveAlertsContainer" role="region" aria-live="polite">
                     <!-- Live alerts will be populated here by JavaScript -->
                 </div>
-            </div>
-
+            </section>
         </main>
 
         <!-- Bottom navigation -->
-        <div class="bottom-nav">
+        <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
             <div class="bottom-nav-content">
-                <a href="Routes.html" class="nav-rectangle">
-                    <img src="images/location.svg" alt="Location" class="nav-icon-img">
+                <a href="Routes.html" class="nav-rectangle" aria-label="Routes">
+                    <img src="images/location.svg" alt="" class="nav-icon-img">
                 </a>
-                <a href="Notifications.html" class="nav-icon active-nav">
-                    <img src="images/notification.svg" alt="Notifications" class="nav-icon-img">
+                <a href="Notifications.html" class="nav-icon active-nav" aria-label="Notifications">
+                    <img src="images/notification.svg" alt="" class="nav-icon-img">
                 </a>
             </div>
-        </div>
+        </nav>
     </div>
 
     <script src="js/notifications.js"></script>

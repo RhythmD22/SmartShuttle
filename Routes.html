@@ -8,7 +8,6 @@
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-PYM3FNRD4T');
     </script>
 
@@ -34,57 +33,56 @@
 <body>
     <div class="desktop-notification" id="desktopNotification">
         <p>For the best experience, please use your mobile device</p>
-        <button id="closeNotification">&times;</button>
+        <button id="closeNotification" aria-label="Close notification">&times;</button>
     </div>
+
     <div class="container">
         <header class="header">
             <div class="header-left">
-                <button class="search-btn">
+                <button class="search-btn" aria-label="Search">
                     <img src="images/search.svg" alt="Search" class="icon">
                 </button>
             </div>
             <div class="header-center">
                 <div class="live-indicator-container">
-                    <div class="live-indicator" id="statusIndicator"></div>
+                    <div class="live-indicator" id="statusIndicator" aria-hidden="true"></div>
                     <div class="header-text">LIVE route tracking</div>
                 </div>
                 <div class="current-location">
-                    <img src="images/curvedright.svg" alt=">" class="icon">
+                    <img src="images/curvedright.svg" alt="Current Location" class="icon">
                     <span id="selectedLocationDisplay">Select a location</span>
                 </div>
             </div>
             <div class="header-right">
-                <button class="menu-btn">
+                <button class="menu-btn" aria-label="Menu">
                     <img src="images/feedback.svg" alt="Feedback" class="icon">
                 </button>
             </div>
         </header>
 
         <!-- Search Modal -->
-        <div id="searchModal" class="search-modal">
+        <div id="searchModal" class="search-modal" aria-hidden="true">
             <div class="search-modal-content">
                 <div class="search-header">
                     <input type="text" id="searchInput" class="search-input"
-                        placeholder="Search for a location in the US...">
-                    <button id="closeSearchModal" class="close-search-btn">&times;</button>
+                        placeholder="Search for a location in the US..." aria-label="Search for a location">
+                    <button id="closeSearchModal" class="close-search-btn" aria-label="Close search">&times;</button>
                 </div>
-                <div id="searchResults" class="search-results"></div>
+                <div id="searchResults" class="search-results" role="listbox"></div>
             </div>
         </div>
 
         <main class="main-content">
-            <div id="map" class="map-container">
+            <div id="map" class="map-container" aria-label="Map" role="application">
                 <!-- Refresh Button -->
-                <button class="refresh-btn" id="refreshBtn">
+                <button class="refresh-btn" id="refreshBtn" aria-label="Refresh map">
                     <img src="images/refresh.svg" alt="Refresh" class="icon">
                 </button>
 
                 <!-- Transit API Badge -->
-                <div class="transit-api-badge"
-                    style="position: absolute; bottom: 0; left: 0; z-index: 1000; width: 90px;">
+                <div class="transit-api-badge" aria-label="Powered by Transit API">
                     <a href="https://transitapp.com" target="_blank" rel="noopener noreferrer">
-                        <img src="transit-api-badge.svg" alt="Powered by Transit API"
-                            style="width: 100%; height: auto; border: none; display: block;">
+                        <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo">
                     </a>
                 </div>
             </div>
@@ -119,19 +117,19 @@
         </main>
 
         <!-- Bottom navigation -->
-        <div class="bottom-nav">
+        <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
             <div class="bottom-nav-content">
-                <a href="Stops.html" class="nav-rectangle">
-                    <img src="images/map.svg" alt="Map" class="nav-icon-img">
+                <a href="Stops.html" class="nav-rectangle" aria-label="Stops">
+                    <img src="images/map.svg" alt="" class="nav-icon-img">
                 </a>
-                <a href="Routes.html" class="nav-icon active-nav">
-                    <img src="images/location.svg" alt="Location" class="nav-icon-img">
+                <a href="Routes.html" class="nav-icon active-nav" aria-label="Routes">
+                    <img src="images/location.svg" alt="" class="nav-icon-img">
                 </a>
-                <a href="Notifications.html" class="nav-rectangle">
-                    <img src="images/notification.svg" alt="Notifications" class="nav-icon-img">
+                <a href="Notifications.html" class="nav-rectangle" aria-label="Notifications">
+                    <img src="images/notification.svg" alt="" class="nav-icon-img">
                 </a>
             </div>
-        </div>
+        </nav>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

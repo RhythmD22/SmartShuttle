@@ -8,7 +8,6 @@
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-PYM3FNRD4T');
     </script>
 
@@ -33,12 +32,13 @@
 <body>
     <div class="desktop-notification" id="desktopNotification">
         <p>For the best experience, please use your mobile device</p>
-        <button id="closeNotification">&times;</button>
+        <button id="closeNotification" aria-label="Close notification">&times;</button>
     </div>
+
     <div class="container feedback-page">
         <header class="header">
             <div class="header-left">
-                <button class="back-btn" onclick="window.history.back()">
+                <button class="back-btn" aria-label="Back">
                     <img src="images/back.svg" alt="Back" class="icon">
                 </button>
             </div>
@@ -48,62 +48,68 @@
                     <h1 class="header-text">SmartShuttle</h1>
                 </div>
             </div>
-
         </header>
+
         <main class="main-content">
             <div class="feedback-title-container">
                 <h2 class="feedback-title">Feedback</h2>
             </div>
-            <div class="issue-type-container">
-                <p class="issue-type-label">Type of Issue</p>
-                <div class="dropdown-container">
-                    <select id="issueType" class="issue-dropdown">
-                        <option value="">Select an issue...</option>
-                        <option value="delay">Delay</option>
-                        <option value="route-change">Route Change</option>
-                        <option value="stop-change">Stop Change</option>
-                        <option value="overcrowding">Overcrowding</option>
-                        <option value="arrival-time">Arrival Time Inaccuracy</option>
-                        <option value="location-tracking">Location Tracking Issue</option>
-                        <option value="app-bug">App Bug</option>
-                        <option value="safety-concern">Safety Concern</option>
-                        <option value="other">Other</option>
-                    </select>
-                    <div class="dropdown-arrow"></div>
-                </div>
-                <div class="description-container">
-                    <p class="description-label">Description</p>
-                    <textarea id="descriptionText" class="description-textarea"
-                        placeholder="Describe the issue..."></textarea>
-                </div>
-                <div class="attachment-container">
-                    <p class="attachment-label">Add Attachment</p>
-                    <label for="attachmentInput" class="attachment-wrapper" id="attachmentLabel">
-                        <img src="images/attach.svg" alt="Attach" class="attach-icon">
-                        <span class="attach-text">Attach file</span>
-                    </label>
-                    <input type="file" id="attachmentInput" class="attachment-input"
-                        accept="image/*,.pdf,.doc,.docx,.txt">
-                    <div id="attachmentPreview" class="attachment-preview" style="display: none;">
-                        <div class="attachment-preview-content">
-                            <span class="attachment-preview-icon">📄</span>
-                            <span class="attachment-preview-text">Attached</span>
+
+            <form class="feedback-form" id="feedbackForm">
+                <div class="issue-type-container">
+                    <label for="issueType" class="issue-type-label">Type of Issue</label>
+                    <div class="dropdown-container">
+                        <select id="issueType" class="issue-dropdown" aria-required="true">
+                            <option value="">Select an issue...</option>
+                            <option value="delay">Delay</option>
+                            <option value="route-change">Route Change</option>
+                            <option value="stop-change">Stop Change</option>
+                            <option value="overcrowding">Overcrowding</option>
+                            <option value="arrival-time">Arrival Time Inaccuracy</option>
+                            <option value="location-tracking">Location Tracking Issue</option>
+                            <option value="app-bug">App Bug</option>
+                            <option value="safety-concern">Safety Concern</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <div class="dropdown-arrow" aria-hidden="true"></div>
+                    </div>
+
+                    <div class="description-container">
+                        <label for="descriptionText" class="description-label">Description</label>
+                        <textarea id="descriptionText" class="description-textarea" placeholder="Describe the issue..."
+                            aria-required="true" rows="5" maxlength="1000"></textarea>
+                    </div>
+
+                    <div class="attachment-container">
+                        <p class="attachment-label">Add Attachment</p>
+                        <div class="attachment-input-wrapper">
+                            <input type="file" id="attachmentInput" class="attachment-input"
+                                accept="image/*,.pdf,.doc,.docx,.txt" aria-label="Upload attachment">
+                            <label for="attachmentInput" class="attachment-wrapper" id="attachmentLabel">
+                                <img src="images/attach.svg" alt="" class="attach-icon">
+                                <span class="attach-text">Attach file</span>
+                            </label>
+                        </div>
+
+                        <div id="attachmentPreview" class="attachment-preview" aria-live="polite"
+                            style="display: none;">
+                            <div class="attachment-preview-content">
+                                <span class="attachment-preview-icon">📄</span>
+                                <span class="attachment-preview-text">File attached</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="feedback-section">
-                <div class="feedback-form">
-                    <button id="submitFeedback" class="submit-btn">Submit Feedback</button>
+
+                <div class="feedback-submit-section">
+                    <button type="submit" id="submitFeedback" class="submit-btn">Submit Feedback</button>
                     <p class="privacy-text">Your feedback is anonymized to ensure your privacy.</p>
                     <p class="thank-you-text">Thank you for helping us improve our service.</p>
                 </div>
-            </div>
+            </form>
         </main>
     </div>
 
-    <!-- EmailJS library for sending emails from frontend -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/feedback.js"></script>
 </body>
