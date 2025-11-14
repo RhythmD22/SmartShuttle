@@ -1,93 +1,47 @@
-/* Reset and base styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html,
-body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    /* Ensure no scrolling in any circumstance */
-}
-
-body {
-    font-family: 'Inter', Arial, sans-serif;
-    background: #181A1B;
-    /* Set the requested background color */
-    color: #fff;
-    line-height: 1.2;
-    width: 100vw;
-    height: 100dvh;
-    max-width: 100vw;
-    max-height: 100dvh;
-}
-
-/* Container */
-.container {
-    max-width: 100%;
-    height: 100dvh;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    margin: 0 auto;
-    /* Center container if needed */
-    background: #181A1B;
-    overflow: hidden;
-}
-
 .header {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
     height: 60px;
-    flex-shrink: 0;
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    flex: 0 0 auto;
-    margin-right: 5px;
 }
 
 .feedback-title-container {
     padding: 15px 16px 10px 16px;
+    width: 100%;
+    max-width: 370px;
+    margin-left: calc(50% - 50vw);
+    margin-right: auto;
+    text-align: left;
 }
 
 .feedback-title {
     color: #fff;
     font-size: 24px;
     font-weight: 600;
-    /* semibold */
-    margin: 0;
+    margin: 0 0 10px 0;
     padding: 0;
     line-height: 1.2;
+    text-align: left;
 }
 
 .issue-type-container {
-    margin-top: 15px;
+    margin-top: 5px;
+    width: 100%;
+    max-width: 370px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .issue-type-label {
     color: #fff;
     font-size: 16px;
     font-weight: 600;
-    /* semibold */
     margin: 0 0 8px 0;
     padding: 0;
+    display: block;
 }
 
 .attachment-label {
     color: #fff;
     font-size: 16px;
     font-weight: 600;
-    /* semibold */
     margin: 0 0 8px 0;
     padding: 0;
 }
@@ -100,16 +54,13 @@ body {
 .issue-dropdown {
     width: 100%;
     padding: 12px 40px 12px 12px;
-    /* Extra padding on right for arrow */
     background-color: #131516;
     border: 1px solid #70685C;
     border-radius: 8px;
     color: #A0A0A0;
     font-size: 15px;
     font-weight: 600;
-    /* semibold */
     appearance: none;
-    /* Remove default dropdown styling */
     -webkit-appearance: none;
     -moz-appearance: none;
 }
@@ -124,28 +75,29 @@ body {
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 5px solid #C8C7C5;
-    /* Downward pointing arrow */
     pointer-events: none;
-    /* So it doesn't interfere with dropdown interaction */
 }
 
 .description-container {
-    margin-top: 15px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 370px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .description-label {
     color: #fff;
     font-size: 16px;
     font-weight: 600;
-    /* semibold */
     margin: 0 0 8px 0;
     padding: 0;
+    display: block;
 }
 
 .description-textarea {
     width: 100%;
     height: 120px;
-    /* About 3 times the height of the dropdown (~40px) */
     padding: 12px;
     background-color: #131516;
     border: 1px solid #70685C;
@@ -153,10 +105,8 @@ body {
     color: #C8C7C5;
     font-size: 15px;
     font-weight: 500;
-    /* medium weight */
     font-family: 'Inter', Arial, sans-serif;
     resize: vertical;
-    /* Allow vertical resizing only */
     box-sizing: border-box;
 }
 
@@ -164,44 +114,20 @@ body {
     color: #A0A0A0;
 }
 
-/* Set the font weight for dropdown options */
 .issue-dropdown option {
     font-weight: 600;
-    /* semibold */
     font-size: 15px;
     color: #A0A0A0;
     background-color: #131516;
 }
 
 .attachment-container {
-    margin-top: 15px;
-    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 50px;
     width: 100%;
-    max-width: 130px;
-    margin: 15px auto 0 auto;
-    /* Same spacing as other sections */
-    height: 92px;
-    /* Increased height */
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-/* The attachment label that was moved to be inside the container */
-.attachment-label {
-    color: #fff;
-    font-size: 16px;
-    font-weight: 600;
-    /* semibold */
-    margin: 0 0 8px 0;
-    /* Space between label and the attachment element */
-    padding: 0;
-    align-self: flex-start;
-    /* Left align the label within the container */
-    width: 100%;
-    text-align: left;
+    max-width: 370px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .attach-icon {
@@ -214,13 +140,11 @@ body {
     color: #A0A0A0;
     font-size: 15px;
     font-weight: 600;
-    /* semibold */
     margin: 0;
 }
 
 .attachment-input {
     display: none;
-    /* Hide the actual file input */
 }
 
 .attachment-wrapper {
@@ -228,26 +152,19 @@ body {
     align-items: center;
     justify-content: center;
     padding: 16px 12px;
-    /* Increased vertical padding */
     background-color: #131516;
     border: 1px solid #70685C;
     border-radius: 8px;
     cursor: pointer;
     height: 60px;
-    /* Increased height */
     width: 100%;
     box-sizing: border-box;
-    margin-top: 8px;
-    /* Space between label and container */
 }
 
 .attachment-preview {
     width: 100%;
     text-align: center;
-    margin-top: 8px;
-    /* Space below the attachment wrapper */
     order: 3;
-    /* Show after attachment wrapper in the flex container */
 }
 
 .attachment-preview-content {
@@ -255,15 +172,12 @@ body {
     align-items: center;
     justify-content: center;
     padding: 16px 12px;
-    /* Increased vertical padding */
     background-color: #131516;
     border: 1px solid #70685C;
     border-radius: 8px;
     cursor: pointer;
-    /* Make it clickable to remove attachment */
     width: 100%;
     height: 60px;
-    /* Increased height to match attachment wrapper */
     box-sizing: border-box;
 }
 
@@ -276,24 +190,7 @@ body {
     color: #A0A0A0;
     font-size: 15px;
     font-weight: 600;
-    /* semibold */
     margin: 0;
-}
-
-.header-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    text-align: center;
-    min-height: 0;
-    min-width: 0;
-}
-
-.header-center-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .app-icon {
@@ -308,71 +205,13 @@ body {
     color: #fff;
 }
 
-.header-right {
-    display: flex;
-    align-items: center;
-    flex: 0 0 auto;
-    margin-left: auto;
-    /* Push the center content away */
-}
-
-/* Make the header center more compact by adjusting line spacing */
-.header-center>* {
-    line-height: 1.2;
-}
-
-/* Icon styles */
-.icon {
-    width: 20px;
-    height: 20px;
-    display: block;
-}
-
-.back-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: auto;
-    width: 40px;
-    height: 40px;
-}
-
-.feedback-btn {
-    background: none;
-    border: 1px solid white;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: auto;
-    width: 40px;
-    height: 40px;
-}
-
-/* Main Content */
 .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 15px 16px 10px 16px;
-    /* Reduced bottom padding */
-    margin-bottom: 100px;
-    /* Space for footer */
+    padding: 5px 16px 10px 16px;
     overflow-y: auto;
     position: relative;
-}
-
-/* For feedback page that doesn't have bottom navigation */
-.container.feedback-page .main-content {
-    margin-bottom: 20px;
-    /* Reduced margin since no bottom nav */
 }
 
 .feedback-section {
@@ -430,21 +269,10 @@ body {
     width: 100%;
 }
 
-.feedback-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 370px;
-    /* Adjusted width for the submit button */
-    margin: 20px auto 0 auto;
-}
-
 .privacy-text {
     color: #ACA9A6;
     font-size: 13px;
     font-weight: 600;
-    /* semibold */
     margin: 15px 0 0 0;
     padding: 0;
     text-align: center;
@@ -455,12 +283,34 @@ body {
     color: #fff !important;
     font-size: 14.5px;
     font-weight: 600;
-    /* semibold */
-    margin: 45px 0 0 0;
-    /* About 3 times the space (3x15px=45px) */
+    margin: 35px 0 0 0;
     padding: 0;
     text-align: center;
     width: 100%;
+}
+
+/* Feedback page doesn't have bottom navigation, adjust margins */
+.container.feedback-page .main-content {
+    margin-bottom: 20px;
+    /* Reduced margin since no bottom nav */
+}
+
+/* Center the attachment section */
+.attachment-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.attachment-wrapper {
+    justify-content: center;
+}
+
+/* Header layout for feedback page */
+.header-center-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* Toggle switch */
@@ -507,133 +357,4 @@ input:checked+.slider {
 
 input:checked+.slider:before {
     transform: translateX(26px);
-}
-
-/* Responsive design */
-@media (min-width: 768px) {
-    .container {
-        max-width: 500px;
-        margin: 0 auto;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    }
-}
-
-/* Bottom navigation */
-.bottom-nav {
-    position: fixed;
-    bottom: 75px;
-    /* Adjusted to match other pages */
-    left: 0;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    z-index: 100;
-    background-color: #181a1b;
-    border-top: 1px solid #333;
-    padding: 10px 0;
-    height: auto;
-    box-sizing: content-box;
-}
-
-.bottom-nav-content {
-    display: flex;
-    position: relative;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.nav-icon {
-    width: 50px;
-    height: 50px;
-    background-color: #6A63F6;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.nav-rectangle {
-    width: 35px;
-    height: 45px;
-    background-color: #413C96;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    padding: 8px;
-    margin: 4px;
-}
-
-.bottom-nav .nav-rectangle {
-    position: absolute;
-    left: calc(50% - 110px);
-    /* Same distance as in routes */
-    top: -2px;
-    height: 45px;
-}
-
-.bottom-nav .nav-icon {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* Specific border for the center icon only */
-.bottom-nav .nav-icon .nav-icon-img {
-    border: 1px solid white;
-    border-radius: 2px;
-}
-
-.nav-icon-img {
-    width: 24px;
-    height: 24px;
-    filter: brightness(0) invert(1);
-    /* Makes the icon white */
-    box-sizing: content-box;
-    padding: 4px;
-}
-
-/* Desktop notification banner */
-.desktop-notification {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #6A63F6;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    z-index: 9999;
-    font-size: 14px;
-}
-
-.desktop-notification p {
-    margin: 0;
-    display: inline-block;
-}
-
-.desktop-notification button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 0 10px;
-    margin-left: 10px;
-    float: right;
-}
-
-/* Show notification only on desktop screens */
-@media (min-width: 768px) {
-    .desktop-notification {
-        display: block;
-    }
-
-    /* Hide the main content on desktop */
-    .container {
-        display: none;
-    }
 }
