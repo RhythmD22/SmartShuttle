@@ -25,7 +25,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/routes.css">
@@ -81,8 +81,9 @@
                 </button>
 
                 <!-- Transit API Badge -->
-                <div class="transit-api-badge" aria-label="Powered by Transit API">
-                    <a href="https://transitapp.com" target="_blank" rel="noopener noreferrer">
+                <div class="transit-api-badge">
+                    <a href="https://transitapp.com" target="_blank" rel="noopener noreferrer"
+                        aria-label="Powered by Transit API">
                         <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo">
                     </a>
                 </div>
@@ -118,7 +119,7 @@
         </main>
 
         <!-- Bottom navigation -->
-        <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <nav class="bottom-nav" aria-label="Main navigation">
             <div class="bottom-nav-content">
                 <a href="Stops.html" class="nav-rectangle" aria-label="Stops">
                     <img src="images/map.svg" alt="" class="nav-icon-img">
