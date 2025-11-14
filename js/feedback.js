@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     initializeDesktopNotification();
     initializeFeedbackForm();
+    initializeBackButton();
 });
 
 // Initialize feedback form functionality
@@ -198,6 +199,18 @@ function handleAPIResponse(data, submitBtn, originalText, issueType, description
 
         // Reset form state anyway so user can try again
         resetSubmitButton(submitBtn, originalText);
+    }
+}
+
+// Function to initialize back button functionality
+function initializeBackButton() {
+    const backBtn = document.querySelector('.back-btn');
+
+    if (backBtn) {
+        backBtn.addEventListener('click', function () {
+            // Use history.back() to go back to the previous page
+            window.history.back();
+        });
     }
 }
 
