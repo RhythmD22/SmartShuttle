@@ -236,7 +236,7 @@ const initializeAlertFilters = () => {
     const filterButtons = document.querySelectorAll('.alert-filter-btn');
 
     filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', function () {
             // Remove active class from all buttons
             filterButtons.forEach(btn => btn.classList.remove('active'));
 
