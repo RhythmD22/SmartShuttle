@@ -70,10 +70,6 @@ const initShuttleFinder = () => {
                                                 <span class="vehicle-type-label">Vehicle:</span>
                                                 <span class="vehicle-type-value ${getVehicleTypeClass(route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus')))}">${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}</span>
                                             </div>
-                                            <div class="distance-info">
-                                                <span class="distance-label">Distance:</span>
-                                                <span class="distance-value">${stop.distance ? Math.round(stop.distance) + 'm' : 'Distance unknown'}</span>
-                                            </div>
                                             <div class="accessibility-info">
                                                 <span class="accessibility-label">Accessibility:</span>
                                                 <span class="accessibility-value ${stop.wheelchair_boarding === 1 ? 'accessible' : ''}">
