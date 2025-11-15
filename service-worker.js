@@ -17,6 +17,7 @@ const urlsToCache = [
   '/css/routes.css',
   '/css/notifications.css',
   '/css/feedback.css',
+  '/css/styles.css',
   '/js/index.js',
   '/js/stops.js',
   '/js/routes.js',
