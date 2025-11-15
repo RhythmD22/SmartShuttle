@@ -616,9 +616,9 @@ const processRoutesData = (routes) => {
 
                     if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
                         const nextDeparture = itinerary.schedule_items[0]; // Get first schedule item
-                        if (nextDeparture.departure_time) {
+                        if (nextDeparture.arrival_time) {
                             const now = Date.now() / 1000; // Current time in seconds
-                            const timeDiff = Math.max(0, nextDeparture.departure_time - now);
+                            const timeDiff = Math.max(0, nextDeparture.arrival_time - now);
                             const minutes = Math.ceil(timeDiff / 60);
 
                             if (minutes === 0) {
@@ -684,10 +684,10 @@ const processRoutesData = (routes) => {
                 if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
                     itinerary.schedule_items.forEach(scheduleItem => {
                         // Process real-time data if available
-                        if (scheduleItem.is_real_time && scheduleItem.departure_time) {
+                        if (scheduleItem.is_real_time && scheduleItem.arrival_time) {
                             // In a real implementation, this would show vehicle positions
                             // For now, we'll just log for demonstration
-                            console.log(`Real-time bus for route ${route.route_short_name || route.real_time_route_id}: ${new Date(scheduleItem.departure_time * 1000).toLocaleTimeString()}`);
+                            console.log(`Real-time bus for route ${route.route_short_name || route.real_time_route_id}: ${new Date(scheduleItem.arrival_time * 1000).toLocaleTimeString()}`);
                         }
                     });
                 }
@@ -734,9 +734,9 @@ const updateRouteArrivalsSection = (routes) => {
 
                     // Format the arrival time
                     let arrivalText = 'Arriving soon';
-                    if (scheduleItem.departure_time) {
+                    if (scheduleItem.arrival_time) {
                         const now = Date.now() / 1000; // Current time in seconds
-                        const timeDiff = Math.max(0, scheduleItem.departure_time - now);
+                        const timeDiff = Math.max(0, scheduleItem.arrival_time - now);
                         const minutes = Math.ceil(timeDiff / 60);
 
                         if (minutes === 0) {
