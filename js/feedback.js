@@ -190,7 +190,7 @@ function handleAPIResponse(data, submitBtn, originalText, issueType, description
         console.log('SUCCESS!', data);
 
         // Show success popup to user instead of alert
-        showFeedbackPopup('✓', 'Thank You!', `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`);
+        showFeedbackPopup('', 'Thank You!', `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`);
 
         // Reset form
         if (issueType) issueType.value = '';
@@ -206,7 +206,7 @@ function handleAPIResponse(data, submitBtn, originalText, issueType, description
         console.log('FAILED...', data ? data.error || 'Failed to send feedback' : 'Failed to send feedback');
 
         // Show error popup to user
-        showFeedbackPopup('✕', 'Error', 'Failed to send feedback. Please try again.');
+        showFeedbackPopup('', 'Error', 'Failed to send feedback. Please try again.');
 
         // Reset form state anyway so user can try again
         resetSubmitButton(submitBtn, originalText);
@@ -218,7 +218,7 @@ function simulateAPIResponse(submitBtn, originalText, issueType, descriptionText
     // Simulate a successful response after a short delay
     setTimeout(() => {
         // Show success popup to user (same as successful API response without any suffix)
-        showFeedbackPopup('✓', 'Thank You!', 'Your feedback has been received!');
+        showFeedbackPopup('', 'Thank You!', 'Your feedback has been received!');
 
         // Reset form
         if (issueType) issueType.value = '';
@@ -291,8 +291,8 @@ function showFeedbackPopup(icon, title, message) {
         overlay.classList.add('show');
     }, 10);
 
-    // Close popup after 5 seconds if not manually closed
-    if (icon === '✅') { // Only auto-close success messages
+    // Close popup after 5 seconds if not manually closed for success messages
+    if (title === 'Thank You!') { // Only auto-close success messages
         setTimeout(() => {
             hideFeedbackPopup(overlay);
         }, 5000);
