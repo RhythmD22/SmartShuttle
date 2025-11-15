@@ -58,6 +58,9 @@ const initShuttleFinder = () => {
 
                                 // No departure info needed for popup
 
+                                // Log stop object to see what fields are available
+                                console.log('Stop object:', stop);
+
                                 // Create detailed popup content for bus stop
                                 const popupContent = `
                                     <div class="bus-stop-popup">
