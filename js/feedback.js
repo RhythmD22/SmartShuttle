@@ -1,9 +1,9 @@
 // JavaScript for Feedback page
 // Import shared utilities
-// Note: In a real project, we'd use proper module imports, but for now we assume utils.js is loaded before this file
 
 document.addEventListener('DOMContentLoaded', function () {
     initializeDesktopNotification();
+    initializeFeedbackButton();
     initializeFeedbackForm();
     initializeBackButton();
 });
@@ -37,14 +37,14 @@ function initializeFeedbackForm() {
 
     // Handle preview click to allow re-uploading
     if (attachmentPreview) {
-        attachmentPreview.addEventListener('click', function () {
+        attachmentPreview.addEventListener('click', () => {
             // Use shared utility to reset attachment UI
             resetAttachmentUI(attachmentInput, attachmentLabel, attachmentPreview);
         });
     }
 
     if (submitBtn) {
-        submitBtn.addEventListener('click', function () {
+        submitBtn.addEventListener('click', () => {
             handleFeedbackSubmission(submitBtn, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
         });
     }
@@ -141,13 +141,11 @@ function sendFeedbackAPI(emailParams, submitBtn, originalText, issueType, descri
         },
         body: JSON.stringify(emailParams)
     })
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (data) {
+        .then(response => response.json())
+        .then(data => {
             handleAPIResponse(data, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, "");
         })
-        .catch(function (error) {
+        .catch(error => {
             console.log('FAILED...', error);
             // Reset form state anyway so user can try again
             resetSubmitButton(submitBtn, originalText);
@@ -163,13 +161,11 @@ function sendFeedbackAPIWithoutAttachment(emailParams, submitBtn, originalText, 
         },
         body: JSON.stringify(emailParams)
     })
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (data) {
+        .then(response => response.json())
+        .then(data => {
             handleAPIResponse(data, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage);
         })
-        .catch(function (error) {
+        .catch(error => {
             console.log('FAILED...', error);
             // Reset form state anyway so user can try again
             resetSubmitButton(submitBtn, originalText);
@@ -207,7 +203,7 @@ function initializeBackButton() {
     const backBtn = document.querySelector('.back-btn');
 
     if (backBtn) {
-        backBtn.addEventListener('click', function () {
+        backBtn.addEventListener('click', () => {
             // Use history.back() to go back to the previous page
             window.history.back();
         });

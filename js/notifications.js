@@ -3,54 +3,17 @@
 // Variable to track the currently selected filter
 let currentFilter = 'all';
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     initializeDesktopNotification();
     initializeFeedbackButton();
     initializeThemeToggle();
-    initializeRefreshButton();
+    initializeRefreshButton(refreshLiveAlerts);
     setupLiveFeedUpdates();
 
 });
 
-// Initialize desktop notification functionality
-function initializeDesktopNotification() {
-    const closeNotificationBtn = document.getElementById('closeNotification');
-    const desktopNotification = document.getElementById('desktopNotification');
-
-    if (closeNotificationBtn && desktopNotification) {
-        closeNotificationBtn.addEventListener('click', function () {
-            desktopNotification.style.display = 'none';
-        });
-    }
-
-    // Service Worker registration for PWA functionality
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-            navigator.serviceWorker.register('./service-worker.js')
-                .then(function (registration) {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                })
-                .catch(function (error) {
-                    console.log('ServiceWorker registration failed: ', error);
-                });
-        });
-    }
-}
-
-// Initialize feedback button functionality
-function initializeFeedbackButton() {
-    const feedbackBtn = document.querySelector('.feedback-btn');
-
-    if (feedbackBtn) {
-        feedbackBtn.addEventListener('click', function () {
-            // Redirect to feedback page
-            window.location.href = 'Feedback.html';
-        });
-    }
-}
-
 // Initialize theme toggle functionality
-function initializeThemeToggle() {
+const initializeThemeToggle = () => {
     const themeToggle = document.getElementById('themeToggle');
 
     if (themeToggle) {
@@ -60,7 +23,7 @@ function initializeThemeToggle() {
             themeToggle.checked = true;
         }
 
-        themeToggle.addEventListener('change', function () {
+        themeToggle.addEventListener('change', () => {
             if (this.checked) {
                 // Switch to dark theme
                 document.body.classList.add('dark-theme');
@@ -72,10 +35,10 @@ function initializeThemeToggle() {
             }
         });
     }
-}
+};
 
 // Initialize live feed functionality
-function initializeLiveFeed() {
+const initializeLiveFeed = () => {
     // Get saved location from localStorage (from routes page)
     const savedLocation = localStorage.getItem('selectedNotificationLocation');
 
@@ -90,10 +53,10 @@ function initializeLiveFeed() {
         // If no saved location, try to get current location
         getCurrentLocation();
     }
-}
+};
 
 // Get the user's current location
-function getCurrentLocation() {
+const getCurrentLocation = () => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             position => {
@@ -126,19 +89,19 @@ function getCurrentLocation() {
         console.error('Geolocation is not supported by this browser.');
         displayNoLocationMessage();
     }
-}
+};
 
 // Display message when no location is selected
-function displayNoLocationMessage() {
+const displayNoLocationMessage = () => {
     const container = document.getElementById('liveAlertsContainer');
     container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No location selected</div><div class="live-alert-description">Please select a location in Routes first</div></div></div>';
 
     // Apply the current filter even for location messages
     applyAlertFilter(currentFilter);
-}
+};
 
 // Fetch live alerts from Transit API
-async function fetchLiveAlerts(lat, lon) {
+const fetchLiveAlerts = async (lat, lon) => {
     const container = document.getElementById('liveAlertsContainer');
 
     try {
@@ -200,10 +163,10 @@ async function fetchLiveAlerts(lat, lon) {
         // Apply the current filter even for error messages
         applyAlertFilter(currentFilter);
     }
-}
+};
 
 // Add an alert to the live feed
-function addAlertToFeed(alert, route) {
+const addAlertToFeed = (alert, route) => {
     const container = document.getElementById('liveAlertsContainer');
 
     // Map alert effect to appropriate icon and text
@@ -266,14 +229,14 @@ function addAlertToFeed(alert, route) {
 
     // Add to container
     container.appendChild(alertElement);
-}
+};
 
 // Initialize alert filter functionality
-function initializeAlertFilters() {
+const initializeAlertFilters = () => {
     const filterButtons = document.querySelectorAll('.alert-filter-btn');
 
     filterButtons.forEach(button => {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', () => {
             // Remove active class from all buttons
             filterButtons.forEach(btn => btn.classList.remove('active'));
 
@@ -285,10 +248,10 @@ function initializeAlertFilters() {
             applyAlertFilter(currentFilter);
         });
     });
-}
+};
 
 // Apply the selected filter to show only matching alerts
-function applyAlertFilter(filterValue) {
+const applyAlertFilter = (filterValue) => {
     const alertItems = document.querySelectorAll('.live-alert-item');
 
     alertItems.forEach(item => {
@@ -306,32 +269,10 @@ function applyAlertFilter(filterValue) {
             }
         }
     });
-}
-
-// Initialize refresh button functionality
-function initializeRefreshButton() {
-    const refreshBtn = document.getElementById('refreshBtn');
-
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', function () {
-            // Add visual feedback for the refresh action
-            const refreshIcon = refreshBtn.querySelector('.icon');
-            refreshIcon.style.transition = 'transform 0.3s ease';
-            refreshIcon.style.transform = 'rotate(360deg)';
-
-            // Reset the rotation after the animation completes
-            setTimeout(() => {
-                refreshIcon.style.transform = 'rotate(0deg)';
-            }, 300);
-
-            // Perform the refresh action
-            refreshLiveAlerts();
-        });
-    }
-}
+};
 
 // Refresh function to update live alerts
-function refreshLiveAlerts() {
+const refreshLiveAlerts = () => {
     // Get saved location from localStorage (from routes page)
     const savedLocation = localStorage.getItem('selectedNotificationLocation');
 
@@ -347,10 +288,10 @@ function refreshLiveAlerts() {
         // If no saved location, try to get current location
         getCurrentLocation();
     }
-}
+};
 
 // Update live feed periodically (every 5 minutes)
-function setupLiveFeedUpdates() {
+const setupLiveFeedUpdates = () => {
     // Set default filter to 'all' on initial load
     currentFilter = 'all';
 
@@ -360,4 +301,4 @@ function setupLiveFeedUpdates() {
 
     // Update every 5 minutes
     setInterval(initializeLiveFeed, 5 * 60 * 1000);
-}
+};

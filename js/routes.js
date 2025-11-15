@@ -6,7 +6,7 @@ let selectedLocation = null;
 let routeMarkers = []; // Store route markers for efficient cleanup
 
 // Initialize the map on page load
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     // Initialize the map
     initializeMap();
 
@@ -26,33 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
     updateShuttleCapacitySection();
 });
 
-// Initialize desktop notification functionality
-function initializeDesktopNotification() {
-    const closeNotificationBtn = document.getElementById('closeNotification');
-    const desktopNotification = document.getElementById('desktopNotification');
-
-    if (closeNotificationBtn && desktopNotification) {
-        closeNotificationBtn.addEventListener('click', function () {
-            desktopNotification.style.display = 'none';
-        });
-    }
-
-    // Service Worker registration for PWA functionality
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-            navigator.serviceWorker.register('./service-worker.js')
-                .then(function (registration) {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                })
-                .catch(function (error) {
-                    console.log('ServiceWorker registration failed: ', error);
-                });
-        });
-    }
-}
 
 // Initialize search functionality
-function initializeSearch() {
+const initializeSearch = () => {
     const searchBtn = document.querySelector('.search-btn');
     const searchModal = document.getElementById('searchModal');
     const closeSearchModal = document.getElementById('closeSearchModal');
@@ -60,19 +36,19 @@ function initializeSearch() {
     const searchResults = document.getElementById('searchResults');
 
     // Show modal when search button is clicked
-    searchBtn.addEventListener('click', function () {
+    searchBtn.addEventListener('click', () => {
         searchModal.style.display = 'block';
         searchInput.focus();
     });
 
     // Close modal when close button is clicked
-    closeSearchModal.addEventListener('click', function () {
+    closeSearchModal.addEventListener('click', () => {
         searchModal.style.display = 'none';
         clearSearchResults();
     });
 
     // Show "Current Location" option when user focuses on search input
-    searchInput.addEventListener('focus', function () {
+    searchInput.addEventListener('focus', () => {
         // Only show current location option if input is empty
         if (searchInput.value.trim() === '') {
             showCurrentLocationOption();
@@ -80,7 +56,7 @@ function initializeSearch() {
     });
 
     // Close modal when clicking outside the modal content
-    window.addEventListener('click', function (event) {
+    window.addEventListener('click', (event) => {
         if (event.target === searchModal) {
             searchModal.style.display = 'none';
             clearSearchResults();
@@ -89,7 +65,7 @@ function initializeSearch() {
 
     // Handle search input
     let searchTimeout;
-    searchInput.addEventListener('input', function () {
+    searchInput.addEventListener('input', () => {
         clearTimeout(searchTimeout);
         const query = searchInput.value.trim();
 
@@ -112,7 +88,7 @@ function initializeSearch() {
     });
 
     // Handle Enter key press
-    searchInput.addEventListener('keypress', function (event) {
+    searchInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
             const query = searchInput.value.trim();
             if (query.length >= 3) {
@@ -122,7 +98,7 @@ function initializeSearch() {
     });
 
     // Perform search using Nominatim API
-    async function performSearch(query) {
+    const performSearch = async (query) => {
         try {
             // Fetch both bus stops and general locations in parallel to improve performance
             // For bus stops, we use the query parameter alone to avoid the structured query error
@@ -167,10 +143,10 @@ function initializeSearch() {
             console.error('Error with search:', error);
             searchResults.innerHTML = '<div class="search-result-item">Error performing search. Please try again.</div>';
         }
-    }
+    };
 
     // Display search results in the modal with bus stops first, then cities/towns
-    function displaySearchResults(results) {
+    const displaySearchResults = (results) => {
         searchResults.innerHTML = '';
 
         if (!results || !Array.isArray(results) || results.length === 0) {
@@ -226,7 +202,7 @@ function initializeSearch() {
             `;
 
             // Add click event to center map on selected location
-            resultElement.addEventListener('click', function () {
+            resultElement.addEventListener('click', () => {
                 const lat = parseFloat(result.lat);
                 const lon = parseFloat(result.lon);
 
@@ -264,7 +240,7 @@ function initializeSearch() {
 
             searchResults.appendChild(resultElement);
         });
-    }
+    };
 
     // Function to clear search results and input
     function clearSearchResults() {
@@ -273,7 +249,7 @@ function initializeSearch() {
     }
 
     // Function to show current location option when search input is focused
-    function showCurrentLocationOption() {
+    const showCurrentLocationOption = () => {
         searchResults.innerHTML = '';
 
         // Create current location option
@@ -285,11 +261,11 @@ function initializeSearch() {
         `;
 
         // Add click event to use current location
-        currentLocationElement.addEventListener('click', function () {
+        currentLocationElement.addEventListener('click', () => {
             // Get user's current location
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    async function (position) {
+                    async (position) => {
                         const userLat = position.coords.latitude;
                         const userLng = position.coords.longitude;
 
@@ -317,7 +293,7 @@ function initializeSearch() {
                             saveLocationAndCenterMap(userLat, userLng, 'Current Location');
                         }
                     },
-                    function (error) {
+                    (error) => {
                         console.error('Error getting current location:', error);
 
                         // Show error message
@@ -337,10 +313,10 @@ function initializeSearch() {
         });
 
         searchResults.appendChild(currentLocationElement);
-    }
+    };
 
     // Function to save location, update UI, and center map
-    function saveLocationAndCenterMap(lat, lng, displayName) {
+    const saveLocationAndCenterMap = (lat, lng, displayName) => {
         // Save the current location to localStorage
         const selectedLocation = {
             lat: lat,
@@ -374,7 +350,7 @@ function initializeSearch() {
     }
 
     // Function to add user location marker to the map
-    function addUserLocationMarker(userLat, userLng, position) {
+    const addUserLocationMarker = (userLat, userLng, position) => {
         const userIcon = L.divIcon({
             className: 'user-location-icon',
             html: `<img src="images/current.svg" style="width: 24px; height: 24px;">`,
@@ -408,11 +384,11 @@ function initializeSearch() {
             radius: accuracy * 1.5, // Slightly larger
             purpose: 'user-location'
         }).addTo(map);
-    }
+    };
 }
 
 // Initialize the map
-function initializeMap() {
+const initializeMap = () => {
     // Initialize the map with a default view
     map = L.map('map').setView([40.4406, -79.9951], 13); // Default to Pittsburgh
 
@@ -422,7 +398,7 @@ function initializeMap() {
     }).addTo(map);
 
     // Function to get user's current location
-    function getUserLocation() {
+    const getUserLocation = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showUserLocation, handleLocationError);
         } else {
@@ -431,10 +407,10 @@ function initializeMap() {
             // If no location access, load the saved location
             loadSelectedLocation();
         }
-    }
+    };
 
     // Function to show user's location on the map
-    async function showUserLocation(position) {
+    const showUserLocation = async (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
 
@@ -509,17 +485,17 @@ function initializeMap() {
                 locationDisplay.textContent = 'Current Location';
             }
         }
-    }
+    };
 
     // Function to handle location errors
-    function handleLocationError(error) {
+    const handleLocationError = (error) => {
         console.log("Unable to retrieve your location. Error code: " + error.code + ", Message: " + error.message);
 
         // Load the saved location if user denies location access
         loadSelectedLocation();
-    }
+    };
 
-    map.whenReady(function () {
+    map.whenReady(() => {
         // First, try to load the saved location from localStorage
         const savedLocation = localStorage.getItem('selectedNotificationLocation');
         if (savedLocation) {
@@ -543,10 +519,10 @@ function initializeMap() {
             getUserLocation();
         }
     });
-}
+};
 
 // Load selected location from localStorage
-function loadSelectedLocation() {
+const loadSelectedLocation = () => {
     const savedLocation = localStorage.getItem('selectedNotificationLocation');
     if (savedLocation) {
         selectedLocation = JSON.parse(savedLocation);
@@ -571,10 +547,10 @@ function loadSelectedLocation() {
             locationDisplay.textContent = 'Select a location';
         }
     }
-}
+};
 
 // Fetch real-time bus positions from the Transit API
-async function fetchRealTimeBuses(lat, lng) {
+const fetchRealTimeBuses = async (lat, lng) => {
     try {
         // First, get nearby routes using the Transit API
         const response = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`);
@@ -622,10 +598,10 @@ async function fetchRealTimeBuses(lat, lng) {
         // Update shuttle capacity to show error state
         updateShuttleCapacitySection([]);
     }
-}
+};
 
 // Function to process route data and display on the map
-function processRoutesData(routes) {
+const processRoutesData = (routes) => {
     // For each route, extract stops and possible vehicle positions
     routes.forEach((route, index) => {
         if (route.itineraries && route.itineraries.length > 0) {
@@ -718,10 +694,10 @@ function processRoutesData(routes) {
             });
         }
     });
-}
+};
 
 // Function to clear existing bus markers from the map
-function clearBusMarkers() {
+const clearBusMarkers = () => {
     if (routeMarkers && Array.isArray(routeMarkers)) {
         routeMarkers.forEach(marker => {
             if (map.hasLayer(marker)) {
@@ -730,10 +706,10 @@ function clearBusMarkers() {
         });
         routeMarkers = []; // Reset the array
     }
-}
+};
 
 // Function to update the Route & Arrivals section with real data
-function updateRouteArrivalsSection(routes) {
+const updateRouteArrivalsSection = (routes) => {
     const routeArrivalsContent = document.querySelector('.route-arrivals-content');
 
     if (!routeArrivalsContent) return;
@@ -822,42 +798,10 @@ function updateRouteArrivalsSection(routes) {
 
     // Update the shuttle capacity section based on the routes found
     updateShuttleCapacitySection(routes);
-}
-
-// Helper function to get human-readable route type text
-function getRouteTypeText(routeType) {
-    const routeTypes = {
-        0: 'Tram, Streetcar, Light rail',
-        1: 'Subway, Metro',
-        2: 'Rail',
-        3: 'Bus',
-        4: 'Ferry',
-        5: 'Cable tram',
-        6: 'Aerial lift, suspended cable car',
-        7: 'Funicular',
-        11: 'Trolleybus',
-        12: 'Monorail'
-    };
-
-    return routeTypes[routeType] || `Unknown (${routeType})`;
-}
-
-// Helper function to get CSS class for vehicle type
-function getVehicleTypeClass(vehicleType) {
-    const type = vehicleType.toLowerCase();
-
-    if (type.includes('bus')) return 'bus';
-    if (type.includes('rail') || type.includes('light rail')) return 'rail';
-    if (type.includes('subway') || type.includes('metro')) return 'subway';
-    if (type.includes('tram') || type.includes('streetcar')) return 'tram';
-    if (type.includes('ferry')) return 'ferry';
-
-    // Default to bus for unknown types
-    return 'bus';
-}
+};
 
 // Handle browser back button
-window.addEventListener('popstate', function (event) {
+window.addEventListener('popstate', (event) => {
     // This handles the browser back button if needed
     console.log('Back button pressed');
 });
@@ -873,7 +817,7 @@ const SHUTTLE_CAPACITY_MAP = {
 };
 
 // Function to update the Shuttle Capacity section with real data
-function updateShuttleCapacitySection(routes) {
+const updateShuttleCapacitySection = (routes) => {
     const shuttleCapacityContent = document.querySelector('.shuttle-capacity-content');
 
     if (!shuttleCapacityContent) return;
@@ -978,44 +922,10 @@ function updateShuttleCapacitySection(routes) {
 
         shuttleCapacityContent.appendChild(shuttleRow);
     });
-}
-
-// Initialize feedback button functionality
-function initializeFeedbackButton() {
-    const feedbackBtn = document.querySelector('.menu-btn');
-
-    if (feedbackBtn) {
-        feedbackBtn.addEventListener('click', function () {
-            // Redirect to feedback page
-            window.location.href = 'Feedback.html';
-        });
-    }
-}
-
-// Initialize refresh button functionality
-function initializeRefreshButton() {
-    const refreshBtn = document.getElementById('refreshBtn');
-
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', function () {
-            // Add visual feedback for the refresh action
-            const refreshIcon = refreshBtn.querySelector('.icon');
-            refreshIcon.style.transition = 'transform 0.3s ease';
-            refreshIcon.style.transform = 'rotate(360deg)';
-
-            // Reset the rotation after the animation completes
-            setTimeout(() => {
-                refreshIcon.style.transform = 'rotate(0deg)';
-            }, 300);
-
-            // Perform the refresh action
-            refreshPageData();
-        });
-    }
-}
+};
 
 // Refresh function to update all map data and alerts
-async function refreshPageData() {
+const refreshPageData = async () => {
     // Get current map center
     const center = map.getCenter();
 
@@ -1055,9 +965,9 @@ async function refreshPageData() {
             locationDisplay.textContent = 'Current Location';
         }
     }
-}
+};
 
 // Initialize the refresh functionality when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function () {
-    initializeRefreshButton();
+document.addEventListener('DOMContentLoaded', () => {
+    initializeRefreshButton(refreshPageData);
 });
