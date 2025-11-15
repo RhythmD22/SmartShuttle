@@ -641,7 +641,7 @@ const processRoutesData = (routes) => {
 
                     // Create detailed popup content
                     const popupContent = `
-                        <div class="stop-popup">
+                        <div class="bus-stop-popup">
                             <h3 class="stop-name">${stop.stop_name}</h3>
                             <div class="popup-details">
                                 <div class="route-info">

@@ -56,28 +56,7 @@ const initShuttleFinder = () => {
                                     iconAnchor: [8, 8]
                                 });
 
-                                // Gather all schedule items for next departure times
-                                let nextDepartureTime = 'No schedule available';
-                                let isRealTime = false;
-                                let tripInfo = '';
-
-                                if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
-                                    const nextDeparture = itinerary.schedule_items[0]; // Get first schedule item
-                                    if (nextDeparture.departure_time) {
-                                        const now = Date.now() / 1000; // Current time in seconds
-                                        const timeDiff = Math.max(0, nextDeparture.departure_time - now);
-                                        const minutes = Math.ceil(timeDiff / 60);
-
-                                        if (minutes === 0) {
-                                            nextDepartureTime = 'Departing now';
-                                        } else {
-                                            nextDepartureTime = `Departing in ${minutes} min`;
-                                        }
-
-                                        isRealTime = nextDeparture.is_real_time || false;
-                                        tripInfo = nextDeparture.rt_trip_id ? `<br>Trip: ${nextDeparture.rt_trip_id}` : '';
-                                    }
-                                }
+                                // No departure info needed for popup
 
                                 // Create detailed popup content for bus stop
                                 const popupContent = `
@@ -88,13 +67,9 @@ const initShuttleFinder = () => {
                                                 <span class="vehicle-type-label">Vehicle:</span>
                                                 <span class="vehicle-type-value ${getVehicleTypeClass(route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus')))}">${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}</span>
                                             </div>
-                                            <div class="departure-info">
-                                                <span class="next-departure">
-                                                    ${nextDepartureTime}
-                                                </span>
-                                                <span class="${isRealTime ? 'real-time-indicator' : 'scheduled-indicator'}">
-                                                    ${isRealTime ? '• Real-time' : '• Scheduled'}
-                                                </span>
+                                            <div class="distance-info">
+                                                <span class="distance-label">Distance:</span>
+                                                <span class="distance-value">${stop.distance ? Math.round(stop.distance) + 'm' : 'Distance unknown'}</span>
                                             </div>
                                             <div class="accessibility-info">
                                                 <span class="accessibility-label">Accessibility:</span>
