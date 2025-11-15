@@ -124,8 +124,7 @@
 .attachment-container {
     margin-top: 20px;
     margin-bottom: 50px;
-    width: 100%;
-    max-width: 370px;
+    width: 135px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -157,12 +156,12 @@
     border-radius: 8px;
     cursor: pointer;
     height: 60px;
-    width: 100%;
+    width: 135px;
     box-sizing: border-box;
 }
 
 .attachment-preview {
-    width: 100%;
+    width: 135px !important;
     text-align: center;
     order: 3;
 }
@@ -176,7 +175,7 @@
     border: 1px solid #70685C;
     border-radius: 8px;
     cursor: pointer;
-    width: 100%;
+    width: 135px !important;
     height: 60px;
     box-sizing: border-box;
 }
@@ -300,10 +299,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 135px !important;
 }
 
 .attachment-wrapper {
     justify-content: center;
+    width: 135px !important;
 }
 
 /* Header layout for feedback page */
