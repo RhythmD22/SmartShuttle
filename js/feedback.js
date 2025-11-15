@@ -177,8 +177,8 @@ function handleAPIResponse(data, submitBtn, originalText, issueType, description
     if (data.success) {
         console.log('SUCCESS!', data);
 
-        // Show success message to user
-        alert(`Thank you for your feedback!${suffixMessage ? ' It has been sent successfully (' + suffixMessage + ').' : ''}`);
+        // Show success popup to user instead of alert
+        showFeedbackPopup('✅', 'Thank You!', `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`);
 
         // Reset form
         if (issueType) issueType.value = '';
@@ -193,9 +193,89 @@ function handleAPIResponse(data, submitBtn, originalText, issueType, description
         // Hide error popup but still handle error appropriately
         console.log('FAILED...', data.error || 'Failed to send feedback');
 
+        // Show error popup to user
+        showFeedbackPopup('❌', 'Error', 'Failed to send feedback. Please try again.');
+
         // Reset form state anyway so user can try again
         resetSubmitButton(submitBtn, originalText);
     }
+}
+
+// Function to show feedback popup
+function showFeedbackPopup(icon, title, message) {
+    // Create overlay element if it doesn't exist
+    let overlay = document.getElementById('feedbackPopupOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'feedbackPopupOverlay';
+        overlay.className = 'popup-overlay';
+
+        // Create popup content
+        const popupContent = document.createElement('div');
+        popupContent.className = 'popup-content';
+
+        // Create popup elements
+        const iconElement = document.createElement('div');
+        iconElement.className = 'popup-icon';
+        iconElement.textContent = icon;
+
+        const titleElement = document.createElement('h3');
+        titleElement.className = 'popup-title';
+        titleElement.textContent = title;
+
+        const messageElement = document.createElement('p');
+        messageElement.className = 'popup-message';
+        messageElement.textContent = message;
+
+        const buttonElement = document.createElement('button');
+        buttonElement.className = 'popup-button';
+        buttonElement.textContent = 'OK';
+        buttonElement.onclick = function () {
+            hideFeedbackPopup(overlay);
+        };
+
+        // Add elements to popup content
+        popupContent.appendChild(iconElement);
+        popupContent.appendChild(titleElement);
+        popupContent.appendChild(messageElement);
+        popupContent.appendChild(buttonElement);
+
+        // Add popup content to overlay
+        overlay.appendChild(popupContent);
+
+        // Add overlay to body
+        document.body.appendChild(overlay);
+    } else {
+        // Update existing popup content
+        const iconElement = overlay.querySelector('.popup-icon');
+        const titleElement = overlay.querySelector('.popup-title');
+        const messageElement = overlay.querySelector('.popup-message');
+        iconElement.textContent = icon;
+        titleElement.textContent = title;
+        messageElement.textContent = message;
+    }
+
+    // Show the popup
+    setTimeout(() => {
+        overlay.classList.add('show');
+    }, 10);
+
+    // Close popup after 5 seconds if not manually closed
+    if (icon === '✅') { // Only auto-close success messages
+        setTimeout(() => {
+            hideFeedbackPopup(overlay);
+        }, 5000);
+    }
+}
+
+// Function to hide feedback popup
+function hideFeedbackPopup(overlay) {
+    overlay.classList.remove('show');
+    setTimeout(() => {
+        if (overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+        }
+    }, 300);
 }
 
 // Function to initialize back button functionality
