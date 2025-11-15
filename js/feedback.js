@@ -154,7 +154,7 @@ function sendFeedbackAPI(emailParams, submitBtn, originalText, issueType, descri
         .catch(error => {
             console.log('FAILED...', error);
             // If API call fails, simulate the response for testing
-            simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, " (simulated response)");
+            simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
         });
 }
 
@@ -180,7 +180,7 @@ function sendFeedbackAPIWithoutAttachment(emailParams, submitBtn, originalText, 
         .catch(error => {
             console.log('FAILED...', error);
             // If API call fails, simulate the response for testing
-            simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, " (simulated response)");
+            simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
         });
 }
 
@@ -190,7 +190,7 @@ function handleAPIResponse(data, submitBtn, originalText, issueType, description
         console.log('SUCCESS!', data);
 
         // Show success popup to user instead of alert
-        showFeedbackPopup('✅', 'Thank You!', `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`);
+        showFeedbackPopup('✓', 'Thank You!', `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`);
 
         // Reset form
         if (issueType) issueType.value = '';
@@ -206,7 +206,7 @@ function handleAPIResponse(data, submitBtn, originalText, issueType, description
         console.log('FAILED...', data ? data.error || 'Failed to send feedback' : 'Failed to send feedback');
 
         // Show error popup to user
-        showFeedbackPopup('❌', 'Error', 'Failed to send feedback. Please try again.');
+        showFeedbackPopup('✕', 'Error', 'Failed to send feedback. Please try again.');
 
         // Reset form state anyway so user can try again
         resetSubmitButton(submitBtn, originalText);
@@ -217,8 +217,8 @@ function handleAPIResponse(data, submitBtn, originalText, issueType, description
 function simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage = "") {
     // Simulate a successful response after a short delay
     setTimeout(() => {
-        // Show success popup to user
-        showFeedbackPopup('✅', 'Thank You!', `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`);
+        // Show success popup to user (same as successful API response without any suffix)
+        showFeedbackPopup('✓', 'Thank You!', 'Your feedback has been received!');
 
         // Reset form
         if (issueType) issueType.value = '';
