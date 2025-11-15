@@ -73,6 +73,29 @@
     color: #C8C7C5;
 }
 
+/* Distance info styling for stop popups */
+.distance-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.distance-label {
+    font-weight: 600;
+    color: #181a1b;
+}
+
+.distance-value {
+    font-weight: 500;
+    color: #6A63F6;
+    background-color: #e0e0ff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
 /* Bottom navigation specific to stops */
 .bottom-nav .nav-icon {
     position: absolute;
