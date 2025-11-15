@@ -3,15 +3,14 @@ export default async function handler(request, response) {
     // Extract the API endpoint from the URL - construct complete URL with query parameters
     // In Next.js API routes, request.url includes the path and query string but not the protocol/host
     // We need to parse the path and query separately
-    const urlParts = request.url.split('?');
-    const pathname = urlParts[0];
-    const search = urlParts.length > 1 ? '?' + urlParts[1] : '';
-    
+    const [pathname, ...searchParts] = request.url.split('?');
+    const search = searchParts.length > 0 ? '?' + searchParts.join('?') : '';
+
     const endpoint = pathname.replace('/api/transit', '');
     const searchParams = search; // This includes the ? and all parameters
 
     // Get the API key from environment variables
-    const apiKey = process.env.TRANSIT_API_KEY;
+    const { TRANSIT_API_KEY: apiKey } = process.env;
 
     if (!apiKey) {
       console.error('TRANSIT_API_KEY is not configured');
@@ -20,22 +19,22 @@ export default async function handler(request, response) {
 
     // Ensure endpoint starts with a slash to create a valid URL
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    
+
     // Transit API v3 requires the /public prefix for public endpoints
     // Check if the endpoint already has /public, if not, add it
     const apiEndpoint = formattedEndpoint.startsWith('/public') ? formattedEndpoint : `/public${formattedEndpoint}`;
-    
+
     // Construct the target URL for the Transit API, properly including query parameters
     const targetUrl = `https://external.transitapp.com/v3${apiEndpoint}${searchParams}`;
-    
+
     // Validate the constructed URL
     try {
       new URL(targetUrl);
     } catch (urlError) {
       console.error('Invalid target URL constructed:', targetUrl, urlError);
-      return response.status(400).json({ 
-        error: 'Invalid API endpoint', 
-        details: 'The requested endpoint is malformed' 
+      return response.status(400).json({
+        error: 'Invalid API endpoint',
+        details: 'The requested endpoint is malformed'
       });
     }
 

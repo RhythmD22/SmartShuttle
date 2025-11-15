@@ -4,18 +4,16 @@ export default async function handler(request, response) {
   }
 
   try {
-    const emailParams = request.body;
+    const { issue_type, description, attachment_info } = request.body;
 
-    if (!emailParams.issue_type || !emailParams.description) {
+    if (!issue_type || !description) {
       return response.status(400).json({
         error: 'Missing required fields',
         details: 'Both issue_type and description are required'
       });
     }
 
-    const githubToken = process.env.GITHUB_TOKEN;
-    const repoOwner = process.env.GITHUB_REPO_OWNER;
-    const repoName = process.env.GITHUB_REPO_NAME;
+    const { GITHUB_TOKEN: githubToken, GITHUB_REPO_OWNER: repoOwner, GITHUB_REPO_NAME: repoName } = process.env;
 
     if (!githubToken || !repoOwner || !repoName) {
       console.error('GitHub feedback configuration missing');
@@ -25,8 +23,8 @@ export default async function handler(request, response) {
     }
 
     const issueData = {
-      title: `Feedback: ${emailParams.issue_type}`,
-      body: `**Issue Type:** ${emailParams.issue_type}\n\n**Description:**\n${emailParams.description}\n\n**From:** SmartShuttle Feedback Form\n**Timestamp:** ${new Date().toISOString()}\n\n**Attachment Info:** ${emailParams.attachment_info || 'No attachment'}`,
+      title: `Feedback: ${issue_type}`,
+      body: `**Issue Type:** ${issue_type}\n\n**Description:**\n${description}\n\n**From:** SmartShuttle Feedback Form\n**Timestamp:** ${new Date().toISOString()}\n\n**Attachment Info:** ${attachment_info || 'No attachment'}`,
       labels: ["feedback", "smartshuttle"]
     };
 
