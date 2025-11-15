@@ -123,8 +123,8 @@ const clearShuttleMarkers = () => {
 
 // Initialize the map
 const initializeMap = () => {
-    // Initialize the map
-    map = L.map('map').setView([40.4406, -79.9951], 15); // Set initial view to a default location (Pittsburgh as example)
+    // Initialize the map - start with a world view that will be replaced when location is determined
+    map = L.map('map').setView([0, 0], 2); // Start with world view (0,0, zoom 2)
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -218,9 +218,9 @@ const initializeMap = () => {
     const handleLocationError = async (error) => {
         console.log("Unable to retrieve your location. Error code: " + error.code + ", Message: " + error.message);
 
-        // Use default location if user denies location access
-        const defaultLat = 40.4406;
-        const defaultLng = -79.9951;
+        // Use a more neutral default if user denies location access
+        const defaultLat = 39.8283; // Approximate center of US
+        const defaultLng = -98.5795;
 
         const defaultMarker = L.marker([defaultLat, defaultLng]).addTo(map);
         defaultMarker.bindPopup('Current Location').openPopup();
@@ -277,8 +277,8 @@ const initializeMap = () => {
             findNearbyShuttles(center.lat, center.lng);
         });
 
-        // Also find shuttles at the initial location
-        findNearbyShuttles(40.4406, -79.9951);
+        // Try to get user's location first, fallback to default if needed
+        getUserLocation();
     });
 };
 

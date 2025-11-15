@@ -390,7 +390,7 @@ const initializeSearch = () => {
 // Initialize the map
 const initializeMap = () => {
     // Initialize the map with a default view
-    map = L.map('map').setView([40.4406, -79.9951], 13); // Default to Pittsburgh
+    map = L.map('map').setView([0, 0], 2); // Start with world view (0,0, zoom 2)
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
