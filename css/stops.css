@@ -126,6 +126,167 @@
     left: calc(50% + 55px);
 }
 
+/* Advanced Search Filters */
+.advanced-filters {
+    padding: 15px;
+    background-color: #181a1b;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.filter-section {
+    margin: 15px 0;
+}
+
+.filter-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: white;
+    font-weight: 600;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+}
+
+.filter-option input {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.filter-option label {
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+}
+
+.result-details {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+.accessibility-badge,
+.capacity-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.accessibility-badge {
+    background-color: #e0e0ff;
+    color: #413C96;
+}
+
+.capacity-badge {
+    background-color: #ffe0e0;
+    color: #06d6a0;
+}
+
+/* Popup styles for bus stop markers (same as routes page) */
+.bus-stop-popup {
+    max-width: 300px;
+}
+
+.bus-stop-popup h3 {
+    margin: 0 0 10px 0;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #181a1b;
+}
+
+.popup-details {
+    font-size: 14px;
+}
+
+.route-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.route-number {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.vehicle-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.vehicle-type-label {
+    font-weight: 600;
+    color: #181a1b;
+}
+
+.vehicle-type-value {
+    font-weight: 500;
+    color: #6A63F6;
+    background-color: #e0e0ff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.direction {
+    font-weight: 500;
+}
+
+.departure-info {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 6px;
+}
+
+.next-departure {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.real-time-badge {
+    font-size: 12px;
+    color: #06d6a0;
+}
+
+.scheduled-badge {
+    font-size: 12px;
+    color: #595959;
+}
+
+.accessibility-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.accessibility-label {
+    font-weight: 600;
+    color: #181a1b;
+    font-size: inherit;
+}
+
+.accessibility-value {
+    color: #000000;
+    background-color: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 12px;
+}
+
 @media (max-width: 480px) {
     .bus-info {
         flex-direction: column;
