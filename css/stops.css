@@ -215,6 +215,9 @@
     border-radius: 4px;
     font-weight: bold;
     font-size: 12px;
+}
+
+.bus-stop-popup .route-number {
     color: white !important;
 }
 
