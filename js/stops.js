@@ -56,19 +56,52 @@ const initShuttleFinder = () => {
                                     iconAnchor: [8, 8]
                                 });
 
-                                // No departure info needed for popup
+                                // Determine next departure time and real-time status
+                                let nextDepartureTime = 'No schedule available';
+                                let isRealTime = false;
+
+                                if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
+                                    const nextDeparture = itinerary.schedule_items[0]; // Get first schedule item
+                                    if (nextDeparture.departure_time) {
+                                        const now = Date.now() / 1000; // Current time in seconds
+                                        const timeDiff = Math.max(0, nextDeparture.departure_time - now);
+                                        const minutes = Math.ceil(timeDiff / 60);
+
+                                        if (minutes === 0) {
+                                            nextDepartureTime = 'Departing now';
+                                        } else {
+                                            nextDepartureTime = `Departing in ${minutes} min`;
+                                        }
+
+                                        isRealTime = nextDeparture.is_real_time || false;
+                                    }
+                                }
 
                                 // Log stop object to see what fields are available
                                 console.log('Stop object:', stop);
 
-                                // Create detailed popup content for bus stop
+                                // Create detailed popup content for bus stop (same format as routes page)
                                 const popupContent = `
                                     <div class="bus-stop-popup">
                                         <h3 class="stop-name">${stop.stop_name}</h3>
                                         <div class="popup-details">
+                                            <div class="route-info">
+                                                <span class="route-number" style="background-color: #${route.route_color || '6A63F6'}; color: ${route.route_text_color || 'white'}; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                                                    ${route.route_short_name || route.real_time_route_id}
+                                                </span>
+                                                <span class="direction">${itinerary.headsign || 'Direction Unknown'}</span>
+                                            </div>
                                             <div class="vehicle-type">
                                                 <span class="vehicle-type-label">Vehicle:</span>
                                                 <span class="vehicle-type-value ${getVehicleTypeClass(route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus')))}">${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}</span>
+                                            </div>
+                                            <div class="departure-info">
+                                                <span class="next-departure">
+                                                    ${nextDepartureTime}
+                                                </span>
+                                                <span class="${isRealTime ? 'real-time-badge' : 'scheduled-badge'}">
+                                                    ${isRealTime ? '• Real-time' : '• Scheduled'}
+                                                </span>
                                             </div>
                                             <div class="accessibility-info">
                                                 <span class="accessibility-label">Accessibility:</span>
@@ -285,6 +318,7 @@ const initializeSearch = () => {
     const closeSearchModal = document.getElementById('closeSearchModal');
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
+    const advancedFilters = document.getElementById('advancedFilters');
 
     // Show modal when search button is clicked
     searchBtn.addEventListener('click', () => {
@@ -348,45 +382,31 @@ const initializeSearch = () => {
         }
     });
 
-    // Perform search using Nominatim API
+    // Handle filter changes
+    const filterInputs = advancedFilters.querySelectorAll('input[type="checkbox"]');
+    filterInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            // Re-run search with current query and new filters
+            const query = searchInput.value.trim();
+            if (query.length >= 3) {
+                performSearch(query);
+            }
+        });
+    });
+
+    // Perform search using Nominatim API and Transit API for enhanced results
     const performSearch = async (query) => {
         try {
-            // Fetch both bus stops and general locations in parallel to improve performance
-            // For bus stops, we use the query parameter alone to avoid the structured query error
-            const [busStopResponse, generalResponse] = await Promise.all([
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}+bus+stop&countrycodes=US&limit=10&addressdetails=1`, {
-                    method: 'GET',
-                    headers: {
-                        'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
-                    }
-                }),
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=US&limit=10&addressdetails=1`, {
-                    method: 'GET',
-                    headers: {
-                        'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
-                    }
-                })
-            ]);
+            // Get selected filters
+            const filters = getSelectedFilters();
 
-            let busStopResults = [];
-            let generalResults = [];
+            // Perform enhanced search that combines Nominatim and Transit API data
+            let allResults = await performEnhancedSearch(query, filters);
 
-            if (busStopResponse.ok) {
-                const busStopData = await busStopResponse.json();
-                if (busStopData && Array.isArray(busStopData)) {
-                    busStopResults = busStopData;
-                }
+            // Apply additional filters to results
+            if (filters) {
+                allResults = filterResultsByAccessibility(allResults, filters);
             }
-
-            if (generalResponse.ok) {
-                const generalData = await generalResponse.json();
-                if (generalData && Array.isArray(generalData)) {
-                    generalResults = generalData;
-                }
-            }
-
-            // Combine results with bus stops first, then general results
-            const allResults = busStopResults.concat(generalResults);
 
             // Display search results
             displaySearchResults(allResults);
@@ -394,6 +414,127 @@ const initializeSearch = () => {
             console.error('Error with search:', error);
             searchResults.innerHTML = '<div class="search-result-item">Error performing search. Please try again.</div>';
         }
+    };
+
+    // Function to get selected filter values
+    const getSelectedFilters = () => {
+        const accessibilityFilters = Array.from(document.querySelectorAll('input[name="accessibility"]:checked')).map(cb => cb.value);
+        const transportModeFilters = Array.from(document.querySelectorAll('input[name="transport-mode"]:checked')).map(cb => cb.value);
+        const serviceTypeFilters = Array.from(document.querySelectorAll('input[name="service-type"]:checked')).map(cb => cb.value);
+
+        return {
+            accessibility: accessibilityFilters,
+            transportMode: transportModeFilters,
+            serviceType: serviceTypeFilters
+        };
+    };
+
+    // Function to filter results based on accessibility and other parameters
+    const filterResultsByAccessibility = (results, filters) => {
+        return results.filter(result => {
+            // Check accessibility filter
+            if (filters.accessibility.length > 0) {
+                if (filters.accessibility.includes('wheelchair')) {
+                    // Check if transit info is available and if it's wheelchair accessible
+                    if (result.transit_info && typeof result.transit_info.wheelchair_accessible !== 'undefined') {
+                        // If wheelchair accessible is false/0 when we're filtering for wheelchair accessible, exclude it
+                        if (!result.transit_info.wheelchair_accessible) {
+                            return false;
+                        }
+                    } else {
+                        // If no transit info, we can't verify accessibility, so allow it if filter is active
+                        // (we show a '?' badge in the UI to indicate unknown status)
+                    }
+                }
+            }
+
+            // Check transport mode filter
+            if (filters.transportMode.length > 0 && result.class && result.type) {
+                if (filters.transportMode.includes('bus') &&
+                    !((result.class === 'highway' && result.type === 'bus_stop') ||
+                        (result.class === 'amenity' && result.type === 'bus_stop'))) {
+                    // If it's not a bus stop but we're filtering for buses, check transit info
+                    if (result.transit_info && result.transit_info.all_modes) {
+                        const hasBusMode = result.transit_info.all_modes.some(mode =>
+                            mode.toLowerCase().includes('bus'));
+                        if (!hasBusMode) {
+                            return false;
+                        }
+                    } else {
+                        // If no transit info, and it's not a bus stop in Nominatim, exclude it
+                        return false;
+                    }
+                }
+
+                if (filters.transportMode.includes('rail') &&
+                    !((result.class === 'highway' && result.type === 'bus_stop') ||
+                        (result.class === 'amenity' && result.type === 'bus_stop'))) {
+                    // If it's not a known bus stop but we're filtering for rail
+                    if (result.transit_info && result.transit_info.all_modes) {
+                        const hasRailMode = result.transit_info.all_modes.some(mode =>
+                            mode.toLowerCase().includes('rail') && !mode.toLowerCase().includes('light rail'));
+                        if (!hasRailMode) {
+                            return false;
+                        }
+                    } else {
+                        // If no transit info, and it's not a known stop, exclude it
+                        return false;
+                    }
+                }
+
+                if (filters.transportMode.includes('tram') &&
+                    !((result.class === 'highway' && result.type === 'bus_stop') ||
+                        (result.class === 'amenity' && result.type === 'bus_stop'))) {
+                    // If it's not a known bus stop but we're filtering for tram/light rail
+                    if (result.transit_info && result.transit_info.all_modes) {
+                        const hasTramMode = result.transit_info.all_modes.some(mode =>
+                            mode.toLowerCase().includes('tram') || mode.toLowerCase().includes('light rail'));
+                        if (!hasTramMode) {
+                            return false;
+                        }
+                    } else {
+                        // If no transit info, and it's not a known stop, exclude it
+                        return false;
+                    }
+                }
+
+                if (filters.transportMode.includes('subway') &&
+                    !((result.class === 'highway' && result.type === 'bus_stop') ||
+                        (result.class === 'amenity' && result.type === 'bus_stop'))) {
+                    // If it's not a known bus stop but we're filtering for subway/metro
+                    if (result.transit_info && result.transit_info.all_modes) {
+                        const hasSubwayMode = result.transit_info.all_modes.some(mode =>
+                            mode.toLowerCase().includes('subway') ||
+                            mode.toLowerCase().includes('metro') ||
+                            mode.toLowerCase().includes('underground'));
+                        if (!hasSubwayMode) {
+                            return false;
+                        }
+                    } else {
+                        // If no transit info, and it's not a known stop, exclude it
+                        return false;
+                    }
+                }
+
+                if (filters.transportMode.includes('ferry') &&
+                    !((result.class === 'highway' && result.type === 'bus_stop') ||
+                        (result.class === 'amenity' && result.type === 'bus_stop'))) {
+                    // If it's not a known bus stop but we're filtering for ferry
+                    if (result.transit_info && result.transit_info.all_modes) {
+                        const hasFerryMode = result.transit_info.all_modes.some(mode =>
+                            mode.toLowerCase().includes('ferry'));
+                        if (!hasFerryMode) {
+                            return false;
+                        }
+                    } else {
+                        // If no transit info, and it's not a known stop, exclude it
+                        return false;
+                    }
+                }
+            }
+
+            return true; // Pass all filters
+        });
     };
 
     // Display search results in the modal with bus stops first, then cities/towns
@@ -449,9 +590,56 @@ const initializeSearch = () => {
             const resultElement = document.createElement('div');
             resultElement.className = 'search-result-item';
 
+            // Check if this is a transit stop and get additional info
+            const isBusStop = (result.class === 'highway' && result.type === 'bus_stop') ||
+                (result.class === 'amenity' && result.type === 'bus_stop');
+
+            let additionalInfo = '';
+            if (isBusStop) {
+                // Display enhanced transit information if available
+                if (result.transit_info) {
+                    let accessibilityBadge = '';
+                    let routeInfo = '';
+
+                    // Accessibility badge
+                    if (typeof result.transit_info.wheelchair_accessible !== 'undefined') {
+                        const accessible = result.transit_info.wheelchair_accessible ? '✓' : '✗';
+                        accessibilityBadge = `<span class="accessibility-badge">♿ ${accessible}</span>`;
+                    }
+
+                    // Route information - display all routes at this stop
+                    if (result.transit_info.route_names && result.transit_info.route_names.length > 0) {
+                        const uniqueModes = [...new Set(result.transit_info.all_modes)];
+                        const uniqueRoutes = [...new Set(result.transit_info.route_names)];
+
+                        // Create a badge for each route with its color
+                        routeInfo = '<div class="route-info-badges" style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">';
+                        for (let i = 0; i < uniqueRoutes.length && i < 3; i++) { // Limit to first 3 routes to avoid clutter
+                            routeInfo += `<div class="route-info-badge" style="background-color: #${result.transit_info.route_colors[i] || '6A63F6'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">
+                                ${uniqueRoutes[i]} ${uniqueModes.length > 0 ? `(${uniqueModes[0]})` : ''}
+                            </div>`;
+                        }
+
+                        if (uniqueRoutes.length > 3) {
+                            routeInfo += `<div class="route-info-badge" style="background-color: #413C96; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">
+                                +${uniqueRoutes.length - 3} more
+                            </div>`;
+                        }
+
+                        routeInfo += '</div>';
+                    }
+
+                    additionalInfo = `<div class="result-details">${accessibilityBadge}</div>${routeInfo}`;
+                } else {
+                    // For transit stops without enhanced info, show generic placeholder
+                    additionalInfo = '<div class="result-details"><span class="accessibility-badge">♿ ?</span></div>';
+                }
+            }
+
             resultElement.innerHTML = `
                 <div class="result-title">${result.display_name}</div>
                 <div class="result-address">${result.address?.state || result.address?.county || result.address?.country || 'United States'}</div>
+                ${additionalInfo}
             `;
 
             // Add click event to center map on selected location
@@ -635,6 +823,160 @@ const initializeSearch = () => {
         const currentLocationSpan = document.querySelector('.current-location span');
         if (currentLocationSpan) {
             currentLocationSpan.textContent = displayName || 'Current Location';
+        }
+    };
+
+    // Function to perform enhanced search with Transit API for additional stop information
+    const performEnhancedSearch = async (query, filters) => {
+        try {
+            // First do the basic search with Nominatim
+            const basicResults = await performBasicSearch(query);
+
+            // If the user is looking for transit stops specifically, get additional info from transit API
+            if (filters.transportMode.length > 0 || filters.accessibility.length > 0) {
+                // Extract coordinates from basic results to search for nearby transit stops
+                const enhancedResults = [];
+
+                for (const result of basicResults) {
+                    // Check if this result is near transit stops using Transit API
+                    const transitData = await fetch(`/api/transit/nearby_routes?lat=${result.lat}&lon=${result.lon}&max_distance=100&should_update_realtime=false`);
+
+                    if (transitData.ok) {
+                        const transitInfo = await transitData.json();
+
+                        if (transitInfo.routes && transitInfo.routes.length > 0) {
+                            // Process the transit information to enrich our results
+                            // Collect all relevant route information for this location
+                            let locationHasMatch = false;
+                            const routeInfo = {
+                                route_names: [],
+                                route_colors: [],
+                                modes: [],
+                                wheelchair_accessible: false,  // Will be true if ANY route at this stop is accessible
+                                all_modes: []
+                            };
+
+                            for (const route of transitInfo.routes) {
+                                // Apply filters based on route information
+                                let matchesTransportMode = true; // Default to true if no filters
+                                if (filters.transportMode.length > 0) {
+                                    // Check if route type matches selected transport modes
+                                    // Use mode_name if available, otherwise use route_type to determine the appropriate mode
+                                    const routeType = route.mode_name || getRouteTypeText(route.route_type) || 'bus';
+
+                                    // Check each selected transport mode
+                                    let modeMatchFound = false;
+
+                                    if (filters.transportMode.includes('bus') &&
+                                        (routeType.toLowerCase().includes('bus') || route.route_type === 3)) {
+                                        modeMatchFound = true;
+                                    }
+
+                                    if (filters.transportMode.includes('rail') &&
+                                        (((routeType.toLowerCase().includes('rail') && !routeType.toLowerCase().includes('light rail'))) || route.route_type === 2)) {
+                                        modeMatchFound = true;
+                                    }
+
+                                    if (filters.transportMode.includes('tram') &&
+                                        ((routeType.toLowerCase().includes('tram') || routeType.toLowerCase().includes('light rail')) || route.route_type === 0)) {
+                                        modeMatchFound = true;
+                                    }
+
+                                    if (filters.transportMode.includes('subway') &&
+                                        ((routeType.toLowerCase().includes('subway') || routeType.toLowerCase().includes('metro')) || route.route_type === 1)) {
+                                        modeMatchFound = true;
+                                    }
+
+                                    if (filters.transportMode.includes('ferry') &&
+                                        ((routeType.toLowerCase().includes('ferry')) || route.route_type === 4)) {
+                                        modeMatchFound = true;
+                                    }
+
+                                    if (!modeMatchFound) {
+                                        matchesTransportMode = false;
+                                    }
+                                }
+
+                                if (matchesTransportMode) {
+                                    locationHasMatch = true;
+                                    routeInfo.route_names.push(route.route_short_name || route.real_time_route_id);
+                                    routeInfo.route_colors.push(route.route_color || '6A63F6');
+                                    routeInfo.modes.push(route.mode_name || getRouteTypeText(route.route_type) || 'bus');
+                                    routeInfo.all_modes.push(route.mode_name || getRouteTypeText(route.route_type) || 'bus');
+
+                                    // Check wheelchair accessibility - if any route is accessible, mark the stop as accessible
+                                    if (route.wheelchair_accessible) {
+                                        routeInfo.wheelchair_accessible = true;
+                                    }
+                                }
+                            }
+
+                            if (locationHasMatch) {
+                                // Add enhanced transit information to the result
+                                result.transit_info = {
+                                    route_names: routeInfo.route_names,
+                                    route_colors: routeInfo.route_colors,
+                                    modes: routeInfo.modes,
+                                    all_modes: routeInfo.all_modes,
+                                    wheelchair_accessible: routeInfo.wheelchair_accessible
+                                };
+
+                                enhancedResults.push(result);
+                            }
+                        }
+                    }
+                }
+
+                return enhancedResults;
+            }
+
+            return basicResults;
+        } catch (error) {
+            console.error('Error performing enhanced search:', error);
+            return [];
+        }
+    };
+
+    // Function to perform basic search with Nominatim
+    const performBasicSearch = async (query) => {
+        try {
+            const [busStopResponse, generalResponse] = await Promise.all([
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}+bus+stop&countrycodes=US&limit=10&addressdetails=1`, {
+                    method: 'GET',
+                    headers: {
+                        'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
+                    }
+                }),
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=US&limit=10&addressdetails=1`, {
+                    method: 'GET',
+                    headers: {
+                        'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
+                    }
+                })
+            ]);
+
+            let busStopResults = [];
+            let generalResults = [];
+
+            if (busStopResponse.ok) {
+                const busStopData = await busStopResponse.json();
+                if (busStopData && Array.isArray(busStopData)) {
+                    busStopResults = busStopData;
+                }
+            }
+
+            if (generalResponse.ok) {
+                const generalData = await generalResponse.json();
+                if (generalData && Array.isArray(generalData)) {
+                    generalResults = generalData;
+                }
+            }
+
+            // Combine results with bus stops first, then general results
+            return busStopResults.concat(generalResults);
+        } catch (error) {
+            console.error('Error with basic search:', error);
+            return [];
         }
     };
 };
