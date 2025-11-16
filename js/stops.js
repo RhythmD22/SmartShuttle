@@ -86,7 +86,7 @@ const initShuttleFinder = () => {
                                         <h3 class="stop-name">${stop.stop_name}</h3>
                                         <div class="popup-details">
                                             <div class="route-info">
-                                                <span class="route-number" style="background-color: #${route.route_color || '6A63F6'}; color: ${route.route_text_color || 'white'}; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                                                <span class="route-number" style="background-color: #${route.route_color || '6A63F6'}; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
                                                     ${route.route_short_name || route.real_time_route_id}
                                                 </span>
                                                 <span class="direction">${itinerary.headsign || 'Direction Unknown'}</span>
