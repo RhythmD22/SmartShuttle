@@ -30,9 +30,9 @@ SmartShuttle can be installed as a Progressive Web App on mobile devices:
 ## Technology Stack
 
 - **Core Technologies**: HTML5, CSS3, JavaScript (ES6+)
-- **Map Integration**: Leaflet.js for interactive maps
-- **Animations**: Lottie animation for engaging UI elements
-- **PWA Support**: Service worker for offline functionality and installability
+- **Map Integration**: Leaflet.js for interactive maps.
+- **Animations**: Lottie animation for engaging UI elements.
+- **PWA Support**: Service worker for offline functionality and installability.
 
 ## API Integration
 
