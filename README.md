@@ -20,7 +20,7 @@ SmartShuttle can be installed as a Progressive Web App on mobile devices:
 
 - **Responsive Design**: Mobile-first responsive interface.
 - **Location Services**: Access to user's location for finding nearby shuttles.
-- **Accessibility**: Designed with accessibility in mind (aria labels, etc.).
+- **Accessibility**: Designed with accessibility in mind (WCAG compliance, aria labels, etc.).
 - **Real-time Shuttle Tracking**: Interactive map with live shuttle locations.
 - **Live Updates**: Real-time status and departure information.
 - **Live Notifications**: Updates about shuttle status and service details.
