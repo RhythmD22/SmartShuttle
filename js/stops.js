@@ -351,32 +351,15 @@ const initializeSearch = () => {
     // Perform search using Nominatim API
     const performSearch = async (query) => {
         try {
-            // Fetch both bus stops and general locations in parallel to improve performance
-            // For bus stops, we use the query parameter alone to avoid the structured query error
-            const [busStopResponse, generalResponse] = await Promise.all([
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}+bus+stop&countrycodes=US&limit=10&addressdetails=1`, {
-                    method: 'GET',
-                    headers: {
-                        'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
-                    }
-                }),
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=US&limit=10&addressdetails=1`, {
-                    method: 'GET',
-                    headers: {
-                        'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
-                    }
-                })
-            ]);
-
-            let busStopResults = [];
-            let generalResults = [];
-
-            if (busStopResponse.ok) {
-                const busStopData = await busStopResponse.json();
-                if (busStopData && Array.isArray(busStopData)) {
-                    busStopResults = busStopData;
+            // Fetch general locations to improve performance
+            const generalResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=US&limit=10&addressdetails=1`, {
+                method: 'GET',
+                headers: {
+                    'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
                 }
-            }
+            });
+
+            let generalResults = [];
 
             if (generalResponse.ok) {
                 const generalData = await generalResponse.json();
@@ -385,11 +368,8 @@ const initializeSearch = () => {
                 }
             }
 
-            // Combine results with bus stops first, then general results
-            const allResults = busStopResults.concat(generalResults);
-
             // Display search results
-            displaySearchResults(allResults);
+            displaySearchResults(generalResults);
         } catch (error) {
             console.error('Error with search:', error);
             searchResults.innerHTML = '<div class="search-result-item">Error performing search. Please try again.</div>';
