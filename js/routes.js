@@ -572,10 +572,10 @@ const fetchRealTimeBuses = async (lat, lng) => {
             updateRouteArrivalsSection(data.routes);
         } else {
             console.log('No routes found near the selected location');
-            // Show message to user that no buses are available in this area
+            // Show message to user that no transit are available in this area
             const locationDisplay = document.getElementById('selectedLocationDisplay');
             if (locationDisplay) {
-                locationDisplay.textContent = 'No buses available in this area';
+                locationDisplay.textContent = 'No transit available in this area';
             }
 
             // Clear the Route & Arrivals section if no routes found
