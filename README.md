@@ -6,7 +6,7 @@ SmartShuttle is a mobile Progressive Web Application (PWA) that provides real-ti
 
 ## Google Analytics
 
-This application includes Google Analytics tracking to monitor basic usage metrics and improve user experience. Please note that no personal or financial data is shared with Google Analytics - only general page usage and navigation metrics are collected.
+This application includes Google Analytics tracking to monitor basic usage metrics and improve user experience. Please note that no personal data is shared with Google Analytics - only general page usage and navigation metrics are collected.
 
 ## Progressive Web App (PWA) Support
 
