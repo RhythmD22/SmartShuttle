@@ -148,7 +148,7 @@ const fetchLiveAlerts = async (lat, lon) => {
                 });
             } else {
                 // If no alerts found in nearby routes, show a message
-                container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No service alerts</div><div class="live-alert-description">No service disruptions in your area at this time</div></div></div>';
+                container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No alerts</div><div class="live-alert-description">No transit disruptions in your area at this time.</div></div></div>';
             }
         } else {
             container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No routes found</div><div class="live-alert-description">No transit routes found in your area</div></div></div>';
