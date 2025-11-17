@@ -585,14 +585,14 @@ const fetchRealTimeBuses = async (lat, lng) => {
             updateShuttleCapacitySection([]);
         }
     } catch (error) {
-        console.error('Error fetching real-time buses:', error);
+        console.error('Error fetching real-time transit:', error);
         // Clear existing markers in case of error
         clearBusMarkers();
 
         // Show error message to user
         const locationDisplay = document.getElementById('selectedLocationDisplay');
         if (locationDisplay) {
-            locationDisplay.textContent = 'Error fetching bus data';
+            locationDisplay.textContent = 'Error fetching transit data';
         }
 
         // Update shuttle capacity to show error state
