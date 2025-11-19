@@ -98,18 +98,24 @@ body {
 }
 
 .live-indicator-container {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 2px;
 }
 
-.live-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #F8312F;
-    animation: blink 1s infinite;
+dotlottie-wc {
+    display: block;
+    flex-shrink: 0;
+}
+
+.live-indicator-container dotlottie-wc {
+    align-self: center;
+    margin: 0 !important;
+    vertical-align: middle;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
 }
 
 .icon {
@@ -150,14 +156,6 @@ body {
     font-size: 20px;
     font-weight: 600;
     color: #C8C7C5;
-}
-
-.status-indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: #F8312F;
-    animation: blink 1s infinite;
 }
 
 .page-title {

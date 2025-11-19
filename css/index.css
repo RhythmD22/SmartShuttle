@@ -34,6 +34,34 @@
     color: #C8C7C5;
 }
 
+/* Ensure Lottie animations in header behave like the original indicators */
+.header dotlottie-wc {
+    width: 12px !important;
+    height: 12px !important;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.status-container {
+    margin-bottom: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* Ensure Lottie animation doesn't affect layout */
+.status-container dotlottie-wc {
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0;
+    padding: 0;
+    min-width: 20px;
+    min-height: 20px;
+    display: inline-flex !important;
+    align-self: center;
+}
+
 .bus-details {
     margin-bottom: 30px;
 }
