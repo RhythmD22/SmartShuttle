@@ -4,10 +4,6 @@
 
 SmartShuttle is a mobile Progressive Web Application (PWA) that provides real-time shuttle tracking for users. The application allows passengers to track shuttle locations in real-time using an interactive map, view shuttle schedules, and receive live updates about shuttle services.
 
-## Google Analytics
-
-This application includes Google Analytics tracking to monitor basic usage metrics and improve user experience. Please note that no personal data is shared with Google Analytics - only general page usage and navigation metrics are collected.
-
 ## Progressive Web App (PWA) Support
 
 SmartShuttle can be installed as a Progressive Web App on mobile devices:
