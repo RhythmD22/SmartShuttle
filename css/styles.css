@@ -426,6 +426,10 @@ dotlottie-wc {
 }
 
 /* Show notification only on desktop screens */
+.desktop-qr-code {
+    display: none;
+}
+
 @media (min-width: 768px) {
     .desktop-notification {
         display: block;
