@@ -25,7 +25,6 @@ const urlsToCache = [
   '/js/feedback.js',
   '/js/utils.js',
   '/images/alert.svg',
-  '/images/arrow.svg',
   '/images/attach.svg',
   '/images/back.svg',
   '/images/clock.svg',
