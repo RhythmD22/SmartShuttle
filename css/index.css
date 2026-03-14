@@ -22,7 +22,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 10px 0;
+    padding: 10px 0 60px;
     text-align: center;
     overflow: hidden;
     position: relative;
@@ -83,14 +83,14 @@
     background-color: #6A63F6;
     border: none;
     border-radius: 0;
-    width: 90px;
+    width: 200px;
     height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     position: absolute;
-    bottom: 20px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -106,9 +106,16 @@
     transform: scale(0.98);
 }
 
+.button-text {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+
 .arrow-icon {
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     -webkit-filter: brightness(0) invert(1);
     filter: brightness(0) invert(1);
 }
