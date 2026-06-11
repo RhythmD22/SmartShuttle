@@ -1,3 +1,24 @@
+/* Base Layout */
+.container {
+    background: linear-gradient(180deg, #0b0c15 0%, #1a1b26 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.main-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 0 60px;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    z-index: 15;
+}
+
+/* UI Components */
 .app-title {
     font-size: 40px;
     font-weight: bold;
@@ -13,33 +34,8 @@
     margin-bottom: 5px;
     flex: none;
     border-bottom: none;
-    /* Remove border from index page header */
-}
-
-.main-content {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 10px 0 60px;
-    text-align: center;
-    overflow: hidden;
     position: relative;
-}
-
-.status-label {
-    font-size: 24px;
-    font-weight: 600;
-    color: #C8C7C5;
-}
-
-/* Ensure Lottie animations in header behave like the original indicators */
-.header dotlottie-wc {
-    width: 12px !important;
-    height: 12px !important;
-    display: inline-block;
-    vertical-align: middle;
+    z-index: 20;
 }
 
 .status-container {
@@ -50,7 +46,19 @@
     gap: 6px;
 }
 
-/* Ensure Lottie animation doesn't affect layout */
+.status-label {
+    font-size: 24px;
+    font-weight: 600;
+    color: #C8C7C5;
+}
+
+.header dotlottie-wc {
+    width: 12px !important;
+    height: 12px !important;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .status-container dotlottie-wc {
     width: 20px !important;
     height: 20px !important;
@@ -60,22 +68,6 @@
     min-height: 20px;
     display: inline-flex !important;
     align-self: center;
-}
-
-.bus-details {
-    margin-bottom: 30px;
-}
-
-.bus-number {
-    font-size: 28px;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 10px;
-}
-
-.bus-route {
-    font-size: 18px;
-    color: #ccc;
 }
 
 /* Next Button */
@@ -95,6 +87,7 @@
     transform: translateX(-50%);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, transform 0.1s;
+    z-index: 20;
 }
 
 .next-button:hover {
@@ -113,13 +106,7 @@
     font-family: 'Inter', sans-serif;
 }
 
-.arrow-icon {
-    width: 24px;
-    height: 24px;
-    -webkit-filter: brightness(0) invert(1);
-    filter: brightness(0) invert(1);
-}
-
+/* Animation Container */
 .bus-image-container {
     margin: 200px auto;
     width: 100%;
@@ -128,6 +115,8 @@
     justify-content: center;
     align-items: center;
     flex: 0 0 auto;
+    position: relative;
+    z-index: 15;
 }
 
 dotlottie-wc {
@@ -140,18 +129,122 @@ dotlottie-wc {
     transform-origin: center;
 }
 
-.bus-image {
+/* Atmosphere & Lo-Fi Effects */
+/* Layered Z-Index Hierarchy:
+   1: night-glow
+   2: grain-overlay
+   3: stars-container
+   15: main-content/animation
+   20: header/button
+*/
+
+.night-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 200px;
-    object-fit: cover;
-    max-width: 100%;
-    display: block;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-    margin: 0;
-    padding: 0;
-    position: relative;
+    height: 100%;
+    /* Layered gradients for a rich Lo-Fi sky */
+    background:
+        radial-gradient(circle at 50% 35%, rgba(165, 201, 255, 0.2) 0%, transparent 60%),
+        radial-gradient(circle at 10% 20%, rgba(255, 138, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(106, 99, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
 }
 
+.grain-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: overlay;
+    animation: grainMove 8s steps(10) infinite;
+    /* Slowed down significantly for texture */
+}
+
+.stars-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.stars-container::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: transparent;
+    box-shadow:
+        15vw 10vh #fff, 35vw 15vh #fff, 65vw 5vh #fff, 85vw 12vh #fff,
+        25vw 25vh #fff, 55vw 20vh #fff, 75vw 28vh #fff, 95vw 18vh #fff,
+        10vw 35vh #fff, 45vw 32vh #fff, 60vw 38vh #fff, 80vw 30vh #fff;
+    border-radius: 50%;
+    animation: twinkling 7s ease-in-out infinite alternate;
+    /* More relaxed, natural twinkle */
+}
+
+/* Animations */
+@keyframes glowFadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes grainMove {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    10% {
+        transform: translate(-1%, -1%);
+    }
+
+    20% {
+        transform: translate(1%, 1%);
+    }
+
+    30% {
+        transform: translate(-2%, 1%);
+    }
+
+    40% {
+        transform: translate(2%, -1%);
+    }
+
+    50% {
+        transform: translate(-1%, 2%);
+    }
+}
+
+@keyframes twinkling {
+    0% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+/* Media Queries */
 @media (min-width: 768px) {
     .container {
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -160,26 +253,10 @@ dotlottie-wc {
     .status-label {
         font-size: 32px;
     }
-
-    .bus-number {
-        font-size: 36px;
-    }
-
-    .bus-route {
-        font-size: 22px;
-    }
 }
 
 @media (max-width: 480px) {
     .status-label {
         font-size: 20px;
-    }
-
-    .bus-number {
-        font-size: 24px;
-    }
-
-    .bus-route {
-        font-size: 16px;
     }
 }
