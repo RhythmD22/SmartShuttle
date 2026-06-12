@@ -188,6 +188,7 @@ dotlottie-wc {
     position: fixed;
     bottom: 75px;
     left: 0;
+    right: 0;
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
