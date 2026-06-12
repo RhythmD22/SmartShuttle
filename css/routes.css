@@ -76,14 +76,14 @@
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 20px;
     padding: 2px 7px;
-    width: 85px;
+    width: 100px;
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
 }
 
 .route-search-pill:focus-within {
-    width: 110px;
+    width: 140px;
     background-color: rgba(255, 255, 255, 0.25);
     border-color: rgba(255, 255, 255, 0.4);
 }
@@ -101,11 +101,14 @@
     background: none;
     border: none;
     color: white;
-    font-size: 16px; /* Prevents iOS auto-zoom */
-    width: 145.45%; /* Exact math for 1/0.6875 */
+    font-size: 16px;
+    /* Prevents iOS auto-zoom */
+    width: 145.45%;
+    /* Exact math for 1/0.6875 */
     transform: scale(0.6875);
     transform-origin: left center;
-    margin-right: -45.45%; /* Offsets visual shrinkage to fix right-side space */
+    margin-right: -45.45%;
+    /* Offsets visual shrinkage to fix right-side space */
     outline: none;
     font-family: 'Inter', sans-serif;
     padding: 0;
