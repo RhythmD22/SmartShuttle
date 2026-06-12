@@ -87,7 +87,7 @@ const initializeThemeToggle = () => {
 // Initialize live feed functionality
 const initializeLiveFeed = () => {
     // Get saved location from localStorage (from routes page)
-    const savedLocation = localStorage.getItem('selectedNotificationLocation');
+    const savedLocation = localStorage.getItem('selectedLocation');
 
     if (savedLocation) {
         try {
@@ -117,7 +117,7 @@ const getCurrentLocation = () => {
                     displayName: 'Current Location',
                     timestamp: Date.now()
                 };
-                localStorage.setItem('selectedNotificationLocation', JSON.stringify(selectedLocation));
+                localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
 
                 // Fetch alerts for current location
                 fetchLiveAlerts(userLat, userLng);
@@ -327,7 +327,7 @@ const applyAlertFilter = (filterValue) => {
 // Refresh function to update live alerts
 const refreshLiveAlerts = () => {
     // Get saved location from localStorage (from routes page)
-    const savedLocation = localStorage.getItem('selectedNotificationLocation');
+    const savedLocation = localStorage.getItem('selectedLocation');
 
     if (savedLocation) {
         try {

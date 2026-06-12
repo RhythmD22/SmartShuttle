@@ -256,8 +256,16 @@ const initializeMap = () => {
         findNearbyShuttles(defaultLat, defaultLng);
     };
 
-    // Request location directly since we don't require API key from user anymore
-    getUserLocation();
+    // Try to load saved location first, otherwise request user location
+    const savedLocation = localStorage.getItem('selectedLocation');
+    if (savedLocation) {
+        try {
+            const locationData = JSON.parse(savedLocation);
+            // We will defer centering until map is ready or center now if map exists
+        } catch (e) {
+            console.error('Error parsing saved location:', e);
+        }
+    }
 
     // Initialize the app when the map is ready
     map.whenReady(() => {
@@ -273,8 +281,42 @@ const initializeMap = () => {
             findNearbyShuttles(center.lat, center.lng);
         });
 
-        // Try to get user's location first, fallback to default if needed
-        getUserLocation();
+        // Try to load the saved location from localStorage
+        const savedLocation = localStorage.getItem('selectedLocation');
+        if (savedLocation) {
+            try {
+                const locationData = JSON.parse(savedLocation);
+
+                // Update the header to show the actual location name
+                const locationDisplay = document.querySelector('.current-location span');
+                if (locationDisplay) {
+                    locationDisplay.textContent = locationData.displayName || 'Current Location';
+                }
+
+                // Center the map on the saved location
+                map.setView([locationData.lat, locationData.lon], 15);
+
+                // Add user location marker
+                const userIcon = L.divIcon({
+                    className: 'user-location-icon',
+                    html: `<img src="images/current.svg" style="width: 24px; height: 24px;">`,
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                });
+                const userMarker = L.marker([locationData.lat, locationData.lon], { icon: userIcon }).addTo(map);
+                userMarker.bindPopup(locationData.displayName || 'Your Location').openPopup();
+                window.userLocationMarker = userMarker;
+
+                // Find and display real-time shuttles
+                findNearbyShuttles(locationData.lat, locationData.lon);
+            } catch (e) {
+                console.error('Error loading saved location:', e);
+                getUserLocation();
+            }
+        } else {
+            // Try to get user's location first, fallback to default if needed
+            getUserLocation();
+        }
     });
 };
 
@@ -452,7 +494,7 @@ const initializeSearch = () => {
                     displayName: result.display_name,
                     timestamp: Date.now()
                 };
-                localStorage.setItem('selectedTrackingLocation', JSON.stringify(selectedLocation));
+                localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
 
                 // Update the header text to reflect the selected location
                 updateSelectedLocationDisplay(result.display_name);
@@ -551,7 +593,7 @@ const initializeSearch = () => {
             displayName: displayName,
             timestamp: Date.now()
         };
-        localStorage.setItem('selectedTrackingLocation', JSON.stringify(selectedLocation));
+        localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
 
         // Update the location display
         updateSelectedLocationDisplay(displayName);

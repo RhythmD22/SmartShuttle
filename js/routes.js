@@ -203,7 +203,7 @@ const initializeSearch = () => {
                     displayName: result.display_name,
                     timestamp: Date.now()
                 };
-                localStorage.setItem('selectedNotificationLocation', JSON.stringify(selectedLocation));
+                localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
 
                 // Update the location display
                 const locationDisplay = document.getElementById('selectedLocationDisplay');
@@ -308,7 +308,7 @@ const initializeSearch = () => {
             displayName: displayName,
             timestamp: Date.now()
         };
-        localStorage.setItem('selectedNotificationLocation', JSON.stringify(selectedLocation));
+        localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
 
         // Update the location display
         const locationDisplay = document.getElementById('selectedLocationDisplay');
@@ -515,7 +515,7 @@ const initializeMap = () => {
 
     map.whenReady(() => {
         // First, try to load the saved location from localStorage
-        const savedLocation = localStorage.getItem('selectedNotificationLocation');
+        const savedLocation = localStorage.getItem('selectedLocation');
         if (savedLocation) {
             // If there's a saved location, use that instead of current location
             const locationData = JSON.parse(savedLocation);
@@ -541,7 +541,7 @@ const initializeMap = () => {
 
 // Load selected location from localStorage
 const loadSelectedLocation = () => {
-    const savedLocation = localStorage.getItem('selectedNotificationLocation');
+    const savedLocation = localStorage.getItem('selectedLocation');
     if (savedLocation) {
         selectedLocation = JSON.parse(savedLocation);
 
