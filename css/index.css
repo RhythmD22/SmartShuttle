@@ -9,8 +9,8 @@ body.home-page {
 }
 
 .home-page .container {
-    /* Solid color for the top 150px, then transition to the darker shade */
-    background: linear-gradient(180deg, #0b0c15 0%, #0b0c15 150px, #1a1b26 100%);
+    /* Solid color for the top 150px, then transition to the richer indigo shade */
+    background: linear-gradient(180deg, #0b0c15 0%, #0c0b1a 150px, #13112a 100%);
     position: relative;
     overflow: hidden;
 }
@@ -84,7 +84,7 @@ body.home-page {
 
 /* Next Button */
 .next-button {
-    background-color: #6A63F6;
+    background: linear-gradient(135deg, #8277ff 0%, #6A63F6 100%);
     border: none;
     border-radius: 999px;
     width: 200px;
@@ -97,19 +97,19 @@ body.home-page {
     bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s, transform 0.1s;
+    box-shadow: 0 8px 25px rgba(106, 99, 246, 0.4);
+    transition: all 0.3s ease, transform 0.1s;
     z-index: 20;
     margin-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 .next-button:hover {
-    background-color: #5a53e6;
+    box-shadow: 0 10px 30px rgba(106, 99, 246, 0.6);
+    transform: translateX(-50%) translateY(-2px);
 }
 
 .next-button:active {
-    background-color: #5049d6;
-    transform: scale(0.98);
+    transform: translateX(-50%) translateY(1px) scale(0.98);
 }
 
 .button-text {
@@ -151,9 +151,9 @@ dotlottie-wc {
     height: 100%;
     /* Layered gradients for a rich Lo-Fi sky - Shifted down significantly */
     background:
-        radial-gradient(circle at 50% 65%, rgba(165, 201, 255, 0.2) 0%, transparent 60%),
-        radial-gradient(circle at 10% 55%, rgba(255, 138, 255, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 90%, rgba(106, 99, 246, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 50% 65%, rgba(165, 201, 255, 0.35) 0%, transparent 60%),
+        radial-gradient(circle at 15% 55%, rgba(255, 138, 255, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(106, 99, 246, 0.25) 0%, transparent 55%);
     pointer-events: none;
     z-index: 1;
 }
@@ -182,18 +182,34 @@ dotlottie-wc {
     z-index: 3;
 }
 
-.stars-container::after {
+/* Background/Distant Star Layer (Small, Dim, Slow Twinkle) */
+.stars-container::before {
     content: "";
     position: absolute;
     width: 1px;
     height: 1px;
     background: transparent;
     box-shadow:
+        10vw 8vh rgba(255, 255, 255, 0.45), 30vw 12vh rgba(255, 255, 255, 0.45), 60vw 6vh rgba(255, 255, 255, 0.45), 80vw 10vh rgba(255, 255, 255, 0.45),
+        20vw 22vh rgba(255, 255, 255, 0.45), 50vw 18vh rgba(255, 255, 255, 0.45), 70vw 25vh rgba(255, 255, 255, 0.45), 90vw 14vh rgba(255, 255, 255, 0.45),
+        5vw 32vh rgba(255, 255, 255, 0.45), 40vw 28vh rgba(255, 255, 255, 0.45), 55vw 34vh rgba(255, 255, 255, 0.45), 75vw 26vh rgba(255, 255, 255, 0.45);
+    border-radius: 50%;
+    animation: twinkling-slow 12s ease-in-out infinite alternate;
+}
+
+/* Foreground Star Layer (Larger, Brighter, Fast Twinkle) */
+.stars-container::after {
+    content: "";
+    position: absolute;
+    width: 1.5px;
+    height: 1.5px;
+    background: transparent;
+    box-shadow:
         15vw 10vh #fff, 35vw 15vh #fff, 65vw 5vh #fff, 85vw 12vh #fff,
         25vw 25vh #fff, 55vw 20vh #fff, 75vw 28vh #fff, 95vw 18vh #fff,
         10vw 35vh #fff, 45vw 32vh #fff, 60vw 38vh #fff, 80vw 30vh #fff;
     border-radius: 50%;
-    animation: twinkling 7s ease-in-out infinite alternate;
+    animation: twinkling-fast 8s ease-in-out infinite alternate;
 }
 
 /* Animations */
@@ -235,15 +251,27 @@ dotlottie-wc {
     }
 }
 
-@keyframes twinkling {
+@keyframes twinkling-slow {
     0% {
-        opacity: 0.3;
-        transform: scale(0.8);
+        opacity: 0.15;
+        transform: translate(0, 0);
+    }
+
+    100% {
+        opacity: 0.65;
+        transform: translate(2px, -2px);
+    }
+}
+
+@keyframes twinkling-fast {
+    0% {
+        opacity: 0.2;
+        transform: translate(0, 0);
     }
 
     100% {
         opacity: 1;
-        transform: scale(1.1);
+        transform: translate(-3px, 3px);
     }
 }
 
