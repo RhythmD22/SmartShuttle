@@ -1,16 +1,63 @@
 // JavaScript for Notifications page
 
-// Variable to track the currently selected filter
+// Variables to track the currently selected filter and search term
 let currentFilter = 'all';
+let currentSearchTerm = '';
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeDesktopNotification();
     initializeFeedbackButton();
     initializeThemeToggle();
     initializeRefreshButton(refreshLiveAlerts);
+    initializeSearch();
     setupLiveFeedUpdates();
 
 });
+
+// Initialize search functionality
+const initializeSearch = () => {
+    const searchInput = document.getElementById('notificationSearchInput');
+    const searchPill = document.querySelector('.notification-search-pill');
+    const filterContainer = document.querySelector('.alert-filter-container');
+
+    if (searchPill && searchInput) {
+        // Clicking the pill focuses the input
+        searchPill.addEventListener('click', () => {
+            searchInput.focus();
+        });
+
+        searchInput.addEventListener('focus', () => {
+            if (filterContainer) {
+                // Scroll container to the right to fully reveal search field
+                setTimeout(() => {
+                    filterContainer.scrollTo({
+                        left: filterContainer.scrollWidth,
+                        behavior: 'smooth'
+                    });
+                }, 320);
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            currentSearchTerm = e.target.value.toLowerCase();
+            applyAlertFilter(currentFilter);
+
+            // Keep expanded class if there is text
+            if (currentSearchTerm.length > 0) {
+                searchPill.classList.add('expanded');
+            } else {
+                searchPill.classList.remove('expanded');
+            }
+        });
+
+        searchInput.addEventListener('blur', () => {
+            // Remove expanded class only if there is no text in search input
+            if (searchInput.value.trim() === '') {
+                searchPill.classList.remove('expanded');
+            }
+        });
+    }
+};
 
 // Initialize theme toggle functionality
 const initializeThemeToggle = () => {
@@ -24,7 +71,7 @@ const initializeThemeToggle = () => {
         }
 
         themeToggle.addEventListener('change', () => {
-            if (this.checked) {
+            if (themeToggle.checked) {
                 // Switch to dark theme
                 document.body.classList.add('dark-theme');
                 localStorage.setItem('theme', 'dark');
@@ -250,23 +297,29 @@ const initializeAlertFilters = () => {
     });
 };
 
-// Apply the selected filter to show only matching alerts
+// Apply the selected filter and search term to show only matching alerts
 const applyAlertFilter = (filterValue) => {
     const alertItems = document.querySelectorAll('.live-alert-item');
 
     alertItems.forEach(item => {
         const alertEffect = item.dataset.effect || '';
+        const titleElement = item.querySelector('.live-alert-title');
+        const descElement = item.querySelector('.live-alert-description');
 
-        if (filterValue === 'all') {
-            // Show all items
+        const title = titleElement ? titleElement.textContent.toLowerCase() : '';
+        const description = descElement ? descElement.textContent.toLowerCase() : '';
+
+        const matchesFilter = filterValue === 'all' || alertEffect === filterValue;
+        const matchesSearch = currentSearchTerm === '' ||
+            title.includes(currentSearchTerm) ||
+            description.includes(currentSearchTerm);
+
+        if (matchesFilter && matchesSearch) {
+            // Show item if it matches both filter and search
             item.style.display = 'flex';
         } else {
-            // Show only items that match the filter
-            if (alertEffect === filterValue) {
-                item.style.display = 'flex';
-            } else {
-                item.style.display = 'none';
-            }
+            // Hide otherwise
+            item.style.display = 'none';
         }
     });
 };
