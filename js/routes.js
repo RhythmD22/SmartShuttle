@@ -4,6 +4,7 @@
 let map;
 let selectedLocation = null;
 let routeMarkers = []; // Store route markers for efficient cleanup
+let currentRoutes = []; // Store current routes for filtering
 
 // Initialize the map on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize search functionality
     initializeSearch();
+
+    // Initialize route search functionality (pill)
+    initializeRouteSearch();
 
     // Initialize desktop notification close functionality
     initializeDesktopNotification();
@@ -367,6 +371,40 @@ const initializeSearch = () => {
     };
 }
 
+// Initialize route search functionality (pill)
+const initializeRouteSearch = () => {
+    const routeSearchInput = document.getElementById('routeSearchInput');
+    if (!routeSearchInput) return;
+
+    routeSearchInput.addEventListener('input', () => {
+        const query = routeSearchInput.value.toLowerCase().trim();
+
+        if (query === '') {
+            // If query is empty, show all routes
+            updateRouteArrivalsSection(currentRoutes);
+            return;
+        }
+
+        // Filter routes based on name or ID
+        const filteredRoutes = currentRoutes.filter(route => {
+            const shortName = (route.route_short_name || '').toLowerCase();
+            const longName = (route.route_long_name || '').toLowerCase();
+            const routeName = (route.route_name || '').toLowerCase();
+            const routeId = (route.real_time_route_id || '').toLowerCase();
+            const headsign = route.itineraries?.[0]?.headsign?.toLowerCase() || '';
+
+            return shortName.includes(query) ||
+                longName.includes(query) ||
+                routeName.includes(query) ||
+                routeId.includes(query) ||
+                headsign.includes(query);
+        });
+
+        // Update both sections with filtered data
+        updateRouteArrivalsSection(filteredRoutes);
+    });
+};
+
 // Initialize the map
 const initializeMap = () => {
     // Initialize the map with a default view
@@ -545,12 +583,15 @@ const fetchRealTimeBuses = async (lat, lng) => {
         clearBusMarkers();
 
         if (data.routes && data.routes.length > 0) {
+            currentRoutes = data.routes; // Store for filtering
+
             // Process and display the route information
             processRoutesData(data.routes);
 
             // Update the Route & Arrivals section with real data
             updateRouteArrivalsSection(data.routes);
         } else {
+            currentRoutes = [];
             console.log('No routes found near the selected location');
             // Show message to user that no transit are available in this area
             const locationDisplay = document.getElementById('selectedLocationDisplay');
