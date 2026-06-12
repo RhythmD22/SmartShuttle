@@ -44,17 +44,25 @@
     align-items: center;
 }
 
-.live-feed-section .section-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .alert-filter-container {
     display: flex;
-    gap: 8px;
-    margin: 10px 0 15px 0;
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin: 10px -16px 15px -16px;
+    padding: 0 16px;
     justify-content: flex-start;
+    align-items: center;
+    width: auto;
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -webkit-overflow-scrolling: touch;
+    /* smooth mobile scrolling */
+}
+
+.alert-filter-container::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
 }
 
 /* Live alert items */
@@ -99,17 +107,17 @@
     background-color: transparent;
     border: 1px solid #6A63F6;
     color: #6A63F6;
-    padding: 2px 12px;
+    padding: 0 10px;
     border-radius: 15px;
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
-    height: auto;
-    max-height: 22px;
+    height: 28px;
+    flex-shrink: 0;
 }
 
 .alert-filter-btn:hover {
@@ -186,28 +194,103 @@
     opacity: 0.7;
 }
 
-/* Refresh button styles - moved up to align with filter buttons */
+/* Refresh button styles - moved up to align with Live Feed title */
 .refresh-btn {
+    position: relative;
+    top: auto;
+    right: auto;
     background: #6A63F6;
     border: 1px solid #6A63F6;
     cursor: pointer;
-    padding: 14px;
+    padding: 8px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     backdrop-filter: blur(4px);
-    margin-left: 25px;
-    margin-top: -12px;
+    margin-right: -4px;
+    /* Slight adjustment to align with container edge */
 }
 
 .refresh-btn .icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     transition: transform 0.3s ease;
     filter: brightness(0) invert(1);
+}
+
+.notification-search-pill {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 15px;
+    padding: 0 8px;
+    width: 90px;
+    flex-grow: 1;
+    height: 28px;
+    transition: all 0.3s ease;
+    border: 1px solid #6A63F6;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.notification-search-pill:focus-within,
+.notification-search-pill.expanded {
+    width: 160px;
+    flex-grow: 1.5;
+    border-color: #6A63F6;
+    background-color: #6A63F6;
+}
+
+.pill-search-icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    background-color: #6A63F6;
+    -webkit-mask-image: url('../images/search.svg');
+    mask-image: url('../images/search.svg');
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    display: inline-block;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.notification-search-pill:focus-within .pill-search-icon,
+.notification-search-pill.expanded .pill-search-icon {
+    background-color: #fff;
+}
+
+.notification-search-pill input {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    /* Prevents iOS auto-zoom */
+    width: 145.45%;
+    /* Exact math for 1/0.6875 */
+    transform: scale(0.6875);
+    transform-origin: left center;
+    margin-right: -45.45%;
+    /* Offsets visual shrinkage to fix right-side space */
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    padding: 0;
+    height: 24px;
+}
+
+.notification-search-pill input::placeholder {
+    color: #6A63F6;
+    transition: color 0.3s ease;
+}
+
+.notification-search-pill:focus-within input::placeholder,
+.notification-search-pill.expanded input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* Navigation specific to notifications page - notifications icon centered, routes icon to left */
@@ -228,26 +311,6 @@
     align-items: flex-start;
     text-align: left;
     margin-left: 4px;
-}
-
-/* Refresh button should appear inline with filter buttons, not positioned absolutely */
-.alert-filter-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    /* Add gap between filter buttons */
-}
-
-.alert-filter-btn {
-    padding: 4px 16px;
-    font-size: 13px;
-}
-
-.alert-filter-container .refresh-btn {
-    position: static;
-    /* Override absolute positioning from styles CSS */
-    margin-left: auto;
-    transform: translate(2px, 5px);
 }
 
 .bottom-nav .nav-rectangle {
