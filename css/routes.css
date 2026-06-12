@@ -55,12 +55,67 @@
     border-bottom: none;
 }
 
+.route-arrivals-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 .route-arrivals-heading {
     color: white;
     font-size: 18px;
     font-weight: 600;
-    margin: 0 0 10px 0;
+    margin: 0;
     text-align: left;
+}
+
+.route-search-pill {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 2px 7px;
+    width: 85px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.route-search-pill:focus-within {
+    width: 110px;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.pill-search-icon {
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+.route-search-pill input {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px; /* Prevents iOS auto-zoom */
+    width: 145.45%; /* Exact math for 1/0.6875 */
+    transform: scale(0.6875);
+    transform-origin: left center;
+    margin-right: -45.45%; /* Offsets visual shrinkage to fix right-side space */
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+.route-search-pill input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .route-arrivals-content {
