@@ -84,6 +84,9 @@
                             style="width: 22px; height: 22px" autoplay loop></dotlottie-wc>
                         <span>LIVE Feed</span>
                     </span>
+                    <button class="refresh-btn" id="refreshBtn" aria-label="Refresh alerts">
+                        <img src="images/refresh.svg" alt="Refresh" class="icon">
+                    </button>
                 </h2>
 
                 <div class="alert-filter-container">
@@ -92,9 +95,11 @@
                     <button class="alert-filter-btn" data-filter="SIGNIFICANT_DELAYS"
                         aria-pressed="false">Delays</button>
                     <button class="alert-filter-btn" data-filter="DETOUR" aria-pressed="false">Detour</button>
-                    <button class="refresh-btn" id="refreshBtn" aria-label="Refresh alerts">
-                        <img src="images/refresh.svg" alt="Refresh" class="icon">
-                    </button>
+                    <div class="notification-search-pill">
+                        <span class="pill-search-icon"></span>
+                        <input type="text" id="notificationSearchInput" placeholder="Search"
+                            aria-label="Search notifications">
+                    </div>
                 </div>
 
                 <div id="liveAlertsContainer" role="region" aria-live="polite">
