@@ -1,6 +1,16 @@
 /* Base Layout */
-.container {
-    background: linear-gradient(180deg, #0b0c15 0%, #1a1b26 100%);
+html {
+    background-color: #0b0c15;
+    /* Match status bar color */
+}
+
+body.home-page {
+    background-color: #0b0c15;
+}
+
+.home-page .container {
+    /* Solid color for the top 150px, then transition to the darker shade */
+    background: linear-gradient(180deg, #0b0c15 0%, #0b0c15 150px, #1a1b26 100%);
     position: relative;
     overflow: hidden;
 }
@@ -31,6 +41,8 @@
     flex-direction: column;
     align-items: center;
     padding: 10px 0 5px;
+    /* Extra padding to ensure title is below the solid status area */
+    padding-top: calc(20px + env(safe-area-inset-top, 0px));
     margin-bottom: 5px;
     flex: none;
     border-bottom: none;
@@ -88,6 +100,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, transform 0.1s;
     z-index: 20;
+    margin-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 .next-button:hover {
@@ -130,25 +143,17 @@ dotlottie-wc {
 }
 
 /* Atmosphere & Lo-Fi Effects */
-/* Layered Z-Index Hierarchy:
-   1: night-glow
-   2: grain-overlay
-   3: stars-container
-   15: main-content/animation
-   20: header/button
-*/
-
 .night-glow {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* Layered gradients for a rich Lo-Fi sky */
+    /* Layered gradients for a rich Lo-Fi sky - Shifted down significantly */
     background:
-        radial-gradient(circle at 50% 35%, rgba(165, 201, 255, 0.2) 0%, transparent 60%),
-        radial-gradient(circle at 10% 20%, rgba(255, 138, 255, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(106, 99, 246, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 50% 65%, rgba(165, 201, 255, 0.2) 0%, transparent 60%),
+        radial-gradient(circle at 10% 55%, rgba(255, 138, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(106, 99, 246, 0.1) 0%, transparent 50%);
     pointer-events: none;
     z-index: 1;
 }
@@ -165,7 +170,6 @@ dotlottie-wc {
     z-index: 2;
     mix-blend-mode: overlay;
     animation: grainMove 8s steps(10) infinite;
-    /* Slowed down significantly for texture */
 }
 
 .stars-container {
@@ -190,7 +194,6 @@ dotlottie-wc {
         10vw 35vh #fff, 45vw 32vh #fff, 60vw 38vh #fff, 80vw 30vh #fff;
     border-radius: 50%;
     animation: twinkling 7s ease-in-out infinite alternate;
-    /* More relaxed, natural twinkle */
 }
 
 /* Animations */
