@@ -12,6 +12,7 @@ const urlsToCache = [
   '/apple-touch-icon.png',
   '/android-chrome-192x192.png',
   '/android-chrome-512x512.png',
+  '/transit-api-badge.svg',
   '/css/index.css',
   '/css/stops.css',
   '/css/routes.css',
@@ -36,6 +37,7 @@ const urlsToCache = [
   '/images/location.svg',
   '/images/map.svg',
   '/images/notification.svg',
+  '/images/QR.svg',
   '/images/refresh.svg',
   '/images/search.svg',
 ];
@@ -54,33 +56,52 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  // Network First strategy for live transit data
+  if (url.pathname.includes('/api/transit-proxy')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // If valid response, cache it and return
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // If network fails, try to serve from cache
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Cache First strategy for static assets and other requests
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Return cached version if available
         if (response) {
           return response;
         }
 
-        // Otherwise, fetch from network
         return fetch(event.request).then(
           response => {
-            // Check if we received a valid response
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
-            // Clone the response to store in cache
             const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
 
-            return caches.open(CACHE_NAME)
-              .then(cache => {
-                return cache.put(event.request, responseToCache);
-              })
-              .then(() => response);
+            return response;
           }
         ).catch(() => {
-          // Serve cached index.html for navigation requests when offline
           if (event.request.mode === 'navigate') {
             return caches.match('/index.html');
           }
