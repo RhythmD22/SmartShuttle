@@ -4,12 +4,14 @@ html {
 }
 
 body.home-page {
-    background-color: #0b0c15;
+    background:
+        linear-gradient(180deg, #0b0c15 0%, #0c0b1a 150px, #13112a 100%) #0b0c15 no-repeat fixed;
+    background-size: 100% 200dvh;
+    min-height: 100dvh;
 }
 
 .home-page .container {
-    /* Solid color for the top 150px, then transition to the richer indigo shade */
-    background: linear-gradient(180deg, #0b0c15 0%, #0c0b1a 150px, #13112a 100%);
+    background: transparent;
     position: relative;
     overflow: hidden;
 }
@@ -38,9 +40,7 @@ body.home-page {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 0 5px;
-    /* Extra padding to ensure title is below the solid status area */
-    padding-top: calc(20px + env(safe-area-inset-top, 0px));
+    padding-top: 20px;
     margin-bottom: 5px;
     flex: none;
     border-bottom: none;
@@ -97,7 +97,6 @@ body.home-page {
     box-shadow: 0 8px 25px rgba(106, 99, 246, 0.4);
     transition: all 0.3s ease, transform 0.1s;
     z-index: 20;
-    margin-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 .next-button:hover {

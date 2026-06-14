@@ -11,6 +11,7 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    background: #181a1b;
 }
 
 body {
@@ -24,11 +25,15 @@ body {
 
 .container {
     width: 100%;
-    height: 100dvh;
+    /* In standalone PWA mode the iOS status bar and home indicator sit
+       inside the viewport, so the safe-area insets push the content
+       inward. In a normal browser tab both env() values resolve to 0
+       and this is equivalent to height: 100dvh. */
+    height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    padding: 0;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
     margin: 0 auto;
     background: #181a1b;
     overflow: hidden;
