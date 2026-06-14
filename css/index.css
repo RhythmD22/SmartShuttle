@@ -1,4 +1,3 @@
-/* Base Layout */
 html {
     background-color: #0b0c15;
     /* Match status bar color */
@@ -28,7 +27,6 @@ body.home-page {
     z-index: 15;
 }
 
-/* UI Components */
 .app-title {
     font-size: 40px;
     font-weight: bold;
@@ -82,7 +80,6 @@ body.home-page {
     align-self: center;
 }
 
-/* Next Button */
 .next-button {
     background: linear-gradient(135deg, #8277ff 0%, #6A63F6 100%);
     border: none;
@@ -119,7 +116,6 @@ body.home-page {
     font-family: 'Inter', sans-serif;
 }
 
-/* Animation Container */
 .bus-image-container {
     margin: 200px auto;
     width: 100%;
@@ -142,7 +138,6 @@ dotlottie-wc {
     transform-origin: center;
 }
 
-/* Atmosphere & Lo-Fi Effects */
 .night-glow {
     position: absolute;
     top: 0;
@@ -182,7 +177,6 @@ dotlottie-wc {
     z-index: 3;
 }
 
-/* Background/Distant Star Layer (Small, Dim, Slow Twinkle) */
 .stars-container::before {
     content: "";
     position: absolute;
@@ -197,7 +191,6 @@ dotlottie-wc {
     animation: twinkling-slow 12s ease-in-out infinite alternate;
 }
 
-/* Foreground Star Layer (Larger, Brighter, Fast Twinkle) */
 .stars-container::after {
     content: "";
     position: absolute;
@@ -212,7 +205,6 @@ dotlottie-wc {
     animation: twinkling-fast 8s ease-in-out infinite alternate;
 }
 
-/* Animations */
 @keyframes glowFadeIn {
     0% {
         opacity: 0;
@@ -275,7 +267,6 @@ dotlottie-wc {
     }
 }
 
-/* Media Queries */
 @media (min-width: 768px) {
     .container {
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);

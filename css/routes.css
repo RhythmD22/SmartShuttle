@@ -33,7 +33,6 @@
     display: block;
 }
 
-/* Wrapper for both containers */
 .info-containers-wrapper {
     display: flex;
     flex-direction: column;
@@ -43,7 +42,6 @@
     box-sizing: border-box;
 }
 
-/* Route & Arrivals Container */
 .route-arrivals-container {
     background-color: #413C96;
     padding: 15px;
@@ -213,7 +211,6 @@
     flex: 1;
 }
 
-/* Capacity indicators */
 .seats-info.low-capacity {
     color: #ff6b6b;
 }

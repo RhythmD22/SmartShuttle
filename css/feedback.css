@@ -288,13 +288,10 @@
     width: 100%;
 }
 
-/* Feedback page doesn't have bottom navigation, adjust margins */
 .container.feedback-page .main-content {
     margin-bottom: 20px;
-    /* Reduced margin since no bottom nav */
 }
 
-/* Center the attachment section */
 .attachment-container {
     display: flex;
     flex-direction: column;
@@ -307,14 +304,12 @@
     width: 135px !important;
 }
 
-/* Header layout for feedback page */
 .header-center-content {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-/* Toggle switch */
 .switch {
     position: relative;
     display: inline-block;
@@ -360,7 +355,6 @@ input:checked+.slider:before {
     transform: translateX(26px);
 }
 
-/* Popup notification styles */
 .popup-overlay {
     position: fixed;
     top: 0;

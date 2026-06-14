@@ -1,4 +1,3 @@
-/* Shared Styles - Common styles across all pages */
 * {
     margin: 0;
     padding: 0;
@@ -273,7 +272,6 @@ dotlottie-wc {
     transform: scale(0.92);
 }
 
-/* --- Active = stops --- */
 .bottom-nav[data-active="stops"] .nav-item[data-route="stops"] {
     left: 50%;
     width: 50px;
@@ -293,7 +291,6 @@ dotlottie-wc {
     transform: translateX(0);
 }
 
-/* --- Active = routes --- */
 .bottom-nav[data-active="routes"] .nav-item[data-route="stops"] {
     left: calc(50% - 105px);
     transform: translateX(0);
@@ -312,7 +309,6 @@ dotlottie-wc {
     transform: translateX(0);
 }
 
-/* --- Active = notifications --- */
 .bottom-nav[data-active="notifications"] .nav-item[data-route="stops"] {
     left: calc(50% - 130px);
     opacity: 0;
@@ -332,7 +328,6 @@ dotlottie-wc {
     transform: translateX(-50%);
 }
 
-/* Responsive design */
 @media (min-width: 768px) {
     .container {
         max-width: 500px;
@@ -345,7 +340,6 @@ dotlottie-wc {
     }
 }
 
-/* Desktop notification banner */
 .desktop-notification {
     display: none;
     position: fixed;
@@ -376,7 +370,6 @@ dotlottie-wc {
     float: right;
 }
 
-/* Search Modal Styles */
 .search-modal {
     display: none;
     position: fixed;
@@ -503,7 +496,6 @@ dotlottie-wc {
     box-sizing: border-box;
 }
 
-/* Refresh button styles */
 .refresh-btn {
     position: absolute;
     top: 16px;
@@ -528,7 +520,6 @@ dotlottie-wc {
     transition: transform 0.3s ease;
 }
 
-/* Show notification only on desktop screens */
 .desktop-qr-code {
     display: none;
 }
@@ -554,7 +545,6 @@ dotlottie-wc {
     }
 }
 
-/* Common button styles */
 .search-btn,
 .menu-btn,
 .back-btn,
@@ -572,7 +562,6 @@ dotlottie-wc {
     height: 40px;
 }
 
-/* Common popup styles */
 .bus-stop-popup {
     color: #181a1b;
 }
@@ -748,7 +737,6 @@ dotlottie-wc {
     font-size: 12px;
 }
 
-/* ===== Smooth page transitions (SPA) ===== */
 ::view-transition-old(root),
 ::view-transition-new(root) {
     animation-duration: 280ms;
@@ -768,24 +756,20 @@ dotlottie-wc {
 @keyframes app-page-exit {
     from {
         opacity: 1;
-        transform: scale(1);
     }
 
     to {
         opacity: 0;
-        transform: scale(0.96);
     }
 }
 
 @keyframes app-page-enter {
     from {
         opacity: 0;
-        transform: scale(1.04);
     }
 
     to {
         opacity: 1;
-        transform: scale(1);
     }
 }
 

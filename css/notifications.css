@@ -57,7 +57,6 @@
     scrollbar-width: none;
     /* Firefox */
     -webkit-overflow-scrolling: touch;
-    /* smooth mobile scrolling */
 }
 
 .alert-filter-container::-webkit-scrollbar {
@@ -65,7 +64,6 @@
     /* Safari and Chrome */
 }
 
-/* Live alert items */
 .live-alert-item {
     display: flex;
     align-items: center;
