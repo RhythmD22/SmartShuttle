@@ -102,6 +102,8 @@ window.navigateTo = function (routeName, pushState = true, options = {}) {
             appRoot.innerHTML = wrapper.innerHTML;
         }
         document.title = route.title;
+
+        updateBottomNav(routeName, { instant: routeName === 'feedback' });
     };
 
     if (supportsViewTransition && !skipTransition) {
@@ -136,8 +138,6 @@ window.navigateTo = function (routeName, pushState = true, options = {}) {
     if (route.swipeEnabled) {
         setupSwipeNavigation(routeName);
     }
-
-    updateBottomNav(routeName, { instant: routeName === 'feedback' });
 
     window.__currentRouteName = routeName;
 };
