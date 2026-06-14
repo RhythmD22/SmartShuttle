@@ -30,10 +30,20 @@
                 searchInput.focus();
             });
 
+            const trackKeyboard = () => {
+                const bottomNav = document.getElementById('bottomNav');
+                if (!bottomNav) return;
+                const isKeyboardOpen = window.visualViewport
+                    ? window.visualViewport.height < window.innerHeight * 0.75
+                    : false;
+                bottomNav.classList.toggle('search-active', isKeyboardOpen);
+            };
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', trackKeyboard);
+            }
+
             searchInput.addEventListener('focus', () => {
                 if (filterContainer) {
-                    // Wait for the iOS keyboard to finish opening (~300ms) before
-                    // scrolling, otherwise it scrolls the wrong amount.
                     setTimeout(() => {
                         filterContainer.scrollTo({
                             left: filterContainer.scrollWidth,

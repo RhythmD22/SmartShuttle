@@ -33,16 +33,32 @@
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
 
+        const trackKeyboard = () => {
+            const bottomNav = document.getElementById('bottomNav');
+            if (!bottomNav) return;
+            const isKeyboardOpen = window.visualViewport
+                ? window.visualViewport.height < window.innerHeight * 0.75
+                : false;
+            bottomNav.classList.toggle('search-active', isKeyboardOpen);
+        };
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', trackKeyboard);
+        }
+
+        const closeSearchModalFn = () => {
+            searchModal.style.display = 'none';
+            const bottomNav = document.getElementById('bottomNav');
+            if (bottomNav) bottomNav.classList.remove('search-active');
+            clearSearchResults();
+        };
+
         // Show modal when search button is clicked
         searchBtn.addEventListener('click', () => {
             searchModal.style.display = 'block';
             searchInput.focus();
         });
 
-        closeSearchModal.addEventListener('click', () => {
-            searchModal.style.display = 'none';
-            clearSearchResults();
-        });
+        closeSearchModal.addEventListener('click', closeSearchModalFn);
 
         searchInput.addEventListener('focus', () => {
             if (searchInput.value.trim() === '') {
@@ -52,8 +68,7 @@
 
         window.addEventListener('click', (event) => {
             if (event.target === searchModal) {
-                searchModal.style.display = 'none';
-                clearSearchResults();
+                closeSearchModalFn();
             }
         });
 

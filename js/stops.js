@@ -2,8 +2,6 @@
     let map;
     let shuttleMarkers = [];
 
-    // Built once on init so map panning only triggers an API call after the
-    // 800ms debounce settles, not on every moveend.
     let debouncedFindShuttles;
 
     window.initStopsPage = () => {
@@ -106,8 +104,6 @@
     };
 
     const initializeMap = () => {
-        // Boot with a world view; it'll be replaced once we have a real
-        // location to center on.
         map = L.map('map').setView([0, 0], 2);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -276,15 +272,30 @@
             searchInput.focus();
         });
 
-        closeSearchModal.addEventListener('click', () => {
+        const trackKeyboard = () => {
+            const bottomNav = document.getElementById('bottomNav');
+            if (!bottomNav) return;
+            const isKeyboardOpen = window.visualViewport
+                ? window.visualViewport.height < window.innerHeight * 0.75
+                : false;
+            bottomNav.classList.toggle('search-active', isKeyboardOpen);
+        };
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', trackKeyboard);
+        }
+
+        const closeSearchModalFn = () => {
             searchModal.style.display = 'none';
+            const bottomNav = document.getElementById('bottomNav');
+            if (bottomNav) bottomNav.classList.remove('search-active');
             clearSearchResults();
-        });
+        };
+
+        closeSearchModal.addEventListener('click', closeSearchModalFn);
 
         window.addEventListener('click', (event) => {
             if (event.target === searchModal) {
-                searchModal.style.display = 'none';
-                clearSearchResults();
+                closeSearchModalFn();
             }
         });
 
