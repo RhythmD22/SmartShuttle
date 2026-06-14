@@ -360,6 +360,16 @@
     color: #C8C7C5;
 }
 
+.main-content {
+    margin-bottom: 66px;
+}
+
+@media (display-mode: standalone) {
+    .main-content {
+        margin-bottom: 65px;
+    }
+}
+
 @media (max-width: 480px) {
     .bus-info {
         flex-direction: column;

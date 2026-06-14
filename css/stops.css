@@ -106,6 +106,16 @@
     left: calc(50% + 55px);
 }
 
+.main-content {
+    margin-bottom: 66px;
+}
+
+@media (display-mode: standalone) {
+    .main-content {
+        margin-bottom: 65px;
+    }
+}
+
 @media (max-width: 480px) {
     .bus-info {
         flex-direction: column;
