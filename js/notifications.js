@@ -25,6 +25,8 @@
         const searchPill = document.querySelector('.notification-search-pill');
         const filterContainer = document.querySelector('.alert-filter-container');
 
+        setupKeyboardViewportFix(searchInput);
+
         if (searchPill && searchInput) {
             searchPill.addEventListener('click', () => {
                 searchInput.focus();

@@ -251,7 +251,19 @@ function repositionBottomNav() {
     const keyboardOpen = isKeyboardOpen();
     bottomNav.classList.toggle('search-active', keyboardOpen);
     document.documentElement.classList.toggle('keyboard-open', keyboardOpen);
+
+    if (!keyboardOpen) {
+        requestAnimationFrame(function () {
+            var containers = document.querySelectorAll('.container');
+            for (var i = 0; i < containers.length; i++) {
+                containers[i].style.height = '';
+                void containers[i].offsetHeight;
+            }
+        });
+    }
 }
+
+window.__repositionBottomNav = repositionBottomNav;
 
 function updateBottomNav(routeName, options = {}) {
     const bottomNav = document.getElementById('bottomNav');
@@ -301,9 +313,36 @@ function updateBottomNav(routeName, options = {}) {
 }
 
 if (window.visualViewport) {
-    const handleViewportChange = () => repositionBottomNav();
-    window.visualViewport.addEventListener('resize', handleViewportChange);
-    window.visualViewport.addEventListener('scroll', handleViewportChange);
+    let previousKeyboardOpen = false;
+    window.visualViewport.addEventListener('resize', function () {
+        var keyboardOpen = isKeyboardOpen();
+        var keyboardJustClosed = previousKeyboardOpen && !keyboardOpen;
+
+        repositionBottomNav();
+
+        if (keyboardJustClosed) {
+            [100, 350, 700].forEach(function (delay) {
+                setTimeout(function () {
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
+
+                    var containers = document.querySelectorAll('.container');
+                    for (var i = 0; i < containers.length; i++) {
+                        containers[i].style.height = '';
+                        void containers[i].offsetHeight;
+                    }
+
+                    repositionBottomNav();
+                }, delay);
+            });
+        }
+
+        previousKeyboardOpen = keyboardOpen;
+    });
+    window.visualViewport.addEventListener('scroll', function () {
+        repositionBottomNav();
+    });
 }
 window.addEventListener('resize', repositionBottomNav);
 window.addEventListener('orientationchange', repositionBottomNav);

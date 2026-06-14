@@ -325,6 +325,8 @@
         const routeSearchInput = document.getElementById('routeSearchInput');
         if (!routeSearchInput) return;
 
+        setupKeyboardViewportFix(routeSearchInput);
+
         routeSearchInput.addEventListener('input', () => {
             const query = routeSearchInput.value.toLowerCase().trim();
 
