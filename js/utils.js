@@ -31,8 +31,12 @@ function initializeFeedbackButton(page = 'Feedback.html') {
 
     if (feedbackBtn) {
         feedbackBtn.addEventListener('click', () => {
-            // Redirect to feedback page
-            window.location.href = page;
+            // Redirect to feedback page using SPA router if available
+            if (window.navigateTo) {
+                window.navigateTo('feedback');
+            } else {
+                window.location.href = page;
+            }
         });
     }
 }

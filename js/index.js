@@ -1,7 +1,6 @@
 // JavaScript for Landing Page
 
-// Ensure DOM is fully loaded before running scripts
-document.addEventListener('DOMContentLoaded', () => {
+window.initIndexPage = () => {
     // Get the status indicator element
     const statusIndicator = document.getElementById('statusIndicator');
 
@@ -17,10 +16,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nextButton) {
         nextButton.addEventListener('click', () => {
             // Navigate to the Stops page
-            window.location.href = 'Stops.html';
+            if (window.navigateTo) {
+                window.navigateTo('stops');
+            } else {
+                window.location.href = 'Stops.html';
+            }
         });
     }
 
     // Initialize desktop notification functionality
     initializeDesktopNotification();
+};
+
+// Fallback for standalone loading
+document.addEventListener('DOMContentLoaded', () => {
+    if (!window.isSPA) {
+        window.initIndexPage();
+    }
 });
