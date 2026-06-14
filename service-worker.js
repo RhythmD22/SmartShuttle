@@ -56,7 +56,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
   // Network First strategy for live transit data
-  if (url.pathname.includes('/api/transit-proxy')) {
+  if (url.pathname.includes('/api/transit/')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
