@@ -25,10 +25,6 @@ body {
 
 .container {
     width: 100%;
-    /* In standalone PWA mode the iOS status bar and home indicator sit
-       inside the viewport, so the safe-area insets push the content
-       inward. In a normal browser tab both env() values resolve to 0
-       and this is equivalent to height: 100dvh. */
     height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     min-height: 100dvh;
     display: flex;
@@ -190,7 +186,7 @@ dotlottie-wc {
 
 .bottom-nav {
     position: fixed;
-    bottom: 25px;
+    bottom: calc(25px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
     width: 100%;
@@ -201,8 +197,6 @@ dotlottie-wc {
     border-top: 1px solid #333;
     padding: 10px 0;
     height: auto;
-    /* Keep the nav itself out of the page cross-fade so the icons can do
-       their own morph below. */
     view-transition-name: bottom-nav;
     opacity: 0;
     pointer-events: none;
@@ -231,10 +225,6 @@ dotlottie-wc {
     height: 50px;
 }
 
-/* Each icon lives at an absolute position that depends on which route is
-   active. The transitions below make the icon itself slide and morph
-   (size + color + position) from its old slot to its new slot -- no pill,
-   no overlay, no separate indicator element. The icon IS the active state. */
 .nav-item {
     position: absolute;
     top: 0;
@@ -261,9 +251,6 @@ dotlottie-wc {
     height: 24px;
     filter: brightness(0) invert(1);
     box-sizing: content-box;
-    /* White border only on the active icon's image, matching the original
-       look. The border toggles with the active class so it appears/disappears
-       alongside the color/size morph. */
     border: 1px solid transparent;
     border-radius: 2px;
     transition: border-color 200ms ease;
