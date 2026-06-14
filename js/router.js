@@ -214,12 +214,7 @@ function setupSwipeNavigation(currentRoute) {
     };
 }
 
-function updateBottomNav(routeName, options = {}) {
-    const bottomNav = document.getElementById('bottomNav');
-    if (!bottomNav) return;
-
-    // env() isn't readable from JS, so measure safe-area-inset-bottom via
-    // a hidden probe element whose height resolves the env() value.
+function getSafeAreaInsetBottom() {
     const probe = document.createElement('div');
     probe.style.position = 'fixed';
     probe.style.bottom = '0';
@@ -229,8 +224,40 @@ function updateBottomNav(routeName, options = {}) {
     document.body.appendChild(probe);
     const safeBottom = parseFloat(getComputedStyle(probe).height) || 0;
     document.body.removeChild(probe);
-    const top = Math.max(0, window.innerHeight - 96 - safeBottom);
+    return safeBottom;
+}
+
+function getVisibleViewportHeight() {
+    if (window.visualViewport) {
+        return window.visualViewport.height;
+    }
+    return window.innerHeight;
+}
+
+function isKeyboardOpen() {
+    if (!window.visualViewport) return false;
+    return window.visualViewport.height < window.innerHeight * 0.75;
+}
+
+function repositionBottomNav() {
+    const bottomNav = document.getElementById('bottomNav');
+    if (!bottomNav) return;
+
+    const safeBottom = getSafeAreaInsetBottom();
+    const visibleHeight = getVisibleViewportHeight();
+    const top = Math.max(0, visibleHeight - 96 - safeBottom);
     bottomNav.style.top = `${top}px`;
+
+    const keyboardOpen = isKeyboardOpen();
+    bottomNav.classList.toggle('search-active', keyboardOpen);
+    document.documentElement.classList.toggle('keyboard-open', keyboardOpen);
+}
+
+function updateBottomNav(routeName, options = {}) {
+    const bottomNav = document.getElementById('bottomNav');
+    if (!bottomNav) return;
+
+    repositionBottomNav();
 
     const route = routes[routeName];
     const shouldShow = !!(route && route.swipeEnabled);
@@ -272,6 +299,14 @@ function updateBottomNav(routeName, options = {}) {
         }
     }
 }
+
+if (window.visualViewport) {
+    const handleViewportChange = () => repositionBottomNav();
+    window.visualViewport.addEventListener('resize', handleViewportChange);
+    window.visualViewport.addEventListener('scroll', handleViewportChange);
+}
+window.addEventListener('resize', repositionBottomNav);
+window.addEventListener('orientationchange', repositionBottomNav);
 
 window.addEventListener('popstate', (event) => {
     const routeName = resolveRouteFromUrl();

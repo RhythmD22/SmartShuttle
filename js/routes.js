@@ -33,22 +33,8 @@
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
 
-        const trackKeyboard = () => {
-            const bottomNav = document.getElementById('bottomNav');
-            if (!bottomNav) return;
-            const isKeyboardOpen = window.visualViewport
-                ? window.visualViewport.height < window.innerHeight * 0.75
-                : false;
-            bottomNav.classList.toggle('search-active', isKeyboardOpen);
-        };
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', trackKeyboard);
-        }
-
         const closeSearchModalFn = () => {
             searchModal.style.display = 'none';
-            const bottomNav = document.getElementById('bottomNav');
-            if (bottomNav) bottomNav.classList.remove('search-active');
             clearSearchResults();
         };
 
