@@ -40,6 +40,8 @@
     width: calc(100% - 20px);
     margin: 0 auto;
     box-sizing: border-box;
+    min-height: 0;
+    flex-shrink: 1;
 }
 
 .route-arrivals-container {
@@ -50,6 +52,7 @@
     width: 100%;
     box-sizing: border-box;
     max-height: 120px;
+    min-height: 0;
     border-bottom: none;
 }
 
@@ -155,6 +158,7 @@
     width: 100%;
     box-sizing: border-box;
     max-height: 120px;
+    min-height: 0;
     border-top: none;
 }
 
