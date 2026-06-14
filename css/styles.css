@@ -20,13 +20,15 @@ body {
     color: #fff;
     line-height: 1.2;
     width: 100vw;
-    height: 100dvh;
+}
+
+#app-root {
+    height: 100%;
 }
 
 .container {
     width: 100%;
-    height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-    min-height: 100dvh;
+    height: 100%;
     display: flex;
     flex-direction: column;
     padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
@@ -171,13 +173,9 @@ dotlottie-wc {
     flex-direction: column;
     padding: 0;
     margin-top: 5px;
-    margin-bottom: 100px;
+    margin-bottom: 80px;
     overflow: hidden;
     position: relative;
-}
-
-.keyboard-open .main-content {
-    margin-bottom: 0;
 }
 
 .nav-icon-img {
@@ -190,7 +188,7 @@ dotlottie-wc {
 
 .bottom-nav {
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
@@ -199,12 +197,12 @@ dotlottie-wc {
     z-index: 100;
     background-color: #181a1b;
     border-top: 1px solid #333;
-    padding: 10px 0;
+    padding: 10px 0 env(safe-area-inset-bottom, 0px);
     height: auto;
     view-transition-name: bottom-nav;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(20px);
+    transform: translateY(70px);
     will-change: transform;
     transition: opacity 280ms cubic-bezier(0.32, 0.72, 0, 1),
         transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
