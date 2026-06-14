@@ -217,7 +217,19 @@ dotlottie-wc {
 }
 
 .bottom-nav.search-active {
-    transform: translateY(150%);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100px);
+}
+
+.bottom-nav.search-active .bottom-nav-content {
+    pointer-events: none;
+}
+
+.bottom-nav.landscape-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100px);
 }
 
 ::view-transition-old(bottom-nav),
