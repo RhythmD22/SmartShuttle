@@ -347,32 +347,6 @@
     color: #C8C7C5;
 }
 
-/* Bottom navigation specific to routes */
-.bottom-nav .nav-rectangle:first-of-type {
-    position: absolute;
-    left: calc(50% - 110px);
-    top: -2px;
-    height: 45px;
-}
-
-.bottom-nav .nav-rectangle:last-of-type {
-    position: absolute;
-    left: calc(50% + 65px);
-    top: -2px;
-    height: 45px;
-}
-
-.bottom-nav .nav-icon {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.bottom-nav .nav-icon .nav-icon-img {
-    border: 1px solid white;
-    border-radius: 2px;
-}
-
 @media (max-width: 480px) {
     .bus-info {
         flex-direction: column;

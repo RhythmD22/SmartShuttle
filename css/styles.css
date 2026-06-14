@@ -186,7 +186,7 @@ dotlottie-wc {
 
 .bottom-nav {
     position: fixed;
-    bottom: 75px;
+    bottom: 25px;
     left: 0;
     right: 0;
     width: 100%;
@@ -197,27 +197,43 @@ dotlottie-wc {
     border-top: 1px solid #333;
     padding: 10px 0;
     height: auto;
+    /* Keep the nav itself out of the page cross-fade so the icons can do
+       their own morph below. */
+    view-transition-name: bottom-nav;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    transition: opacity 280ms cubic-bezier(0.32, 0.72, 0, 1),
+        transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.bottom-nav.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+::view-transition-old(bottom-nav),
+::view-transition-new(bottom-nav) {
+    animation: none;
+    mix-blend-mode: normal;
 }
 
 .bottom-nav-content {
-    display: flex;
     position: relative;
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
-}
-
-.nav-icon {
-    width: 50px;
     height: 50px;
-    background-color: #6A63F6;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.nav-rectangle {
+/* Each icon lives at an absolute position that depends on which route is
+   active. The transitions below make the icon itself slide and morph
+   (size + color + position) from its old slot to its new slot -- no pill,
+   no overlay, no separate indicator element. The icon IS the active state. */
+.nav-item {
+    position: absolute;
+    top: 0;
     width: 35px;
     height: 45px;
     background-color: #413C96;
@@ -225,9 +241,95 @@ dotlottie-wc {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: none;
-    padding: 8px;
-    margin: 4px;
+    text-decoration: none;
+    color: #fff;
+    -webkit-tap-highlight-color: transparent;
+    /* The morph: position, size, and color all interpolate in one motion. */
+    transition: left 380ms cubic-bezier(0.32, 0.72, 0, 1),
+        width 380ms cubic-bezier(0.32, 0.72, 0, 1),
+        height 380ms cubic-bezier(0.32, 0.72, 0, 1),
+        background-color 380ms cubic-bezier(0.32, 0.72, 0, 1),
+        transform 160ms ease;
+}
+
+.nav-item .nav-icon-img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+    box-sizing: content-box;
+    /* White border only on the active icon's image, matching the original
+       look. The border toggles with the active class so it appears/disappears
+       alongside the color/size morph. */
+    border: 1px solid transparent;
+    border-radius: 2px;
+    transition: border-color 200ms ease;
+}
+
+.nav-item.active .nav-icon-img {
+    border-color: white;
+}
+
+.nav-item:active {
+    transform: scale(0.92);
+}
+
+/* --- Active = stops --- */
+.bottom-nav[data-active="stops"] .nav-item[data-route="stops"] {
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    background-color: #6A63F6;
+    transform: translateX(-50%);
+}
+
+.bottom-nav[data-active="stops"] .nav-item[data-route="routes"] {
+    left: calc(50% + 70px);
+    transform: translateX(0);
+}
+
+.bottom-nav[data-active="stops"] .nav-item[data-route="notifications"] {
+    left: calc(50% + 145px);
+    opacity: 0;
+    transform: translateX(0);
+}
+
+/* --- Active = routes --- */
+.bottom-nav[data-active="routes"] .nav-item[data-route="stops"] {
+    left: calc(50% - 105px);
+    transform: translateX(0);
+}
+
+.bottom-nav[data-active="routes"] .nav-item[data-route="routes"] {
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    background-color: #6A63F6;
+    transform: translateX(-50%);
+}
+
+.bottom-nav[data-active="routes"] .nav-item[data-route="notifications"] {
+    left: calc(50% + 70px);
+    transform: translateX(0);
+}
+
+/* --- Active = notifications --- */
+.bottom-nav[data-active="notifications"] .nav-item[data-route="stops"] {
+    left: calc(50% - 130px);
+    opacity: 0;
+    transform: translateX(0);
+}
+
+.bottom-nav[data-active="notifications"] .nav-item[data-route="routes"] {
+    left: calc(50% - 105px);
+    transform: translateX(0);
+}
+
+.bottom-nav[data-active="notifications"] .nav-item[data-route="notifications"] {
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    background-color: #6A63F6;
+    transform: translateX(-50%);
 }
 
 /* Responsive design */
@@ -644,6 +746,52 @@ dotlottie-wc {
     border-radius: 4px;
     font-weight: bold;
     font-size: 12px;
+}
+
+/* ===== Smooth page transitions (SPA) ===== */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 280ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+    animation-fill-mode: both;
+    mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+    animation-name: app-page-exit;
+}
+
+::view-transition-new(root) {
+    animation-name: app-page-enter;
+}
+
+@keyframes app-page-exit {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+}
+
+@keyframes app-page-enter {
+    from {
+        opacity: 0;
+        transform: scale(1.04);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Fallback for browsers without the View Transitions API */
+.app-page-enter {
+    animation: app-page-enter 280ms cubic-bezier(0.32, 0.72, 0, 1) both;
 }
 
 .bus-stop-popup .direction {

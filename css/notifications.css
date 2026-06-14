@@ -194,7 +194,6 @@
     opacity: 0.7;
 }
 
-/* Refresh button styles - moved up to align with Live Feed title */
 .refresh-btn {
     position: relative;
     top: auto;
@@ -211,7 +210,7 @@
     height: 40px;
     backdrop-filter: blur(4px);
     margin-right: -4px;
-    /* Slight adjustment to align with container edge */
+    align-self: center;
 }
 
 .refresh-btn .icon {
@@ -293,29 +292,10 @@
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Navigation specific to notifications page - notifications icon centered, routes icon to left */
-.bottom-nav .nav-icon {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.bottom-nav .nav-icon .nav-icon-img {
-    border: 1px solid white;
-    border-radius: 2px;
-}
-
 /* Override header-center alignment for notifications page */
 .header-center {
     justify-content: flex-start;
     align-items: flex-start;
     text-align: left;
     margin-left: 4px;
-}
-
-.bottom-nav .nav-rectangle {
-    position: absolute;
-    left: calc(50% - 110px);
-    top: -2px;
-    height: 45px;
 }

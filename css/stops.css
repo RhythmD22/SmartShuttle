@@ -73,25 +73,6 @@
     color: #C8C7C5;
 }
 
-/* Bottom navigation specific to stops */
-.bottom-nav .nav-icon {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.bottom-nav .nav-rectangle {
-    position: absolute;
-    left: calc(50% + 55px);
-    top: -2px;
-    height: 45px;
-}
-
-.bottom-nav-content>.nav-icon:first-child .nav-icon-img {
-    border: 1px solid white;
-    border-radius: 2px;
-}
-
 .footer-content {
     display: flex;
     align-items: center;
