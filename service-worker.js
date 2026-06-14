@@ -1,12 +1,8 @@
 // Service Worker for SmartShuttle PWA
-const CACHE_NAME = 'smart-shuttle-v1.0';
+const CACHE_NAME = 'smart-shuttle-v2.0';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/Stops.html',
-  '/Routes.html',
-  '/Notifications.html',
-  '/Feedback.html',
   '/manifest.json',
   '/favicon.ico',
   '/apple-touch-icon.png',
@@ -25,6 +21,7 @@ const urlsToCache = [
   '/js/notifications.js',
   '/js/feedback.js',
   '/js/utils.js',
+  '/js/router.js',
   '/images/alert.svg',
   '/images/attach.svg',
   '/images/back.svg',
