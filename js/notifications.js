@@ -8,7 +8,6 @@
 
         initializeDesktopNotification();
         initializeFeedbackButton();
-        initializeThemeToggle();
         initializeRefreshButton(refreshLiveAlerts);
         initializeSearch();
         setupLiveFeedUpdates();
@@ -77,27 +76,6 @@
         }
     };
 
-    const initializeThemeToggle = () => {
-        const themeToggle = document.getElementById('themeToggle');
-
-        if (themeToggle) {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                themeToggle.checked = true;
-            }
-
-            themeToggle.addEventListener('change', () => {
-                if (themeToggle.checked) {
-                    document.body.classList.add('dark-theme');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    document.body.classList.remove('dark-theme');
-                    localStorage.setItem('theme', 'light');
-                }
-            });
-        }
-    };
-
     const initializeLiveFeed = () => {
         const savedLocation = localStorage.getItem('selectedLocation');
 
@@ -120,13 +98,7 @@
                     const userLat = position.coords.latitude;
                     const userLng = position.coords.longitude;
 
-                    const selectedLocation = {
-                        lat: userLat,
-                        lon: userLng,
-                        displayName: 'Current Location',
-                        timestamp: Date.now()
-                    };
-                    localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
+                    saveLocationToStorage(userLat, userLng, 'Current Location');
 
                     fetchLiveAlerts(userLat, userLng);
                 },
@@ -157,8 +129,8 @@
         const container = document.getElementById('liveAlertsContainer');
 
         try {
-            // Same endpoint as live-notifications.js: the Transit API returns
-            // routes near the user, and each route carries its own alerts.
+            // The Transit API returns routes near the user, and each
+            // route carries its own alerts.
             const response = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lon}&max_distance=1500&should_update_realtime=true`);
 
             if (!response.ok) {

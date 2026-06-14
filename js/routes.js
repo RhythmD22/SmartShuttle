@@ -89,22 +89,7 @@
 
         const performSearch = async (query) => {
             try {
-                const generalResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=US&limit=10&addressdetails=1`, {
-                    method: 'GET',
-                    headers: {
-                        'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)'
-                    }
-                });
-
-                let generalResults = [];
-
-                if (generalResponse.ok) {
-                    const generalData = await generalResponse.json();
-                    if (generalData && Array.isArray(generalData)) {
-                        generalResults = generalData;
-                    }
-                }
-
+                const generalResults = await searchNominatim(query);
                 displaySearchResults(generalResults);
             } catch (error) {
                 console.error('Error with search:', error);
@@ -173,13 +158,7 @@
                         return;
                     }
 
-                    const selectedLocation = {
-                        lat: lat,
-                        lon: lon,
-                        displayName: result.display_name,
-                        timestamp: Date.now()
-                    };
-                    localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
+                    saveLocationToStorage(lat, lon, result.display_name);
 
                     const locationDisplay = document.getElementById('selectedLocationDisplay');
                     if (locationDisplay) {
@@ -222,19 +201,7 @@
 
                             // Reverse geocode to a human-readable name for the header
                             try {
-                                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLat}&lon=${userLng}`);
-                                const data = await response.json();
-
-                                let displayName = 'Current Location';
-                                if (data && data.display_name) {
-                                    const addressParts = data.display_name.split(',');
-                                    if (addressParts.length >= 3) {
-                                        displayName = `${addressParts[0].trim()}, ${addressParts[1].trim()}`;
-                                    } else {
-                                        displayName = addressParts[0].trim() || 'Current Location';
-                                    }
-                                }
-
+                                const displayName = await reverseGeocodeLocation(userLat, userLng);
                                 saveLocationAndCenterMap(userLat, userLng, displayName);
                             } catch (error) {
                                 console.error('Error getting location name:', error);
@@ -261,13 +228,7 @@
         };
 
         const saveLocationAndCenterMap = (lat, lng, displayName) => {
-            const selectedLocation = {
-                lat: lat,
-                lon: lng,
-                displayName: displayName,
-                timestamp: Date.now()
-            };
-            localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
+            saveLocationToStorage(lat, lng, displayName);
 
             const locationDisplay = document.getElementById('selectedLocationDisplay');
             if (locationDisplay) {
@@ -282,43 +243,10 @@
             }
             clearSearchResults();
 
-            addUserLocationMarker(lat, lng);
+            addMapUserMarker(map, lat, lng, null);
 
             fetchRealTimeBuses(lat, lng);
         }
-
-        const addUserLocationMarker = (userLat, userLng, position) => {
-            const userIcon = L.divIcon({
-                className: 'user-location-icon',
-                html: `<img src="images/current.svg" style="width: 24px; height: 24px;">`,
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
-            });
-
-            if (window.userLocationMarker) {
-                map.removeLayer(window.userLocationMarker);
-            }
-
-            const userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
-            userMarker.bindPopup('Your Location').openPopup();
-            window.userLocationMarker = userMarker;
-
-            const accuracy = position?.coords?.accuracy || 100;
-            L.circle([userLat, userLng], {
-                color: '#6A63F6',
-                fillColor: '#6A63F6',
-                fillOpacity: 0.5,
-                radius: accuracy
-            }).addTo(map);
-
-            L.circle([userLat, userLng], {
-                color: '#CCCAF6',
-                fillColor: '#CCCAF6',
-                fillOpacity: 0.5,
-                radius: accuracy * 1.5,
-                purpose: 'user-location'
-            }).addTo(map);
-        };
     }
 
     const initializeRouteSearch = () => {
@@ -367,11 +295,7 @@
     };
 
     const initializeMap = () => {
-        map = L.map('map').setView([0, 0], 2);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        map = createLeafletMap('map');
 
         const getUserLocation = () => {
             if (navigator.geolocation) {
@@ -386,66 +310,16 @@
             const userLat = position.coords.latitude;
             const userLng = position.coords.longitude;
 
-            const userIcon = L.divIcon({
-                className: 'user-location-icon',
-                html: `<img src="images/current.svg" style="width: 24px; height: 24px;">`,
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
-            });
-
-            if (window.userLocationMarker) {
-                map.removeLayer(window.userLocationMarker);
-            }
-
-            const userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
-            userMarker.bindPopup('Your Location').openPopup();
-            window.userLocationMarker = userMarker;
-
-            const accuracy = position.coords.accuracy;
-            L.circle([userLat, userLng], {
-                color: '#6A63F6',
-                fillColor: '#6A63F6',
-                fillOpacity: 0.5,
-                radius: accuracy
-            }).addTo(map);
-
-            L.circle([userLat, userLng], {
-                color: '#CCCAF6',
-                fillColor: '#CCCAF6',
-                fillOpacity: 0.5,
-                radius: accuracy * 1.5,
-                purpose: 'user-location'
-            }).addTo(map);
-
+            addMapUserMarker(map, userLat, userLng, position);
             map.setView([userLat, userLng], 13);
 
-            // Reverse-geocode to a short human-readable name for the header
             try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLat}&lon=${userLng}`);
-                const data = await response.json();
-
-                const locationDisplay = document.getElementById('selectedLocationDisplay');
-                if (locationDisplay) {
-                    if (data && data.display_name) {
-                        const addressParts = data.display_name.split(',');
-                        if (addressParts.length >= 3) {
-                            locationDisplay.textContent = `${addressParts[0].trim()}, ${addressParts[1].trim()}`;
-                        } else {
-                            locationDisplay.textContent = addressParts[0].trim() || 'Current Location';
-                        }
-                    } else {
-                        locationDisplay.textContent = 'Current Location';
-                    }
-                }
-
+                const displayName = await reverseGeocodeLocation(userLat, userLng);
+                updateLocationDisplay(displayName);
                 fetchRealTimeBuses(userLat, userLng);
             } catch (error) {
                 console.error('Error getting location name:', error);
-
-                const locationDisplay = document.getElementById('selectedLocationDisplay');
-                if (locationDisplay) {
-                    locationDisplay.textContent = 'Current Location';
-                }
+                updateLocationDisplay('Current Location');
             }
         };
 
@@ -717,12 +591,6 @@
         updateShuttleCapacitySection(routes);
     };
 
-    window.addEventListener('popstate', (event) => {
-        // Browser back/forward: the router's popstate handler already drives
-        // the SPA navigation, so this is intentionally a no-op.
-        console.log('Back button pressed');
-    });
-
     // Hardcoded seat counts per shuttle class. The Transit API doesn't expose
     // real-time capacity, so we use these to render the capacity bar.
     const SHUTTLE_CAPACITY_MAP = {
@@ -833,29 +701,11 @@
         fetchRealTimeBuses(center.lat, center.lng);
 
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${center.lat}&lon=${center.lng}`);
-            const data = await response.json();
-
-            const locationDisplay = document.getElementById('selectedLocationDisplay');
-            if (locationDisplay) {
-                if (data && data.display_name) {
-                    const addressParts = data.display_name.split(',');
-                    if (addressParts.length >= 3) {
-                        locationDisplay.textContent = `${addressParts[0].trim()}, ${addressParts[1].trim()}`;
-                    } else {
-                        locationDisplay.textContent = addressParts[0].trim() || 'Current Location';
-                    }
-                } else {
-                    locationDisplay.textContent = 'Current Location';
-                }
-            }
+            const displayName = await reverseGeocodeLocation(center.lat, center.lng);
+            updateLocationDisplay(displayName);
         } catch (error) {
             console.error('Error getting location name:', error);
-
-            const locationDisplay = document.getElementById('selectedLocationDisplay');
-            if (locationDisplay) {
-                locationDisplay.textContent = 'Current Location';
-            }
+            updateLocationDisplay('Current Location');
         }
     };
 })();

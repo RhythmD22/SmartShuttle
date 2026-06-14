@@ -24,7 +24,7 @@ function initializeDesktopNotification() {
     }
 }
 
-function initializeFeedbackButton(page = 'Feedback.html') {
+function initializeFeedbackButton() {
     const feedbackBtn = document.querySelector('.feedback-btn') || document.querySelector('.menu-btn');
 
     if (feedbackBtn) {
@@ -32,7 +32,7 @@ function initializeFeedbackButton(page = 'Feedback.html') {
             if (window.navigateTo) {
                 window.navigateTo('feedback');
             } else {
-                window.location.href = page;
+                window.location.href = '/feedback';
             }
         });
     }
@@ -167,4 +167,110 @@ function initializeRefreshButton(refreshCallback) {
             }
         });
     }
+}
+
+// Format a Nominatim display_name to a short city/street level label.
+function formatLocationName(displayName) {
+    if (!displayName) return 'Current Location';
+    const parts = displayName.split(',');
+    if (parts.length >= 3) {
+        return `${parts[0].trim()}, ${parts[1].trim()}`;
+    }
+    return parts[0].trim() || 'Current Location';
+}
+
+// Persist a selected location to localStorage for cross-page access.
+function saveLocationToStorage(lat, lon, displayName) {
+    const location = { lat, lon, displayName, timestamp: Date.now() };
+    localStorage.setItem('selectedLocation', JSON.stringify(location));
+    return location;
+}
+
+// Add a user-location marker + accuracy circles to a Leaflet map.
+// If a marker already exists on the map, it is replaced.
+function addMapUserMarker(map, lat, lng, position) {
+    const userIcon = L.divIcon({
+        className: 'user-location-icon',
+        html: `<img src="images/current.svg" style="width: 24px; height: 24px;">`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+    });
+
+    if (window.userLocationMarker) {
+        map.removeLayer(window.userLocationMarker);
+    }
+
+    const userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
+    userMarker.bindPopup('Your Location').openPopup();
+    window.userLocationMarker = userMarker;
+
+    const accuracy = position?.coords?.accuracy || 100;
+    L.circle([lat, lng], {
+        color: '#6A63F6',
+        fillColor: '#6A63F6',
+        fillOpacity: 0.5,
+        radius: accuracy
+    }).addTo(map);
+
+    L.circle([lat, lng], {
+        color: '#CCCAF6',
+        fillColor: '#CCCAF6',
+        fillOpacity: 0.5,
+        radius: accuracy * 1.5,
+        purpose: 'user-location'
+    }).addTo(map);
+}
+
+// Reverse-geocode coordinates to a human-readable location name.
+async function reverseGeocodeLocation(lat, lng) {
+    try {
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+        );
+        const data = await response.json();
+        return formatLocationName(data?.display_name);
+    } catch (error) {
+        console.error('Error reverse geocoding:', error);
+        return 'Current Location';
+    }
+}
+
+// Forward-geocode a query string via Nominatim (US-only, 10 results).
+async function searchNominatim(query) {
+    const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=US&limit=10&addressdetails=1`,
+        {
+            headers: { 'User-Agent': 'SmartShuttle/1.0 (https://github.com/rhythmd22/SmartShuttle)' }
+        }
+    );
+    if (!response.ok) return [];
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+}
+
+// Create a Leaflet map with OpenStreetMap tiles.
+function createLeafletMap(elementId) {
+    const map = L.map(elementId).setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    return map;
+}
+
+// Promise-based wrapper for navigator.geolocation.getCurrentPosition.
+function getCurrentPositionPromise(options = {}) {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject(new Error('Geolocation not supported'));
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+    });
+}
+
+// Update a .current-location span or #selectedLocationDisplay with a name.
+function updateLocationDisplay(displayName) {
+    let el = document.querySelector('.current-location span');
+    if (!el) el = document.getElementById('selectedLocationDisplay');
+    if (el) el.textContent = displayName || 'Current Location';
 }

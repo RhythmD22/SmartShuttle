@@ -76,8 +76,7 @@
             }
         }
 
-        let emailParams = {
-            to_name: 'Rhythm Desai',
+        const feedbackParams = {
             issue_type: selectedIssueType,
             description: descriptionValue,
             attachment_info: attachmentInput && attachmentInput.files.length > 0 ? 'Attachment included' : 'No attachment'
@@ -86,46 +85,46 @@
         if (attachmentInput && attachmentInput.files.length > 0) {
             const file = attachmentInput.files[0];
 
-            // Image attachments are inlined as base64 data URIs so the email
-            // API can embed them; non-image attachments only carry metadata.
+            // Image attachments are inlined as base64 data URIs so the
+            // server can embed them; non-image attachments only carry metadata.
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
 
                 reader.onload = function (event) {
-                    emailParams.image_attachment = event.target.result;
-                    emailParams.attachment_name = file.name;
+                    feedbackParams.image_attachment = event.target.result;
+                    feedbackParams.attachment_name = file.name;
 
-                    emailParams.attachment_info = `Attached: ${file.name} (${file.size} bytes, type: ${file.type})`;
+                    feedbackParams.attachment_info = `Attached: ${file.name} (${file.size} bytes, type: ${file.type})`;
 
-                    sendFeedbackAPI(emailParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
+                    sendFeedbackAPI(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
                 };
 
                 reader.onerror = function () {
-                    console.error("Error reading file");
+                    console.error('Error reading file');
                     alert('Error reading the file. Please try again.');
 
-                    emailParams.attachment_info = `Attached: ${file.name} (${file.size} bytes, type: ${file.type})`;
+                    feedbackParams.attachment_info = `Attached: ${file.name} (${file.size} bytes, type: ${file.type})`;
 
-                    sendFeedbackAPIWithoutAttachment(emailParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, "without attachment");
+                    sendFeedbackAPIWithoutAttachment(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, 'without attachment');
                 };
 
                 reader.readAsDataURL(file);
                 return;
             } else {
-                emailParams.attachment_info = `Attached: ${file.name} (${file.size} bytes, type: ${file.type})`;
+                feedbackParams.attachment_info = `Attached: ${file.name} (${file.size} bytes, type: ${file.type})`;
             }
         }
 
-        sendFeedbackAPI(emailParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
+        sendFeedbackAPI(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
     }
 
-    function sendFeedbackAPI(emailParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview) {
+    function sendFeedbackAPI(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview) {
         fetch('/api/send-feedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(emailParams)
+            body: JSON.stringify(feedbackParams)
         })
             .then(response => {
                 if (!response.ok) {
@@ -134,21 +133,21 @@
                 return response.json();
             })
             .then(data => {
-                handleAPIResponse(data, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, "");
+                handleAPIResponse(data, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, '');
             })
             .catch(error => {
-                console.log('FAILED...', error);
+                console.error('Feedback submission failed:', error);
                 simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
             });
     }
 
-    function sendFeedbackAPIWithoutAttachment(emailParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage) {
+    function sendFeedbackAPIWithoutAttachment(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage) {
         fetch('/api/send-feedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(emailParams)
+            body: JSON.stringify(feedbackParams)
         })
             .then(response => {
                 if (!response.ok) {
@@ -160,16 +159,14 @@
                 handleAPIResponse(data, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage);
             })
             .catch(error => {
-                console.log('FAILED...', error);
+                console.error('Feedback submission failed:', error);
                 simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
             });
     }
 
     function handleAPIResponse(data, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage) {
         if (data && data.success) {
-            console.log('SUCCESS!', data);
-
-            showFeedbackPopup('', 'Thank You!', `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`);
+            showFeedbackPopup('Thank You!', `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`);
 
             if (issueType) issueType.value = '';
             if (descriptionText) descriptionText.value = '';
@@ -178,19 +175,17 @@
 
             resetSubmitButton(submitBtn, originalText);
         } else {
-            console.log('FAILED...', data ? data.error || 'Failed to send feedback' : 'Failed to send feedback');
+            console.error('Feedback API returned failure:', data ? data.error || 'Unknown error' : 'No response');
 
-            showFeedbackPopup('', 'Error', 'Failed to send feedback. Please try again.');
+            showFeedbackPopup('Error', 'Failed to send feedback. Please try again.');
 
             resetSubmitButton(submitBtn, originalText);
         }
     }
 
-    // Dev fallback: when /api/send-feedback isn't reachable, fake a success
-    // so the form is testable without a backend.
-    function simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage = "") {
+    function simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage = '') {
         setTimeout(() => {
-            showFeedbackPopup('', 'Thank You!', 'Your feedback has been received!');
+            showFeedbackPopup('Thank You!', 'Your feedback has been received!');
 
             if (issueType) issueType.value = '';
             if (descriptionText) descriptionText.value = '';
@@ -201,7 +196,7 @@
         }, 500);
     }
 
-    function showFeedbackPopup(icon, title, message) {
+    function showFeedbackPopup(title, message) {
         let overlay = document.getElementById('feedbackPopupOverlay');
         if (!overlay) {
             overlay = document.createElement('div');
@@ -210,10 +205,6 @@
 
             const popupContent = document.createElement('div');
             popupContent.className = 'popup-content';
-
-            const iconElement = document.createElement('div');
-            iconElement.className = 'popup-icon';
-            iconElement.textContent = icon;
 
             const titleElement = document.createElement('h3');
             titleElement.className = 'popup-title';
@@ -230,7 +221,6 @@
                 hideFeedbackPopup(overlay);
             };
 
-            popupContent.appendChild(iconElement);
             popupContent.appendChild(titleElement);
             popupContent.appendChild(messageElement);
             popupContent.appendChild(buttonElement);
@@ -239,10 +229,8 @@
 
             document.body.appendChild(overlay);
         } else {
-            const iconElement = overlay.querySelector('.popup-icon');
             const titleElement = overlay.querySelector('.popup-title');
             const messageElement = overlay.querySelector('.popup-message');
-            iconElement.textContent = icon;
             titleElement.textContent = title;
             messageElement.textContent = message;
         }
