@@ -218,21 +218,19 @@ function updateBottomNav(routeName, options = {}) {
     const bottomNav = document.getElementById('bottomNav');
     if (!bottomNav) return;
 
-    const anchorNav = () => {
-        const probe = document.createElement('div');
-        probe.style.position = 'fixed';
-        probe.style.bottom = '0';
-        probe.style.left = '-9999px';
-        probe.style.width = '0';
-        probe.style.height = 'env(safe-area-inset-bottom, 0px)';
-        document.body.appendChild(probe);
-        const safeBottom = parseFloat(getComputedStyle(probe).height) || 0;
-        document.body.removeChild(probe);
-        const top = Math.max(0, window.innerHeight - 96 - safeBottom);
-        bottomNav.style.top = `${top}px`;
-    };
-    anchorNav();
-    requestAnimationFrame(anchorNav);
+    // env() isn't readable from JS, so measure safe-area-inset-bottom via
+    // a hidden probe element whose height resolves the env() value.
+    const probe = document.createElement('div');
+    probe.style.position = 'fixed';
+    probe.style.bottom = '0';
+    probe.style.left = '-9999px';
+    probe.style.width = '0';
+    probe.style.height = 'env(safe-area-inset-bottom, 0px)';
+    document.body.appendChild(probe);
+    const safeBottom = parseFloat(getComputedStyle(probe).height) || 0;
+    document.body.removeChild(probe);
+    const top = Math.max(0, window.innerHeight - 96 - safeBottom);
+    bottomNav.style.top = `${top}px`;
 
     const route = routes[routeName];
     const shouldShow = !!(route && route.swipeEnabled);
