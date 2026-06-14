@@ -80,30 +80,30 @@ window.navigateTo = function (routeName, pushState = true, options = {}) {
         window.__tearDownSwipeNavigation();
     }
 
-    // Toggle stylesheet disabled status
-    Object.values(routes).forEach(r => {
-        const link = document.getElementById(r.styleId);
-        if (link) {
-            link.disabled = (r.styleId !== route.styleId);
-        }
-    });
-
-    // Update body class
-    document.body.className = route.bodyClass;
-
-    // Synchronous DOM update that the transition captures
+    // All visual state changes go inside performSwap so the View Transitions
+    // API sees one atomic old -> new transition with no intermediate paint.
+    // The new content is serialized to a string first so #app-root is never
+    // momentarily empty.
     const performSwap = () => {
+        Object.values(routes).forEach(r => {
+            const link = document.getElementById(r.styleId);
+            if (link) {
+                link.disabled = (r.styleId !== route.styleId);
+            }
+        });
+
+        document.body.className = route.bodyClass;
+
         const appRoot = document.getElementById('app-root');
         const template = document.getElementById(route.templateId);
         if (appRoot && template) {
-            appRoot.innerHTML = '';
-            const clone = template.content.cloneNode(true);
-            appRoot.appendChild(clone);
+            const wrapper = document.createElement('div');
+            wrapper.appendChild(template.content.cloneNode(true));
+            appRoot.innerHTML = wrapper.innerHTML;
         }
         document.title = route.title;
     };
 
-    // Run the swap with a smooth view transition, or fall back to a CSS animation
     if (supportsViewTransition && !skipTransition) {
         const transition = document.startViewTransition(performSwap);
         // Initialize the new view once the new DOM state is committed (before
@@ -124,27 +124,21 @@ window.navigateTo = function (routeName, pushState = true, options = {}) {
         setTimeout(() => route.init(), 0);
     }
 
-    // Update URL if requested
     if (pushState) {
         try {
-            // Keep the exact same pathname as the user's original URLs
             window.history.pushState({ route: routeName }, route.title, route.path);
         } catch (e) {
             console.warn('History pushState blocked (possibly file:// protocol):', e);
-            // Fallback: use hash
             window.location.hash = '/' + routeName;
         }
     }
 
-    // Set up swipe navigation for pages with a bottom nav
     if (route.swipeEnabled) {
         setupSwipeNavigation(routeName);
     }
 
-    // Sync the persistent bottom nav (visibility + active state)
-    updateBottomNav(routeName);
+    updateBottomNav(routeName, { instant: routeName === 'feedback' });
 
-    // Remember the active route so the next navigation can compute direction
     window.__currentRouteName = routeName;
 };
 
@@ -155,7 +149,6 @@ const SWIPE_MAX_VERTICAL = 75;
 const SWIPE_MAX_DURATION = 600;
 let swipeState = null;
 
-// Attach touch listeners that allow swiping left/right between bottom-nav sections
 function setupSwipeNavigation(currentRoute) {
     swipeState = null;
 
@@ -189,7 +182,8 @@ function setupSwipeNavigation(currentRoute) {
         if (Math.abs(deltaY) > Math.abs(deltaX)) return;
         if (Math.abs(deltaY) > SWIPE_MAX_VERTICAL) return;
 
-        // Ignore swipes that start inside horizontally scrollable content
+        // Ignore swipes that start inside the map (Leaflet handles its own
+        // pan gestures) or any element marked swipe-ignore.
         const startTarget = e.target;
         if (startTarget && startTarget.closest) {
             const scrollable = startTarget.closest('.swipe-ignore, .map-container');
@@ -220,18 +214,30 @@ function setupSwipeNavigation(currentRoute) {
     };
 }
 
-// Toggle visibility of the persistent bottom nav and mark which route is
-// active. The icon elements themselves morph between rectangle/inactive and
+// The icon elements themselves morph between rectangle/inactive and
 // icon/active via CSS transitions on the [data-active="..."] selectors --
 // this is what makes the active icon "slide into the center" instead of the
 // old templates swapping icons in place.
-function updateBottomNav(routeName) {
+//
+// `options.instant` skips the opacity/translate show-hide transition; used on
+// the feedback page where the fade looks janky against the page cross-fade.
+function updateBottomNav(routeName, options = {}) {
     const bottomNav = document.getElementById('bottomNav');
     if (!bottomNav) return;
 
     const route = routes[routeName];
     const shouldShow = !!(route && route.swipeEnabled);
     const wasHidden = !bottomNav.classList.contains('visible');
+
+    if (options.instant) {
+        const prev = bottomNav.style.transition;
+        bottomNav.style.transition = 'none';
+        bottomNav.classList.toggle('visible', shouldShow);
+        void bottomNav.offsetHeight;
+        bottomNav.style.transition = prev;
+    } else {
+        bottomNav.classList.toggle('visible', shouldShow);
+    }
 
     if (shouldShow) {
         // Flip the active class on each item first so the border-color
@@ -258,17 +264,13 @@ function updateBottomNav(routeName) {
             bottomNav.dataset.active = routeName;
         }
     }
-
-    bottomNav.classList.toggle('visible', shouldShow);
 }
 
-// Handle browser navigation (back/forward buttons)
 window.addEventListener('popstate', (event) => {
     const routeName = resolveRouteFromUrl();
     window.navigateTo(routeName, false);
 });
 
-// Intercept clicks on links for smooth client-side transitions
 document.addEventListener('click', (e) => {
     const anchor = e.target.closest('a');
     if (!anchor) return;
@@ -276,7 +278,6 @@ document.addEventListener('click', (e) => {
     const href = anchor.getAttribute('href');
     if (!href) return;
 
-    // Ignore links that open in a new tab or are external
     if (anchor.getAttribute('target') === '_blank' || href.startsWith('http') || href.startsWith('//')) {
         return;
     }
@@ -294,7 +295,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Initial routing
 window.addEventListener('DOMContentLoaded', () => {
     const initialRoute = resolveRouteFromUrl();
     window.navigateTo(initialRoute, false, { skipTransition: true });

@@ -1,21 +1,17 @@
-// JavaScript for Landing Page
-
 window.initIndexPage = () => {
-    // Get the status indicator element
     const statusIndicator = document.getElementById('statusIndicator');
 
-    // Add click event to the status indicator to demonstrate interactivity
+    // Placeholder: clicking the LIVE status pill just confirms it's live.
+    // Replace with a real status panel when one is built.
     if (statusIndicator) {
         statusIndicator.addEventListener('click', () => {
             alert('Bus status: Currently tracking');
         });
     }
 
-    // Add click event to the next button
     const nextButton = document.getElementById('nextButton');
     if (nextButton) {
         nextButton.addEventListener('click', () => {
-            // Navigate to the Stops page
             if (window.navigateTo) {
                 window.navigateTo('stops');
             } else {
@@ -24,11 +20,11 @@ window.initIndexPage = () => {
         });
     }
 
-    // Initialize desktop notification functionality
     initializeDesktopNotification();
 };
 
-// Fallback for standalone loading
+// Standalone-page fallback: the SPA loads this via initIndexPage, but if the
+// page is opened directly (not through the router) we still need to boot it.
 document.addEventListener('DOMContentLoaded', () => {
     if (!window.isSPA) {
         window.initIndexPage();

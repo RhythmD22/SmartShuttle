@@ -1,6 +1,5 @@
 // Shared utility functions for SmartShuttle project
 
-// Initialize desktop notification functionality
 function initializeDesktopNotification() {
     const closeNotificationBtn = document.getElementById('closeNotification');
     const desktopNotification = document.getElementById('desktopNotification');
@@ -11,7 +10,7 @@ function initializeDesktopNotification() {
         });
     }
 
-    // Service Worker registration for PWA functionality
+    // PWA: register the service worker for offline support and caching.
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
@@ -25,13 +24,11 @@ function initializeDesktopNotification() {
     }
 }
 
-// Initialize feedback button functionality
 function initializeFeedbackButton(page = 'Feedback.html') {
     const feedbackBtn = document.querySelector('.feedback-btn') || document.querySelector('.menu-btn');
 
     if (feedbackBtn) {
         feedbackBtn.addEventListener('click', () => {
-            // Redirect to feedback page using SPA router if available
             if (window.navigateTo) {
                 window.navigateTo('feedback');
             } else {
@@ -41,7 +38,6 @@ function initializeFeedbackButton(page = 'Feedback.html') {
     }
 }
 
-// Validate form fields
 function validateFormFields(requiredFields) {
     for (const [name, value] of Object.entries(requiredFields)) {
         if (!value) {
@@ -52,7 +48,6 @@ function validateFormFields(requiredFields) {
     return true;
 }
 
-// Validate description length
 function validateDescriptionLength(description, minLength = 10) {
     if (description.length < minLength) {
         alert(`Please provide a more detailed description (at least ${minLength} characters).`);
@@ -61,7 +56,6 @@ function validateDescriptionLength(description, minLength = 10) {
     return true;
 }
 
-// Validate file size
 function validateFileSize(file, maxSizeMB = 5) {
     if (file && file.size > maxSizeMB * 1024 * 1024) {
         alert(`File size exceeds ${maxSizeMB}MB limit. Please choose a smaller file.`);
@@ -70,22 +64,19 @@ function validateFileSize(file, maxSizeMB = 5) {
     return true;
 }
 
-// Update attachment preview
 function updateAttachmentPreview(file, previewElement, previewIcon, previewText) {
-    // Determine appropriate icon based on file type
-    let icon = '📄'; // Default document icon
+    let icon = '📄';
     if (file.type.startsWith('image/')) {
-        icon = '🖼️'; // Image icon
+        icon = '🖼️';
     } else if (file.type === 'application/pdf') {
-        icon = '📋'; // PDF document
+        icon = '📋';
     } else if (file.type === 'application/msword' ||
         file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        icon = '📝'; // Word document
+        icon = '📝';
     } else if (file.type === 'text/plain') {
-        icon = '📝'; // Text file
+        icon = '📝';
     }
 
-    // Update the preview icon and text
     if (previewIcon) {
         previewIcon.textContent = icon;
     }
@@ -94,7 +85,6 @@ function updateAttachmentPreview(file, previewElement, previewIcon, previewText)
         previewText.textContent = 'Attached';
     }
 
-    // Show the preview and hide the original button
     if (previewElement) {
         previewElement.style.display = 'block';
     }
@@ -104,7 +94,6 @@ function updateAttachmentPreview(file, previewElement, previewIcon, previewText)
     }
 }
 
-// Reset attachment UI
 function resetAttachmentUI(attachmentInput, attachmentLabel, attachmentPreview) {
     if (attachmentInput) {
         attachmentInput.value = '';
@@ -113,11 +102,12 @@ function resetAttachmentUI(attachmentInput, attachmentLabel, attachmentPreview) 
         attachmentPreview.style.display = 'none';
     }
     if (attachmentLabel) {
-        attachmentLabel.style.display = 'flex'; // or 'block' to match original display
+        attachmentLabel.style.display = 'flex';
     }
 }
 
-// Debounce function to limit API calls
+// Trailing-edge debounce; used to throttle API calls triggered by typing or
+// map panning.
 const debounce = (func, wait) => {
     let timeout;
     return function executedFunction(...args) {
@@ -130,7 +120,6 @@ const debounce = (func, wait) => {
     };
 };
 
-// Helper function to get human-readable route type text
 const getRouteTypeText = (routeType) => {
     const routeTypes = {
         0: 'Tram, Streetcar, Light rail',
@@ -148,7 +137,6 @@ const getRouteTypeText = (routeType) => {
     return routeTypes[routeType] || `Unknown (${routeType})`;
 };
 
-// Helper function to get CSS class for vehicle type
 const getVehicleTypeClass = (vehicleType) => {
     const type = vehicleType.toLowerCase();
 
@@ -158,30 +146,25 @@ const getVehicleTypeClass = (vehicleType) => {
     if (type.includes('tram') || type.includes('streetcar')) return 'tram';
     if (type.includes('ferry')) return 'ferry';
 
-    // Default to bus for unknown types
     return 'bus';
 };
 
-// Initialize refresh button functionality
 function initializeRefreshButton(refreshCallback) {
     const refreshBtn = document.getElementById('refreshBtn');
 
     if (refreshBtn) {
         refreshBtn.addEventListener('click', () => {
-            // Add visual feedback for the refresh action
             const refreshIcon = refreshBtn.querySelector('.icon');
             refreshIcon.style.transition = 'transform 0.3s ease';
             refreshIcon.style.transform = 'rotate(360deg)';
 
-            // Reset the rotation after the animation completes
             setTimeout(() => {
                 refreshIcon.style.transform = 'rotate(0deg)';
             }, 300);
 
-            // Perform the refresh action if callback provided
             if (refreshCallback && typeof refreshCallback === 'function') {
                 refreshCallback();
             }
         });
     }
-};
+}
