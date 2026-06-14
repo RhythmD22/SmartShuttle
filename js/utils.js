@@ -149,49 +149,6 @@ const getVehicleTypeClass = (vehicleType) => {
     return 'bus';
 };
 
-function setupKeyboardViewportFix(searchInput) {
-    if (!searchInput) return;
-
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    if (!isIOS || !isStandalone) return;
-
-    let keyboardOpen = false;
-
-    searchInput.addEventListener('focus', () => {
-        keyboardOpen = true;
-    });
-
-    function scheduleLayoutReset() {
-        keyboardOpen = false;
-        [120, 350, 650].forEach(function (delay) {
-            setTimeout(function () {
-                window.scrollTo(0, 0);
-                document.body.scrollTop = 0;
-                document.documentElement.scrollTop = 0;
-
-                var containers = document.querySelectorAll('.container');
-                for (var i = 0; i < containers.length; i++) {
-                    containers[i].style.height = '';
-                    void containers[i].offsetHeight;
-                }
-
-                if (window.__repositionBottomNav) {
-                    window.__repositionBottomNav();
-                }
-            }, delay);
-        });
-    }
-
-    searchInput.addEventListener('blur', scheduleLayoutReset);
-
-    searchInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-            searchInput.blur();
-        }
-    });
-}
-
 function initializeRefreshButton(refreshCallback) {
     const refreshBtn = document.getElementById('refreshBtn');
 

@@ -25,7 +25,15 @@
         const searchPill = document.querySelector('.notification-search-pill');
         const filterContainer = document.querySelector('.alert-filter-container');
 
-        setupKeyboardViewportFix(searchInput);
+        if (searchInput) {
+            searchInput.addEventListener('blur', function () {
+                setTimeout(function () {
+                    window.scrollTo(0, 0);
+                    document.documentElement.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                }, 100);
+            });
+        }
 
         if (searchPill && searchInput) {
             searchPill.addEventListener('click', () => {

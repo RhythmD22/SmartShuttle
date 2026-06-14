@@ -215,16 +215,29 @@ function setupSwipeNavigation(currentRoute) {
 }
 
 function getSafeAreaInsetBottom() {
-    const probe = document.createElement('div');
+    var probe = document.createElement('div');
     probe.style.position = 'fixed';
     probe.style.bottom = '0';
     probe.style.left = '-9999px';
     probe.style.width = '0';
     probe.style.height = 'env(safe-area-inset-bottom, 0px)';
     document.body.appendChild(probe);
-    const safeBottom = parseFloat(getComputedStyle(probe).height) || 0;
+    var safeBottom = parseFloat(getComputedStyle(probe).height) || 0;
     document.body.removeChild(probe);
     return safeBottom;
+}
+
+function getSafeAreaInsetTop() {
+    var probe = document.createElement('div');
+    probe.style.position = 'fixed';
+    probe.style.top = '0';
+    probe.style.left = '-9999px';
+    probe.style.width = '0';
+    probe.style.height = 'env(safe-area-inset-top, 0px)';
+    document.body.appendChild(probe);
+    var safeTop = parseFloat(getComputedStyle(probe).height) || 0;
+    document.body.removeChild(probe);
+    return safeTop;
 }
 
 function getVisibleViewportHeight() {
@@ -240,26 +253,37 @@ function isKeyboardOpen() {
 }
 
 function repositionBottomNav() {
-    const bottomNav = document.getElementById('bottomNav');
-    if (!bottomNav) return;
+    var bottomNav = document.getElementById('bottomNav');
+    var safeBottom = getSafeAreaInsetBottom();
+    var safeTop = getSafeAreaInsetTop();
+    var visibleHeight = getVisibleViewportHeight();
+    var keyboardOpen = isKeyboardOpen();
 
-    const safeBottom = getSafeAreaInsetBottom();
-    const visibleHeight = getVisibleViewportHeight();
-    const top = Math.max(0, visibleHeight - 96 - safeBottom);
-    bottomNav.style.top = `${top}px`;
+    if (bottomNav) {
+        var top = Math.max(0, visibleHeight - 96 - safeBottom);
+        bottomNav.style.top = top + 'px';
+        bottomNav.classList.toggle('search-active', keyboardOpen);
+    }
 
-    const keyboardOpen = isKeyboardOpen();
-    bottomNav.classList.toggle('search-active', keyboardOpen);
     document.documentElement.classList.toggle('keyboard-open', keyboardOpen);
 
+    var isLandscape = window.matchMedia('(orientation: landscape)').matches;
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    if (bottomNav) {
+        bottomNav.classList.toggle('landscape-hidden', isLandscape && isStandalone);
+    }
+
+    var containers = document.querySelectorAll('.container');
+    var containerHeight = visibleHeight - safeTop - safeBottom;
+    for (var i = 0; i < containers.length; i++) {
+        containers[i].style.height = containerHeight + 'px';
+        containers[i].style.minHeight = containerHeight + 'px';
+    }
+
     if (!keyboardOpen) {
-        requestAnimationFrame(function () {
-            var containers = document.querySelectorAll('.container');
-            for (var i = 0; i < containers.length; i++) {
-                containers[i].style.height = '';
-                void containers[i].offsetHeight;
-            }
-        });
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
     }
 }
 
@@ -313,39 +337,17 @@ function updateBottomNav(routeName, options = {}) {
 }
 
 if (window.visualViewport) {
-    let previousKeyboardOpen = false;
     window.visualViewport.addEventListener('resize', function () {
-        var keyboardOpen = isKeyboardOpen();
-        var keyboardJustClosed = previousKeyboardOpen && !keyboardOpen;
-
         repositionBottomNav();
-
-        if (keyboardJustClosed) {
-            [100, 350, 700].forEach(function (delay) {
-                setTimeout(function () {
-                    window.scrollTo(0, 0);
-                    document.body.scrollTop = 0;
-                    document.documentElement.scrollTop = 0;
-
-                    var containers = document.querySelectorAll('.container');
-                    for (var i = 0; i < containers.length; i++) {
-                        containers[i].style.height = '';
-                        void containers[i].offsetHeight;
-                    }
-
-                    repositionBottomNav();
-                }, delay);
-            });
-        }
-
-        previousKeyboardOpen = keyboardOpen;
     });
     window.visualViewport.addEventListener('scroll', function () {
         repositionBottomNav();
     });
 }
 window.addEventListener('resize', repositionBottomNav);
-window.addEventListener('orientationchange', repositionBottomNav);
+window.addEventListener('orientationchange', function () {
+    setTimeout(repositionBottomNav, 100);
+});
 
 window.addEventListener('popstate', (event) => {
     const routeName = resolveRouteFromUrl();

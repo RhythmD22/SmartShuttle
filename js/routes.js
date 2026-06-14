@@ -325,7 +325,13 @@
         const routeSearchInput = document.getElementById('routeSearchInput');
         if (!routeSearchInput) return;
 
-        setupKeyboardViewportFix(routeSearchInput);
+        routeSearchInput.addEventListener('blur', function () {
+            setTimeout(function () {
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+            }, 100);
+        });
 
         routeSearchInput.addEventListener('input', () => {
             const query = routeSearchInput.value.toLowerCase().trim();
