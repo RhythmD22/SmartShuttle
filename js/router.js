@@ -214,16 +214,25 @@ function setupSwipeNavigation(currentRoute) {
     };
 }
 
-// The icon elements themselves morph between rectangle/inactive and
-// icon/active via CSS transitions on the [data-active="..."] selectors --
-// this is what makes the active icon "slide into the center" instead of the
-// old templates swapping icons in place.
-//
-// `options.instant` skips the opacity/translate show-hide transition; used on
-// the feedback page where the fade looks janky against the page cross-fade.
 function updateBottomNav(routeName, options = {}) {
     const bottomNav = document.getElementById('bottomNav');
     if (!bottomNav) return;
+
+    const anchorNav = () => {
+        const probe = document.createElement('div');
+        probe.style.position = 'fixed';
+        probe.style.bottom = '0';
+        probe.style.left = '-9999px';
+        probe.style.width = '0';
+        probe.style.height = 'env(safe-area-inset-bottom, 0px)';
+        document.body.appendChild(probe);
+        const safeBottom = parseFloat(getComputedStyle(probe).height) || 0;
+        document.body.removeChild(probe);
+        const top = Math.max(0, window.innerHeight - 96 - safeBottom);
+        bottomNav.style.top = `${top}px`;
+    };
+    anchorNav();
+    requestAnimationFrame(anchorNav);
 
     const route = routes[routeName];
     const shouldShow = !!(route && route.swipeEnabled);
