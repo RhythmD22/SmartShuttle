@@ -26,7 +26,14 @@
         const filterContainer = document.querySelector('.alert-filter-container');
 
         if (searchInput) {
+            searchInput.addEventListener('focus', function () {
+                var nav = document.getElementById('bottomNav');
+                if (nav) nav.classList.add('search-active');
+            });
+
             searchInput.addEventListener('blur', function () {
+                var nav = document.getElementById('bottomNav');
+                if (nav) nav.classList.remove('search-active');
                 setTimeout(function () {
                     window.scrollTo(0, 0);
                     document.documentElement.scrollTop = 0;

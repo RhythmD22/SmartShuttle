@@ -325,7 +325,14 @@
         const routeSearchInput = document.getElementById('routeSearchInput');
         if (!routeSearchInput) return;
 
+        routeSearchInput.addEventListener('focus', function () {
+            var nav = document.getElementById('bottomNav');
+            if (nav) nav.classList.add('search-active');
+        });
+
         routeSearchInput.addEventListener('blur', function () {
+            var nav = document.getElementById('bottomNav');
+            if (nav) nav.classList.remove('search-active');
             setTimeout(function () {
                 window.scrollTo(0, 0);
                 document.documentElement.scrollTop = 0;

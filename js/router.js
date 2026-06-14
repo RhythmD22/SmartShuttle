@@ -214,77 +214,21 @@ function setupSwipeNavigation(currentRoute) {
     };
 }
 
-function getSafeAreaInsetBottom() {
-    var probe = document.createElement('div');
-    probe.style.position = 'fixed';
-    probe.style.bottom = '0';
-    probe.style.left = '-9999px';
-    probe.style.width = '0';
-    probe.style.height = 'env(safe-area-inset-bottom, 0px)';
-    document.body.appendChild(probe);
-    var safeBottom = parseFloat(getComputedStyle(probe).height) || 0;
-    document.body.removeChild(probe);
-    return safeBottom;
-}
-
-function getSafeAreaInsetTop() {
-    var probe = document.createElement('div');
-    probe.style.position = 'fixed';
-    probe.style.top = '0';
-    probe.style.left = '-9999px';
-    probe.style.width = '0';
-    probe.style.height = 'env(safe-area-inset-top, 0px)';
-    document.body.appendChild(probe);
-    var safeTop = parseFloat(getComputedStyle(probe).height) || 0;
-    document.body.removeChild(probe);
-    return safeTop;
-}
-
-function getVisibleViewportHeight() {
-    if (window.visualViewport) {
-        return window.visualViewport.height;
+function setFixedLayoutHeight() {
+    document.body.style.height = window.innerHeight + 'px';
+    var containers = document.querySelectorAll('.container');
+    for (var i = 0; i < containers.length; i++) {
+        containers[i].style.height = '';
     }
-    return window.innerHeight;
-}
-
-function isKeyboardOpen() {
-    if (!window.visualViewport) return false;
-    return window.visualViewport.height < window.innerHeight * 0.75;
 }
 
 function repositionBottomNav() {
     var bottomNav = document.getElementById('bottomNav');
-    var safeBottom = getSafeAreaInsetBottom();
-    var safeTop = getSafeAreaInsetTop();
-    var visibleHeight = getVisibleViewportHeight();
-    var keyboardOpen = isKeyboardOpen();
-
-    if (bottomNav) {
-        var top = Math.max(0, visibleHeight - 96 - safeBottom);
-        bottomNav.style.top = top + 'px';
-        bottomNav.classList.toggle('search-active', keyboardOpen);
-    }
-
-    document.documentElement.classList.toggle('keyboard-open', keyboardOpen);
+    if (!bottomNav) return;
 
     var isLandscape = window.matchMedia('(orientation: landscape)').matches;
     var isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    if (bottomNav) {
-        bottomNav.classList.toggle('landscape-hidden', isLandscape && isStandalone);
-    }
-
-    var containers = document.querySelectorAll('.container');
-    var containerHeight = visibleHeight - safeTop - safeBottom;
-    for (var i = 0; i < containers.length; i++) {
-        containers[i].style.height = containerHeight + 'px';
-        containers[i].style.minHeight = containerHeight + 'px';
-    }
-
-    if (!keyboardOpen) {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-    }
+    bottomNav.classList.toggle('landscape-hidden', isLandscape && isStandalone);
 }
 
 window.__repositionBottomNav = repositionBottomNav;
@@ -336,17 +280,15 @@ function updateBottomNav(routeName, options = {}) {
     }
 }
 
-if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', function () {
-        repositionBottomNav();
-    });
-    window.visualViewport.addEventListener('scroll', function () {
-        repositionBottomNav();
-    });
-}
-window.addEventListener('resize', repositionBottomNav);
+window.addEventListener('resize', function () {
+    setFixedLayoutHeight();
+    repositionBottomNav();
+});
 window.addEventListener('orientationchange', function () {
-    setTimeout(repositionBottomNav, 100);
+    setTimeout(function () {
+        setFixedLayoutHeight();
+        repositionBottomNav();
+    }, 100);
 });
 
 window.addEventListener('popstate', (event) => {
@@ -379,6 +321,7 @@ document.addEventListener('click', (e) => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+    setFixedLayoutHeight();
     const initialRoute = resolveRouteFromUrl();
     window.navigateTo(initialRoute, false, { skipTransition: true });
 });
