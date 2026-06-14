@@ -186,7 +186,7 @@ dotlottie-wc {
 
 .bottom-nav {
     position: fixed;
-    bottom: calc(25px + env(safe-area-inset-bottom, 0px));
+    top: calc(100dvh - 96px - env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
     width: 100%;
