@@ -1,15 +1,11 @@
 export default async function handler(request, response) {
   try {
-    // Extract the API endpoint from the URL - construct complete URL with query parameters
-    // In Next.js API routes, request.url includes the path and query string but not the protocol/host
-    // We need to parse the path and query separately
     const [pathname, ...searchParts] = request.url.split('?');
     const search = searchParts.length > 0 ? '?' + searchParts.join('?') : '';
 
     const endpoint = pathname.replace('/api/transit', '');
-    const searchParams = search; // This includes the ? and all parameters
+    const searchParams = search;
 
-    // Get the API key from environment variables
     const { TRANSIT_API_KEY: apiKey } = process.env;
 
     if (!apiKey) {
@@ -17,17 +13,13 @@ export default async function handler(request, response) {
       return response.status(500).json({ error: 'Transit API key not configured' });
     }
 
-    // Ensure endpoint starts with a slash to create a valid URL
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
     // Transit API v3 requires the /public prefix for public endpoints
     // Check if the endpoint already has /public, if not, add it
     const apiEndpoint = formattedEndpoint.startsWith('/public') ? formattedEndpoint : `/public${formattedEndpoint}`;
-
-    // Construct the target URL for the Transit API, properly including query parameters
     const targetUrl = `https://external.transitapp.com/v3${apiEndpoint}${searchParams}`;
 
-    // Validate the constructed URL
     try {
       new URL(targetUrl);
     } catch (urlError) {
@@ -38,9 +30,8 @@ export default async function handler(request, response) {
       });
     }
 
-    console.log(`Forwarding request to: ${targetUrl}`); // Debug log
+    console.log(`Forwarding request to: ${targetUrl}`);
 
-    // Prepare headers for the request to Transit API
     const headers = {
       'Content-Type': 'application/json',
       'apiKey': apiKey
@@ -51,22 +42,19 @@ export default async function handler(request, response) {
     delete loggedHeaders.apiKey;
     console.log('Forwarding headers:', loggedHeaders);
 
-    // Forward the request to the Transit API
     const apiResponse = await fetch(targetUrl, {
       method: request.method,
       headers: headers,
       body: request.method !== 'GET' && request.body ? JSON.stringify(request.body) : undefined
     });
 
-    console.log(`Transit API responded with status: ${apiResponse.status}`); // Debug log
-
+    console.log(`Transit API responded with status: ${apiResponse.status}`);
     if (!apiResponse.ok) {
-      // If there's an error response, try to get more details
       let errorData = {};
+
       try {
         errorData = await apiResponse.json();
       } catch (e) {
-        // If parsing as JSON fails, try to get the raw text response
         errorData.raw_response = await apiResponse.text();
       }
       console.error('Transit API error response:', errorData);
@@ -76,7 +64,6 @@ export default async function handler(request, response) {
       });
     }
 
-    // Return the response from the Transit API
     const data = await apiResponse.json();
     return response.status(apiResponse.status).json(data);
 
