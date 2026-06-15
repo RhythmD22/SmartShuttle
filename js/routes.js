@@ -78,6 +78,10 @@
     const initializeMap = () => {
         map = createLeafletMap('map');
 
+        setTimeout(() => {
+            if (map) map.invalidateSize();
+        }, 350);
+
         const getUserLocation = () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showUserLocation, handleLocationError);
@@ -288,7 +292,7 @@
         routeArrivalsContent.innerHTML = '';
 
         if (!routes || routes.length === 0) {
-            routeArrivalsContent.innerHTML = '<div class="route-row"><div class="route-info" style="color:#70685C;">No matching routes</div><div class="arrival-info" style="color:#70685C;">-</div></div>';
+            routeArrivalsContent.innerHTML = '<div class="route-row"><div class="route-info" style="color:#ABA9A6;">No matching routes</div><div class="arrival-info" style="color:#ABA9A6;">-</div></div>';
             updateShuttleCapacitySection([]);
             return;
         }
@@ -416,7 +420,7 @@
         }
 
         if (!shuttles || shuttles.length === 0) {
-            shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info" style="color:#70685C;">No shuttles available</div><div class="seats-info" style="color:#70685C;">-</div></div>';
+            shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info" style="color:#ABA9A6;">No shuttles available</div><div class="seats-info" style="color:#ABA9A6;">-</div></div>';
             return;
         }
 
