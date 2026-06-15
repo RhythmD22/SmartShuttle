@@ -47,7 +47,6 @@ const routes = {
     }
 };
 
-// Map URL paths to route keys
 function resolveRouteFromUrl() {
     const path = window.location.pathname.toLowerCase();
     const hash = window.location.hash.toLowerCase();
@@ -61,7 +60,6 @@ function resolveRouteFromUrl() {
     return 'landing';
 }
 
-// Global navigate function
 window.navigateTo = function (routeName, pushState = true, options = {}) {
     const route = routes[routeName];
     if (!route) return;
@@ -191,9 +189,9 @@ function setupSwipeNavigation(currentRoute) {
         }
 
         if (deltaX < 0 && hasNext) {
-            window.navigateTo(swipeNavOrder[currentIndex + 1], true, { direction: 'forward' });
+            window.navigateTo(swipeNavOrder[currentIndex + 1], true);
         } else if (deltaX > 0 && hasPrev) {
-            window.navigateTo(swipeNavOrder[currentIndex - 1], true, { direction: 'back' });
+            window.navigateTo(swipeNavOrder[currentIndex - 1], true);
         }
     };
 
@@ -216,22 +214,20 @@ function setupSwipeNavigation(currentRoute) {
 
 function setFixedLayoutHeight() {
     document.body.style.height = window.innerHeight + 'px';
-    var containers = document.querySelectorAll('.container');
-    for (var i = 0; i < containers.length; i++) {
+    const containers = document.querySelectorAll('.container');
+    for (let i = 0; i < containers.length; i++) {
         containers[i].style.height = '';
     }
 }
 
 function repositionBottomNav() {
-    var bottomNav = document.getElementById('bottomNav');
+    const bottomNav = document.getElementById('bottomNav');
     if (!bottomNav) return;
 
-    var isLandscape = window.matchMedia('(orientation: landscape)').matches;
-    var isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     bottomNav.classList.toggle('landscape-hidden', isLandscape && isStandalone);
 }
-
-window.__repositionBottomNav = repositionBottomNav;
 
 function updateBottomNav(routeName, options = {}) {
     const bottomNav = document.getElementById('bottomNav');
@@ -241,7 +237,6 @@ function updateBottomNav(routeName, options = {}) {
 
     const route = routes[routeName];
     const shouldShow = !!(route && route.swipeEnabled);
-    const wasHidden = !bottomNav.classList.contains('visible');
 
     if (options.instant) {
         const prev = bottomNav.style.transition;
@@ -254,29 +249,10 @@ function updateBottomNav(routeName, options = {}) {
     }
 
     if (shouldShow) {
-        // Flip the active class on each item first so the border-color
-        // transition fires alongside the size/color/position morph.
         const items = bottomNav.querySelectorAll('.nav-item');
         items.forEach(item => {
             item.classList.toggle('active', item.dataset.route === routeName);
         });
-
-        if (wasHidden) {
-            // When the nav is becoming visible, suppress the position/size
-            // transition for one frame so the icons don't animate in from
-            // their default (data-active-less) slot.
-            const content = bottomNav.querySelector('.bottom-nav-content');
-            const prevTransition = content
-                ? content.style.transition
-                : '';
-            if (content) content.style.transition = 'none';
-            bottomNav.dataset.active = routeName;
-            // Force a reflow before restoring the transition.
-            void (content ? content.offsetHeight : bottomNav.offsetHeight);
-            if (content) content.style.transition = prevTransition;
-        } else {
-            bottomNav.dataset.active = routeName;
-        }
     }
 }
 

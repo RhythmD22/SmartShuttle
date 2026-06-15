@@ -1,12 +1,10 @@
 (() => {
     let map;
-    let selectedLocation = null;
     let routeMarkers = [];
     let currentRoutes = [];
 
     window.initRoutesPage = () => {
         map = null;
-        selectedLocation = null;
         routeMarkers = [];
         currentRoutes = [];
 
@@ -27,239 +25,22 @@
     });
 
     const initializeSearch = () => {
-        const searchBtn = document.querySelector('.search-btn');
-        const searchModal = document.getElementById('searchModal');
-        const closeSearchModal = document.getElementById('closeSearchModal');
-        const searchInput = document.getElementById('searchInput');
-        const searchResults = document.getElementById('searchResults');
-
-        const closeSearchModalFn = () => {
-            searchModal.style.display = 'none';
-            clearSearchResults();
-        };
-
-        // Show modal when search button is clicked
-        searchBtn.addEventListener('click', () => {
-            searchModal.style.display = 'block';
-            searchInput.focus();
-        });
-
-        closeSearchModal.addEventListener('click', closeSearchModalFn);
-
-        searchInput.addEventListener('focus', () => {
-            if (searchInput.value.trim() === '') {
-                showCurrentLocationOption();
-            }
-        });
-
-        window.addEventListener('click', (event) => {
-            if (event.target === searchModal) {
-                closeSearchModalFn();
-            }
-        });
-
-        let searchTimeout;
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            const query = searchInput.value.trim();
-
-            if (query.length === 0) {
-                showCurrentLocationOption();
-                return;
-            }
-
-            if (query.length < 3) {
-                searchResults.innerHTML = '';
-                return;
-            }
-
-            searchTimeout = setTimeout(() => {
-                performSearch(query);
-            }, 500);
-        });
-
-        searchInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                const query = searchInput.value.trim();
-                if (query.length >= 3) {
-                    performSearch(query);
-                }
-            }
-        });
-
-        const performSearch = async (query) => {
-            try {
-                const generalResults = await searchNominatim(query);
-                displaySearchResults(generalResults);
-            } catch (error) {
-                console.error('Error with search:', error);
-                searchResults.innerHTML = '<div class="search-result-item">Error performing search. Please try again.</div>';
-            }
-        };
-
-        const displaySearchResults = (results) => {
-            searchResults.innerHTML = '';
-
-            if (!results || !Array.isArray(results) || results.length === 0) {
-                searchResults.innerHTML = '<div class="search-result-item">No results found. Try a different search term.</div>';
-                return;
-            }
-
-            const validResults = results.filter(result => {
-                return result &&
-                    typeof result.lat !== 'undefined' &&
-                    typeof result.lon !== 'undefined' &&
-                    result.display_name;
-            });
-
-            if (validResults.length !== results.length) {
-                const invalidCount = results.length - validResults.length;
-                console.warn(`Filtered out ${invalidCount} invalid search results`);
-            }
-
-            const busStops = [];
-            const otherLocations = [];
-
-            validResults.forEach(result => {
-                // Nominatim tags bus stops inconsistently: some come back with
-                // class=highway type=bus_stop, others as amenity, and some only
-                // have "bus stop" in the display name. We check all of these.
-                const isBusStop = (result.class === 'highway' && result.type === 'bus_stop') ||
-                    (result.class === 'amenity' && result.type === 'bus_stop') ||
-                    (result.category === 'highway' && result.type === 'bus_stop') ||
-                    (result.category === 'amenity' && result.type === 'bus_stop') ||
-                    result.display_name.toLowerCase().includes('bus stop') ||
-                    (result.display_name.toLowerCase().includes('stop') &&
-                        (result.class === 'highway' || result.class === 'amenity'));
-
-                if (isBusStop) {
-                    busStops.push(result);
-                } else {
-                    otherLocations.push(result);
-                }
-            });
-
-            const orderedResults = [...busStops, ...otherLocations];
-
-            orderedResults.forEach(result => {
-                const resultElement = document.createElement('div');
-                resultElement.className = 'search-result-item';
-                resultElement.innerHTML = `
-                <div class="result-title">${result.display_name}</div>
-                <div class="result-address">${result.address?.state || result.address?.county || result.address?.country || 'United States'}</div>
-            `;
-
-                resultElement.addEventListener('click', () => {
-                    const lat = parseFloat(result.lat);
-                    const lon = parseFloat(result.lon);
-
-                    if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-                        console.error('Invalid coordinates from search result:', lat, lon);
-                        return;
-                    }
-
-                    saveLocationToStorage(lat, lon, result.display_name);
-
-                    const locationDisplay = document.getElementById('selectedLocationDisplay');
-                    if (locationDisplay) {
-                        locationDisplay.textContent = result.display_name;
-                    }
-
-                    map.setView([lat, lon], 13);
-
-                    searchModal.style.display = 'none';
-                    clearSearchResults();
-
-                    fetchRealTimeBuses(lat, lon);
-                });
-
-                searchResults.appendChild(resultElement);
-            });
-        };
-
-        function clearSearchResults() {
-            searchResults.innerHTML = '';
-            searchInput.value = '';
-        }
-
-        const showCurrentLocationOption = () => {
-            searchResults.innerHTML = '';
-
-            const currentLocationElement = document.createElement('div');
-            currentLocationElement.className = 'search-result-item';
-            currentLocationElement.innerHTML = `
-            <div class="result-title">📍 Current Location</div>
-            <div class="result-address">Use my current location</div>
-        `;
-
-            currentLocationElement.addEventListener('click', () => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        async (position) => {
-                            const userLat = position.coords.latitude;
-                            const userLng = position.coords.longitude;
-
-                            // Reverse geocode to a human-readable name for the header
-                            try {
-                                const displayName = await reverseGeocodeLocation(userLat, userLng);
-                                saveLocationAndCenterMap(userLat, userLng, displayName);
-                            } catch (error) {
-                                console.error('Error getting location name:', error);
-                                saveLocationAndCenterMap(userLat, userLng, 'Current Location');
-                            }
-                        },
-                        (error) => {
-                            console.error('Error getting current location:', error);
-
-                            searchResults.innerHTML = '<div class="search-result-item">Unable to retrieve your location. Please check permissions.</div>';
-
-                            const locationDisplay = document.getElementById('selectedLocationDisplay');
-                            if (locationDisplay) {
-                                locationDisplay.textContent = 'Location access denied';
-                            }
-                        }
-                    );
-                } else {
-                    searchResults.innerHTML = '<div class="search-result-item">Geolocation is not supported by your browser.</div>';
-                }
-            });
-
-            searchResults.appendChild(currentLocationElement);
-        };
-
-        const saveLocationAndCenterMap = (lat, lng, displayName) => {
-            saveLocationToStorage(lat, lng, displayName);
-
-            const locationDisplay = document.getElementById('selectedLocationDisplay');
-            if (locationDisplay) {
-                locationDisplay.textContent = displayName;
-            }
-
-            map.setView([lat, lng], 13);
-
-            const searchModal = document.getElementById('searchModal');
-            if (searchModal) {
-                searchModal.style.display = 'none';
-            }
-            clearSearchResults();
-
-            addMapUserMarker(map, lat, lng, null);
-
+        initializeLocationSearch(map, (lat, lng) => {
             fetchRealTimeBuses(lat, lng);
-        }
-    }
+        });
+    };
 
     const initializeRouteSearch = () => {
         const routeSearchInput = document.getElementById('routeSearchInput');
         if (!routeSearchInput) return;
 
         routeSearchInput.addEventListener('focus', function () {
-            var nav = document.getElementById('bottomNav');
+            const nav = document.getElementById('bottomNav');
             if (nav) nav.classList.add('search-active');
         });
 
         routeSearchInput.addEventListener('blur', function () {
-            var nav = document.getElementById('bottomNav');
+            const nav = document.getElementById('bottomNav');
             if (nav) nav.classList.remove('search-active');
             setTimeout(function () {
                 window.scrollTo(0, 0);
@@ -301,7 +82,7 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showUserLocation, handleLocationError);
             } else {
-                console.log("Geolocation is not supported by this browser.");
+                console.error('Geolocation is not supported by this browser.');
                 loadSelectedLocation();
             }
         };
@@ -324,7 +105,8 @@
         };
 
         const handleLocationError = (error) => {
-            console.log("Unable to retrieve your location. Error code: " + error.code + ", Message: " + error.message);
+            console.error('Unable to retrieve your location. Error code: ' + error.code + ', Message: ' + error.message);
+            updateLocationDisplay('Location unavailable');
             loadSelectedLocation();
         };
 
@@ -332,7 +114,6 @@
             const savedLocation = localStorage.getItem('selectedLocation');
             if (savedLocation) {
                 const locationData = JSON.parse(savedLocation);
-                selectedLocation = locationData;
 
                 const locationDisplay = document.getElementById('selectedLocationDisplay');
                 if (locationDisplay) {
@@ -350,16 +131,16 @@
     const loadSelectedLocation = () => {
         const savedLocation = localStorage.getItem('selectedLocation');
         if (savedLocation) {
-            selectedLocation = JSON.parse(savedLocation);
+            const locationData = JSON.parse(savedLocation);
 
             const locationDisplay = document.getElementById('selectedLocationDisplay');
             if (locationDisplay) {
-                locationDisplay.textContent = selectedLocation.displayName || 'Saved Location';
+                locationDisplay.textContent = locationData.displayName || 'Saved Location';
             }
 
-            if (selectedLocation) {
-                map.setView([selectedLocation.lat, selectedLocation.lon], 13);
-                fetchRealTimeBuses(selectedLocation.lat, selectedLocation.lon);
+            if (locationData) {
+                map.setView([locationData.lat, locationData.lon], 13);
+                fetchRealTimeBuses(locationData.lat, locationData.lon);
             }
         } else {
             const locationDisplay = document.getElementById('selectedLocationDisplay');
@@ -370,6 +151,9 @@
     };
 
     const fetchRealTimeBuses = async (lat, lng) => {
+        showRouteSkeletons();
+        hideRoutesEmptyState();
+
         try {
             const response = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`);
 
@@ -386,15 +170,10 @@
 
                 processRoutesData(data.routes);
                 updateRouteArrivalsSection(data.routes);
+                hideRoutesEmptyState();
             } else {
                 currentRoutes = [];
-                console.log('No routes found near the selected location');
-
-                const locationDisplay = document.getElementById('selectedLocationDisplay');
-                if (locationDisplay) {
-                    locationDisplay.textContent = 'No transit available in this area';
-                }
-
+                showRoutesEmptyState();
                 updateRouteArrivalsSection([]);
                 updateShuttleCapacitySection([]);
             }
@@ -408,13 +187,14 @@
             }
 
             updateShuttleCapacitySection([]);
+            showRouteErrorState();
         }
     };
 
     const processRoutesData = (routes) => {
-        routes.forEach((route, index) => {
+        routes.forEach(route => {
             if (route.itineraries && route.itineraries.length > 0) {
-                route.itineraries.forEach((itinerary, itineraryIndex) => {
+                route.itineraries.forEach(itinerary => {
                     if (itinerary.closest_stop) {
                         const stop = itinerary.closest_stop;
 
@@ -484,16 +264,6 @@
                         routeMarkers.push(stopMarker);
                     }
 
-                    // Process schedule items (bus departure times)
-                    if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
-                        itinerary.schedule_items.forEach(scheduleItem => {
-                            if (scheduleItem.is_real_time && scheduleItem.departure_time) {
-                                // TODO: render live vehicle markers on the map here.
-                                // For now we just log so devs can see the data is flowing.
-                                console.log(`Real-time bus for route ${route.route_short_name || route.real_time_route_id}: ${new Date(scheduleItem.departure_time * 1000).toLocaleTimeString()}`);
-                            }
-                        });
-                    }
                 });
             }
         });
@@ -518,14 +288,14 @@
         routeArrivalsContent.innerHTML = '';
 
         if (!routes || routes.length === 0) {
-            routeArrivalsContent.innerHTML = '<div class="route-row"><div class="route-info">No routes available</div><div class="arrival-info">-</div></div>';
+            routeArrivalsContent.innerHTML = '<div class="route-row"><div class="route-info" style="color:#70685C;">No matching routes</div><div class="arrival-info" style="color:#70685C;">-</div></div>';
             updateShuttleCapacitySection([]);
             return;
         }
 
         routes.forEach(route => {
             if (route.itineraries && route.itineraries.length > 0) {
-                route.itineraries.forEach((itinerary, index) => {
+                route.itineraries.forEach(itinerary => {
                     if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
                         const scheduleItem = itinerary.schedule_items[0];
 
@@ -591,8 +361,6 @@
         updateShuttleCapacitySection(routes);
     };
 
-    // Hardcoded seat counts per shuttle class. The Transit API doesn't expose
-    // real-time capacity, so we use these to render the capacity bar.
     const SHUTTLE_CAPACITY_MAP = {
         micro: 6,
         small: 12,
@@ -615,7 +383,6 @@
 
         const now = new Date();
         const currentHour = now.getHours();
-        // 0 = Sunday, 1 = Monday, ...; used below to detect weekends.
         const currentDay = now.getDay();
 
         const isPeakTime = (currentHour >= 7 && currentHour <= 9) || (currentHour >= 16 && currentHour <= 18);
@@ -643,14 +410,13 @@
                 shuttles.push({
                     id: index + 1,
                     name: route.route_short_name || route.real_time_route_id || `Route ${index + 1}`,
-                    type: shuttleType,
-                    routeId: route.global_route_id
+                    type: shuttleType
                 });
             });
         }
 
         if (!shuttles || shuttles.length === 0) {
-            shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info">No shuttles available</div><div class="seats-info">-</div></div>';
+            shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info" style="color:#70685C;">No shuttles available</div><div class="seats-info" style="color:#70685C;">-</div></div>';
             return;
         }
 
@@ -660,8 +426,6 @@
 
             const baseCapacity = SHUTTLE_CAPACITY_MAP[shuttle.type] || SHUTTLE_CAPACITY_MAP['standard'];
 
-            // We don't get live capacity from the API, so we fake "available
-            // seats" based on time of day to give the UI something useful to show.
             let dynamicCapacity = baseCapacity;
             let capacityStatus = 'seats';
 
@@ -677,17 +441,24 @@
             }
 
             let capacityClass = '';
+            let capacityLabel = '';
             if (dynamicCapacity / baseCapacity < 0.4) {
                 capacityClass = 'low-capacity';
+                capacityLabel = 'Low';
             } else if (dynamicCapacity / baseCapacity < 0.7) {
                 capacityClass = 'medium-capacity';
+                capacityLabel = 'Medium';
             } else {
                 capacityClass = 'high-capacity';
+                capacityLabel = 'High';
             }
 
             shuttleRow.innerHTML = `
       <div class="shuttle-info">${shuttle.name}</div>
-      <div class="seats-info ${capacityClass}">${dynamicCapacity} ${capacityStatus}</div>
+      <div class="seats-info ${capacityClass}">
+        <span class="capacity-count">${dynamicCapacity} seats</span>
+        <span class="capacity-label">${capacityLabel}</span>
+      </div>
     `;
 
             shuttleCapacityContent.appendChild(shuttleRow);
@@ -708,4 +479,64 @@
             updateLocationDisplay('Current Location');
         }
     };
+
+    function showRouteSkeletons() {
+        const routeContent = document.getElementById('routeArrivalsContent');
+        const capacityContent = document.getElementById('shuttleCapacityContent');
+
+        if (routeContent) {
+            routeContent.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const row = document.createElement('div');
+                row.className = 'skeleton-row';
+                row.innerHTML = '<div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div>';
+                routeContent.appendChild(row);
+            }
+        }
+
+        if (capacityContent) {
+            capacityContent.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const row = document.createElement('div');
+                row.className = 'skeleton-row';
+                row.innerHTML = '<div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div>';
+                capacityContent.appendChild(row);
+            }
+        }
+    }
+
+    function showRoutesEmptyState() {
+        const wrapper = document.querySelector('.info-containers-wrapper');
+        const emptyState = document.getElementById('routesEmptyState');
+
+        if (wrapper) wrapper.style.display = 'none';
+        if (emptyState) emptyState.classList.add('visible');
+
+        const locationDisplay = document.getElementById('selectedLocationDisplay');
+        if (locationDisplay) {
+            locationDisplay.textContent = 'No transit available in this area';
+        }
+    }
+
+    function hideRoutesEmptyState() {
+        const wrapper = document.querySelector('.info-containers-wrapper');
+        const emptyState = document.getElementById('routesEmptyState');
+
+        if (wrapper) wrapper.style.display = '';
+        if (emptyState) emptyState.classList.remove('visible');
+    }
+
+    function showRouteErrorState() {
+        const routeContent = document.getElementById('routeArrivalsContent');
+        const capacityContent = document.getElementById('shuttleCapacityContent');
+
+        if (routeContent) {
+            routeContent.innerHTML = '<div class="route-row"><div class="route-info" style="color:#ff6b6b;">Could not load routes</div><div class="arrival-info">-</div></div>';
+        }
+        if (capacityContent) {
+            capacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info" style="color:#ff6b6b;">Could not load capacity</div><div class="seats-info">-</div></div>';
+        }
+
+        hideRoutesEmptyState();
+    }
 })();

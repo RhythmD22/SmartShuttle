@@ -1,6 +1,7 @@
 (() => {
     let currentFilter = 'all';
     let currentSearchTerm = '';
+    let lastUpdated = null;
 
     window.initNotificationsPage = () => {
         currentFilter = 'all';
@@ -10,6 +11,7 @@
         initializeFeedbackButton();
         initializeRefreshButton(refreshLiveAlerts);
         initializeSearch();
+        initializePullToRefresh();
         setupLiveFeedUpdates();
     };
 
@@ -22,16 +24,15 @@
     const initializeSearch = () => {
         const searchInput = document.getElementById('notificationSearchInput');
         const searchPill = document.querySelector('.notification-search-pill');
-        const filterContainer = document.querySelector('.alert-filter-container');
 
         if (searchInput) {
             searchInput.addEventListener('focus', function () {
-                var nav = document.getElementById('bottomNav');
+                const nav = document.getElementById('bottomNav');
                 if (nav) nav.classList.add('search-active');
             });
 
             searchInput.addEventListener('blur', function () {
-                var nav = document.getElementById('bottomNav');
+                const nav = document.getElementById('bottomNav');
                 if (nav) nav.classList.remove('search-active');
                 setTimeout(function () {
                     window.scrollTo(0, 0);
@@ -44,17 +45,6 @@
         if (searchPill && searchInput) {
             searchPill.addEventListener('click', () => {
                 searchInput.focus();
-            });
-
-            searchInput.addEventListener('focus', () => {
-                if (filterContainer) {
-                    setTimeout(() => {
-                        filterContainer.scrollTo({
-                            left: filterContainer.scrollWidth,
-                            behavior: 'smooth'
-                        });
-                    }, 320);
-                }
             });
 
             searchInput.addEventListener('input', (e) => {
@@ -128,6 +118,8 @@
     const fetchLiveAlerts = async (lat, lon) => {
         const container = document.getElementById('liveAlertsContainer');
 
+        showAlertSkeletons(container);
+
         try {
             // The Transit API returns routes near the user, and each
             // route carries its own alerts.
@@ -174,6 +166,7 @@
             }
 
             applyAlertFilter(currentFilter);
+            updateLiveFeedTimestamp();
         } catch (error) {
             console.error('Error fetching live alerts:', error);
             container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">Error loading alerts</div><div class="live-alert-description">Could not fetch service alerts. Please check your connection.</div></div></div>';
@@ -188,8 +181,6 @@
         let icon = 'alert.svg';
         let title = alert.title || 'Service Alert';
 
-        // All service-class effects (NO_SERVICE, REDUCED_SERVICE, etc.) are
-        // grouped under the single "Service" filter, hence the SERVICE bucket.
         let displayEffect = alert.effect || 'OTHER_EFFECT';
 
         switch (alert.effect) {
@@ -227,19 +218,92 @@
                 displayEffect = 'SERVICE';
         }
 
+        const severity = (alert.severity || 'Info').toLowerCase();
+        const severityLabel = alert.severity || 'Info';
+
+        const affectedRoutes = extractAffectedRoutes(alert.informed_entities, route);
+
+        const timeAgo = alert.created_at ? formatTimeAgo(alert.created_at) : '';
+
         const alertElement = document.createElement('div');
         alertElement.className = 'live-alert-item';
         alertElement.dataset.effect = displayEffect;
+        alertElement.dataset.severity = severity;
         alertElement.innerHTML = `
         <img src="images/${icon}" alt="${title}" class="live-alert-icon">
         <div class="live-alert-text">
-            <div class="live-alert-title">${title}</div>
+            <div class="live-alert-title">
+                ${title}
+                <span class="live-alert-severity ${severity}">${severityLabel}</span>
+            </div>
             <div class="live-alert-description">${alert.description || 'Service disruption on route'}</div>
+            ${affectedRoutes ? `<div class="live-alert-routes">${affectedRoutes}</div>` : ''}
+            ${timeAgo ? `<div class="live-alert-time">${timeAgo}</div>` : ''}
         </div>
     `;
 
         container.appendChild(alertElement);
     };
+
+    function extractAffectedRoutes(informedEntities, currentRoute) {
+        if (!informedEntities || !informedEntities.length) return '';
+
+        const routeIds = [];
+        informedEntities.forEach(entity => {
+            if (entity.global_route_id) {
+                const parts = entity.global_route_id.split('|');
+                const shortName = parts.length > 1 ? parts[1] : entity.global_route_id;
+                if (!routeIds.includes(shortName)) {
+                    routeIds.push(shortName);
+                }
+            }
+        });
+
+        if (currentRoute && currentRoute.route_short_name && !routeIds.includes(currentRoute.route_short_name)) {
+            routeIds.push(currentRoute.route_short_name);
+        }
+
+        if (!routeIds.length) return '';
+
+        const displayRoutes = routeIds.slice(0, 5);
+        const tags = displayRoutes.map(id => `<span class="live-alert-route-tag">${id}</span>`).join('');
+        const more = routeIds.length > 5 ? `<span class="live-alert-route-tag">+${routeIds.length - 5} more</span>` : '';
+
+        return tags + more;
+    }
+
+    function formatTimeAgo(unixTimestamp) {
+        const now = Math.floor(Date.now() / 1000);
+        const diff = now - unixTimestamp;
+
+        if (diff < 60) return 'Just now';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        return Math.floor(diff / 86400) + 'd ago';
+    }
+
+    function updateLiveFeedTimestamp() {
+        lastUpdated = Math.floor(Date.now() / 1000);
+        refreshLiveFeedTimestamp();
+    }
+
+    function refreshLiveFeedTimestamp() {
+        const el = document.getElementById('liveFeedUpdated');
+        if (!el || !lastUpdated) return;
+
+        const now = Math.floor(Date.now() / 1000);
+        const diff = now - lastUpdated;
+
+        if (diff < 60) {
+            el.textContent = 'Updated just now';
+        } else if (diff < 3600) {
+            el.textContent = 'Updated ' + Math.floor(diff / 60) + 'm ago';
+        } else {
+            el.textContent = 'Updated ' + Math.floor(diff / 3600) + 'h ago';
+        }
+    }
+
+    let timestampInterval = setInterval(refreshLiveFeedTimestamp, 30000);
 
     const initializeAlertFilters = () => {
         const filterButtons = document.querySelectorAll('.alert-filter-btn');
@@ -261,16 +325,11 @@
 
         alertItems.forEach(item => {
             const alertEffect = item.dataset.effect || '';
-            const titleElement = item.querySelector('.live-alert-title');
-            const descElement = item.querySelector('.live-alert-description');
-
-            const title = titleElement ? titleElement.textContent.toLowerCase() : '';
-            const description = descElement ? descElement.textContent.toLowerCase() : '';
+            const searchText = item.textContent.toLowerCase();
 
             const matchesFilter = filterValue === 'all' || alertEffect === filterValue;
             const matchesSearch = currentSearchTerm === '' ||
-                title.includes(currentSearchTerm) ||
-                description.includes(currentSearchTerm);
+                searchText.includes(currentSearchTerm);
 
             item.style.display = matchesFilter && matchesSearch ? 'flex' : 'none';
         });
@@ -303,4 +362,59 @@
         }
         window.notificationsInterval = setInterval(initializeLiveFeed, 5 * 60 * 1000);
     };
+
+    function showAlertSkeletons(container) {
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i < 3; i++) {
+            const row = document.createElement('div');
+            row.className = 'skeleton-row';
+            row.style.padding = '10px 0';
+            row.innerHTML = '<div class="skeleton skeleton-text" style="height:14px; width:80%;"></div>';
+            container.appendChild(row);
+        }
+    }
+
+    function initializePullToRefresh() {
+        const mainContent = document.getElementById('notificationsMainContent');
+        const ptr = document.getElementById('pullToRefresh');
+
+        if (!mainContent || !ptr) return;
+
+        let startY = 0;
+        let pulling = false;
+        const threshold = 80;
+
+        mainContent.addEventListener('touchstart', function (e) {
+            if (mainContent.scrollTop <= 0) {
+                startY = e.touches[0].clientY;
+                pulling = true;
+            }
+        }, { passive: true });
+
+        mainContent.addEventListener('touchmove', function (e) {
+            if (!pulling) return;
+            const deltaY = e.touches[0].clientY - startY;
+            if (deltaY > 0 && mainContent.scrollTop <= 0) {
+                ptr.style.height = Math.min(deltaY * 0.5, 60) + 'px';
+            }
+        }, { passive: true });
+
+        mainContent.addEventListener('touchend', function () {
+            if (!pulling) return;
+            pulling = false;
+
+            const currentHeight = parseFloat(ptr.style.height) || 0;
+            if (currentHeight >= threshold) {
+                ptr.classList.add('refreshing');
+                refreshLiveAlerts();
+                setTimeout(function () {
+                    ptr.classList.remove('refreshing');
+                    ptr.style.height = '0';
+                }, 1000);
+            } else {
+                ptr.style.height = '0';
+            }
+        });
+    }
 })();

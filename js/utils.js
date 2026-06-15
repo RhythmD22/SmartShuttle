@@ -10,7 +10,6 @@ function initializeDesktopNotification() {
         });
     }
 
-    // PWA: register the service worker for offline support and caching.
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
@@ -221,7 +220,6 @@ function addMapUserMarker(map, lat, lng, position) {
     }).addTo(map);
 }
 
-// Reverse-geocode coordinates to a human-readable location name.
 async function reverseGeocodeLocation(lat, lng) {
     try {
         const response = await fetch(
@@ -257,20 +255,227 @@ function createLeafletMap(elementId) {
     return map;
 }
 
-// Promise-based wrapper for navigator.geolocation.getCurrentPosition.
-function getCurrentPositionPromise(options = {}) {
-    return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-            reject(new Error('Geolocation not supported'));
-            return;
-        }
-        navigator.geolocation.getCurrentPosition(resolve, reject, options);
-    });
-}
-
-// Update a .current-location span or #selectedLocationDisplay with a name.
 function updateLocationDisplay(displayName) {
     let el = document.querySelector('.current-location span');
     if (!el) el = document.getElementById('selectedLocationDisplay');
     if (el) el.textContent = displayName || 'Current Location';
+}
+
+function initializeLocationSearch(map, onLocationSelected) {
+    const searchBtn = document.querySelector('.search-btn');
+    const searchModal = document.getElementById('searchModal');
+    const closeSearchModal = document.getElementById('closeSearchModal');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    const closeSearchModalFn = () => {
+        searchModal.style.display = 'none';
+        searchInput.value = '';
+        searchResults.innerHTML = '';
+    };
+
+    searchBtn.addEventListener('click', () => {
+        searchModal.style.display = 'block';
+        searchInput.focus();
+        showSearchPrompt();
+        showCurrentLocationOption();
+    });
+
+    closeSearchModal.addEventListener('click', closeSearchModalFn);
+
+    window.addEventListener('click', (event) => {
+        if (event.target === searchModal) {
+            closeSearchModalFn();
+        }
+    });
+
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        const query = searchInput.value.trim();
+
+        if (query.length === 0) {
+            showSearchPrompt();
+            showCurrentLocationOption();
+            return;
+        }
+
+        if (query.length < 3) {
+            showSearchPrompt('Type at least 3 characters to search');
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            performSearch(query);
+        }, 400);
+    });
+
+    searchInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            const query = searchInput.value.trim();
+            if (query.length >= 3) {
+                performSearch(query);
+            }
+        }
+    });
+
+    const performSearch = async (query) => {
+        showSearchLoading();
+        try {
+            const generalResults = await searchNominatim(query);
+            displaySearchResults(generalResults);
+        } catch (error) {
+            console.error('Error with search:', error);
+            searchResults.innerHTML = '<div class="search-result-item">Error performing search. Please try again.</div>';
+        }
+    };
+
+    const displaySearchResults = (results) => {
+        searchResults.innerHTML = '';
+        showCurrentLocationOption();
+
+        if (!results || !Array.isArray(results) || results.length === 0) {
+            const noResult = document.createElement('div');
+            noResult.className = 'search-result-item';
+            noResult.innerHTML = '<div class="result-title">No results found</div><div class="result-address">Try a different search term</div>';
+            searchResults.appendChild(noResult);
+            return;
+        }
+
+        const validResults = results.filter(result => {
+            return result &&
+                typeof result.lat !== 'undefined' &&
+                typeof result.lon !== 'undefined' &&
+                result.display_name;
+        });
+
+        const busStops = [];
+        const otherLocations = [];
+
+        validResults.forEach(result => {
+            const isBusStop = (result.class === 'highway' && result.type === 'bus_stop') ||
+                (result.class === 'amenity' && result.type === 'bus_stop') ||
+                (result.category === 'highway' && result.type === 'bus_stop') ||
+                (result.category === 'amenity' && result.type === 'bus_stop') ||
+                result.display_name.toLowerCase().includes('bus stop') ||
+                (result.display_name.toLowerCase().includes('stop') &&
+                    (result.class === 'highway' || result.class === 'amenity'));
+
+            if (isBusStop) {
+                busStops.push(result);
+            } else {
+                otherLocations.push(result);
+            }
+        });
+
+        const orderedResults = [...busStops, ...otherLocations];
+
+        orderedResults.forEach(result => {
+            const isBusStop = busStops.includes(result);
+            const resultElement = document.createElement('div');
+            resultElement.className = 'search-result-item';
+
+            const typeBadge = isBusStop ? '<span class="result-type">Bus Stop</span>' : '';
+
+            resultElement.innerHTML = `
+                <div class="result-title">${result.display_name}${typeBadge}</div>
+                <div class="result-address">${result.address?.state || result.address?.county || result.address?.country || ''}</div>
+            `;
+
+            resultElement.addEventListener('click', () => {
+                const lat = parseFloat(result.lat);
+                const lon = parseFloat(result.lon);
+
+                if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+                    console.error('Invalid coordinates from search result:', lat, lon);
+                    return;
+                }
+
+                saveLocationToStorage(lat, lon, result.display_name);
+                updateLocationDisplay(result.display_name);
+                map.setView([lat, lon], 13);
+
+                searchModal.style.display = 'none';
+                searchInput.value = '';
+                searchResults.innerHTML = '';
+
+                onLocationSelected(lat, lon, result.display_name);
+            });
+
+            searchResults.appendChild(resultElement);
+        });
+    };
+
+    const showSearchPrompt = (message) => {
+        searchResults.innerHTML = '';
+        const prompt = document.createElement('div');
+        prompt.className = 'search-prompt';
+        prompt.innerHTML = `
+            <div class="search-prompt-icon">&#128270;</div>
+            <div>${message || 'Search for a city, address, or stop'}</div>
+        `;
+        searchResults.appendChild(prompt);
+    };
+
+    const showSearchLoading = () => {
+        searchResults.innerHTML = '';
+        const loading = document.createElement('div');
+        loading.className = 'search-loading';
+        loading.innerHTML = '<div class="search-loading-spinner"></div> Searching...';
+        searchResults.appendChild(loading);
+    };
+
+    const showCurrentLocationOption = () => {
+        const existing = searchResults.querySelector('.current-location-option');
+        if (existing) existing.remove();
+
+        const currentLocationElement = document.createElement('div');
+        currentLocationElement.className = 'search-result-item current-location-option';
+        currentLocationElement.innerHTML = `
+            <div class="result-title">&#128205; Current Location</div>
+            <div class="result-address">Use your device GPS</div>
+        `;
+
+        currentLocationElement.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+
+                        try {
+                            const displayName = await reverseGeocodeLocation(userLat, userLng);
+                            selectLocation(userLat, userLng, displayName);
+                        } catch (error) {
+                            console.error('Error getting location name:', error);
+                            selectLocation(userLat, userLng, 'Current Location');
+                        }
+                    },
+                    (error) => {
+                        console.error('Error getting current location:', error);
+                        searchResults.innerHTML = '<div class="search-result-item">Unable to retrieve your location. Please check permissions.</div>';
+                        updateLocationDisplay('Location access denied');
+                    }
+                );
+            } else {
+                searchResults.innerHTML = '<div class="search-result-item">Geolocation is not supported by your browser.</div>';
+            }
+        });
+
+        searchResults.insertBefore(currentLocationElement, searchResults.firstChild);
+    };
+
+    const selectLocation = (lat, lng, displayName) => {
+        saveLocationToStorage(lat, lng, displayName);
+        updateLocationDisplay(displayName);
+        map.setView([lat, lng], 13);
+
+        searchModal.style.display = 'none';
+        searchInput.value = '';
+        searchResults.innerHTML = '';
+
+        addMapUserMarker(map, lat, lng, null);
+
+        onLocationSelected(lat, lng, displayName);
+    };
 }

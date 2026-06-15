@@ -22,6 +22,12 @@
         const attachmentPreviewIcon = document.querySelector('#attachmentPreview .attachment-preview-icon');
         const attachmentPreviewText = document.querySelector('#attachmentPreview .attachment-preview-text');
 
+        if (issueType) {
+            issueType.addEventListener('change', function () {
+                issueType.classList.toggle('has-value', this.value !== '');
+            });
+        }
+
         if (attachmentInput) {
             attachmentInput.addEventListener('change', function () {
                 if (this.files && this.files[0]) {
@@ -105,7 +111,7 @@
 
                     feedbackParams.attachment_info = `Attached: ${file.name} (${file.size} bytes, type: ${file.type})`;
 
-                    sendFeedbackAPIWithoutAttachment(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, 'without attachment');
+                    sendFeedbackAPI(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, 'without attachment');
                 };
 
                 reader.readAsDataURL(file);
@@ -118,30 +124,7 @@
         sendFeedbackAPI(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
     }
 
-    function sendFeedbackAPI(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview) {
-        fetch('/api/send-feedback', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(feedbackParams)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                handleAPIResponse(data, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, '');
-            })
-            .catch(error => {
-                console.error('Feedback submission failed:', error);
-                simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
-            });
-    }
-
-    function sendFeedbackAPIWithoutAttachment(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage) {
+    function sendFeedbackAPI(feedbackParams, submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage = '') {
         fetch('/api/send-feedback', {
             method: 'POST',
             headers: {
@@ -160,7 +143,7 @@
             })
             .catch(error => {
                 console.error('Feedback submission failed:', error);
-                simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview);
+                simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage);
             });
     }
 
@@ -185,7 +168,7 @@
 
     function simulateAPIResponse(submitBtn, originalText, issueType, descriptionText, attachmentInput, attachmentLabel, attachmentPreview, suffixMessage = '') {
         setTimeout(() => {
-            showFeedbackPopup('Thank You!', 'Your feedback has been received!');
+            showFeedbackPopup('Thank You!', `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`);
 
             if (issueType) issueType.value = '';
             if (descriptionText) descriptionText.value = '';
