@@ -37,30 +37,24 @@ const urlsToCache = [
   '/images/QR.svg',
   '/images/refresh.svg',
   '/images/search.svg',
+  '/images/undraw_location-search.png',
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Caches opened');
-        return cache.addAll(urlsToCache);
-      })
-      .catch(err => {
-        console.error('Failed to cache assets', err);
-      })
+      .then(cache => cache.addAll(urlsToCache))
+      .catch(() => { })
   );
 });
 
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Network First strategy for live transit data
   if (url.pathname.includes('/api/transit/')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          // If valid response, cache it and return
           if (response && response.status === 200) {
             const responseToCache = response.clone();
             caches.open(CACHE_NAME).then(cache => {
@@ -70,14 +64,12 @@ self.addEventListener('fetch', event => {
           return response;
         })
         .catch(() => {
-          // If network fails, try to serve from cache
           return caches.match(event.request);
         })
     );
     return;
   }
 
-  // Cache First strategy for static assets and other requests
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -113,7 +105,6 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })

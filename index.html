@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <script type="text/javascript">
+    <script>
         (function (c, l, a, r, i, t, y) {
             c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
             t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
@@ -49,10 +49,6 @@
     <!-- Active View Container -->
     <div id="app-root"></div>
 
-    <!-- Persistent Bottom Navigation. All three items live in a single shell
-         so the same icon element slides from "inactive rectangle" on one side
-         into the "active icon" slot in the center. The icons themselves
-         morph (left, width, height, color), not a separate pill. -->
     <nav class="bottom-nav" id="bottomNav" aria-label="Main navigation">
         <div class="bottom-nav-content" id="bottomNavContent">
             <a href="/stops" class="nav-item" data-route="stops" aria-label="Stops">
@@ -117,9 +113,10 @@
                         <img src="images/curvedright.svg" alt="Current Location" class="icon">
                         <span>Current Location</span>
                     </div>
+                    <div class="stop-count" id="stopCountDisplay">Loading...</div>
                 </div>
                 <div class="header-right">
-                    <button class="menu-btn" aria-label="Menu">
+                    <button class="feedback-btn" aria-label="Feedback">
                         <img src="images/feedback.svg" alt="Feedback" class="icon">
                     </button>
                 </div>
@@ -129,8 +126,8 @@
             <div id="searchModal" class="search-modal" aria-hidden="true">
                 <div class="search-modal-content">
                     <div class="search-header">
-                        <input type="text" id="searchInput" class="search-input"
-                            placeholder="Search for a location in the US..." aria-label="Search for a location">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search for a location..."
+                            aria-label="Search for a location">
                         <button id="closeSearchModal" class="close-search-btn"
                             aria-label="Close search">&times;</button>
                     </div>
@@ -140,12 +137,10 @@
 
             <main class="main-content">
                 <div id="map" class="map-container" aria-label="Map" role="application">
-                    <!-- Refresh Button -->
                     <button class="refresh-btn" id="refreshBtn" aria-label="Refresh map">
                         <img src="images/refresh.svg" alt="Refresh" class="icon">
                     </button>
 
-                    <!-- Transit API Badge -->
                     <div class="transit-api-badge">
                         <a href="https://transitapp.com" target="_blank" rel="noopener noreferrer"
                             aria-label="Powered by Transit API">
@@ -188,8 +183,8 @@
             <div id="searchModal" class="search-modal" aria-hidden="true">
                 <div class="search-modal-content">
                     <div class="search-header">
-                        <input type="text" id="searchInput" class="search-input"
-                            placeholder="Search for a location in the US..." aria-label="Search for a location">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search for a location..."
+                            aria-label="Search for a location">
                         <button id="closeSearchModal" class="close-search-btn"
                             aria-label="Close search">&times;</button>
                     </div>
@@ -199,12 +194,10 @@
 
             <main class="main-content">
                 <div id="map" class="map-container" aria-label="Map" role="application">
-                    <!-- Refresh Button -->
                     <button class="refresh-btn" id="refreshBtn" aria-label="Refresh map">
                         <img src="images/refresh.svg" alt="Refresh" class="icon">
                     </button>
 
-                    <!-- Transit API Badge -->
                     <div class="transit-api-badge">
                         <a href="https://transitapp.com" target="_blank" rel="noopener noreferrer"
                             aria-label="Powered by Transit API">
@@ -225,7 +218,7 @@
                                     aria-label="Search routes">
                             </div>
                         </div>
-                        <div class="route-arrivals-content">
+                        <div class="route-arrivals-content" id="routeArrivalsContent">
                             <div class="route-row">
                                 <div class="route-info">Loading routes...</div>
                                 <div class="arrival-info">-</div>
@@ -239,12 +232,20 @@
                             <h3 class="shuttle-capacity-heading">Shuttle Capacity</h3>
                             <div class="predicted-text">Predicted</div>
                         </div>
-                        <div class="shuttle-capacity-content">
+                        <div class="shuttle-capacity-content" id="shuttleCapacityContent">
                             <div class="shuttle-row">
                                 <div class="shuttle-info">Loading capacity...</div>
                                 <div class="seats-info">-</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Empty State (shown when no transit found) -->
+                <div class="routes-empty-state" id="routesEmptyState">
+                    <img src="images/undraw_location-search.png" alt="No transit found">
+                    <div class="empty-state-title">No Transit Nearby</div>
+                    <div class="empty-state-description">Try searching for a different location or check back later.
                     </div>
                 </div>
             </main>
@@ -268,31 +269,10 @@
                 </div>
             </header>
 
-            <main class="main-content">
-                <section class="notifications-section">
-                    <h2 class="section-title">Notification Types</h2>
-                    <div class="notification-rectangle">
-                        <img src="images/alert.svg" alt="Alert" class="notification-icon">
-                        <div class="notification-text">
-                            <div class="route-delay-text">Service</div>
-                            <div class="expected-delay-text">Service disruption on route</div>
-                        </div>
-                    </div>
-                    <div class="notification-rectangle">
-                        <img src="images/clock.svg" alt="Clock" class="notification-icon">
-                        <div class="notification-text">
-                            <div class="route-delay-text">Delays</div>
-                            <div class="expected-delay-text">Longer than normal wait times</div>
-                        </div>
-                    </div>
-                    <div class="notification-rectangle">
-                        <img src="images/directions.svg" alt="Directions" class="notification-icon">
-                        <div class="notification-text">
-                            <div class="route-delay-text">Detour</div>
-                            <div class="expected-delay-text">Route change due to construction</div>
-                        </div>
-                    </div>
-                </section>
+            <main class="main-content" id="notificationsMainContent">
+                <div class="pull-to-refresh" id="pullToRefresh">
+                    <div class="pull-spinner"></div>
+                </div>
 
                 <section class="live-feed-section">
                     <h2 class="section-title">
@@ -301,6 +281,7 @@
                                 src="https://lottie.host/de637041-4d03-41fa-86da-b9f405b02bcf/UUfnyLvJhD.lottie"
                                 style="width: 22px; height: 22px" autoplay loop></dotlottie-wc>
                             <span>LIVE Feed</span>
+                            <span class="live-feed-updated" id="liveFeedUpdated"></span>
                         </span>
                         <button class="refresh-btn" id="refreshBtn" aria-label="Refresh alerts">
                             <img src="images/refresh.svg" alt="Refresh" class="icon">
@@ -351,8 +332,8 @@
                 </div>
 
                 <form class="feedback-form" id="feedbackForm">
-                    <div class="issue-type-container">
-                        <label for="issueType" class="issue-type-label">Type of Issue</label>
+                    <div class="form-field">
+                        <label for="issueType" class="field-label">Type of Issue</label>
                         <div class="dropdown-container">
                             <select id="issueType" class="issue-dropdown" aria-required="true">
                                 <option value="">Select an issue...</option>
@@ -368,40 +349,35 @@
                             </select>
                             <div class="dropdown-arrow" aria-hidden="true"></div>
                         </div>
+                    </div>
 
-                        <div class="description-container">
-                            <label for="descriptionText" class="description-label">Description</label>
-                            <textarea id="descriptionText" class="description-textarea"
-                                placeholder="Describe the issue..." aria-required="true" rows="5"
-                                maxlength="1000"></textarea>
-                        </div>
+                    <div class="form-field">
+                        <label for="descriptionText" class="field-label">Description</label>
+                        <textarea id="descriptionText" class="description-textarea" placeholder="Describe the issue..."
+                            aria-required="true" rows="5" maxlength="1000"></textarea>
+                    </div>
 
-                        <div class="attachment-container">
-                            <p class="attachment-label">Add Attachment</p>
-                            <div class="attachment-input-wrapper">
-                                <input type="file" id="attachmentInput" class="attachment-input"
-                                    accept="image/*,.pdf,.doc,.docx,.txt" aria-label="Upload attachment">
-                                <label for="attachmentInput" class="attachment-wrapper" id="attachmentLabel">
-                                    <img src="images/attach.svg" alt="" class="attach-icon">
-                                    <span class="attach-text">Attach file</span>
-                                </label>
-                            </div>
-
+                    <div class="form-field">
+                        <p class="field-label">Add Attachment</p>
+                        <div class="attachment-area">
+                            <input type="file" id="attachmentInput" class="attachment-input"
+                                accept="image/*,.pdf,.doc,.docx,.txt" aria-label="Upload attachment">
+                            <label for="attachmentInput" class="attachment-wrapper" id="attachmentLabel">
+                                <img src="images/attach.svg" alt="" class="attach-icon">
+                                <span class="attach-text">Attach file</span>
+                            </label>
                             <div id="attachmentPreview" class="attachment-preview" aria-live="polite"
                                 style="display: none;">
                                 <div class="attachment-preview-content">
-                                    <span class="attachment-preview-icon">📄</span>
+                                    <span class="attachment-preview-icon"></span>
                                     <span class="attachment-preview-text">File attached</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="feedback-submit-section">
-                        <button type="submit" id="submitFeedback" class="submit-btn">Submit Feedback</button>
-                        <p class="privacy-text">Your feedback is anonymized to ensure your privacy.</p>
-                        <p class="thank-you-text">Thank you for helping us improve our service.</p>
-                    </div>
+                    <button type="submit" id="submitFeedback" class="submit-btn">Submit Feedback</button>
+                    <p class="privacy-text">Your feedback is anonymized to ensure your privacy.</p>
                 </form>
             </main>
         </div>
