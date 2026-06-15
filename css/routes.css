@@ -14,8 +14,11 @@
     z-index: 0;
     overflow: hidden;
     position: relative;
-    margin: 0 auto;
+    margin: 0 auto 8px auto;
     padding: 0;
+    border-radius: 12px;
+    background: #181a1b;
+    isolation: isolate;
 }
 
 .transit-api-badge {
@@ -24,7 +27,11 @@
     left: 0;
     padding: 0;
     margin: 0;
-    z-index: 10000;
+    z-index: 1000;
+}
+
+.leaflet-control-attribution {
+    margin-bottom: 0 !important;
 }
 
 .transit-api-logo {
@@ -33,6 +40,7 @@
     display: block;
 }
 
+/* --- Info Panels Wrapper --- */
 .info-containers-wrapper {
     display: flex;
     flex-direction: column;
@@ -44,31 +52,31 @@
     flex-shrink: 0;
 }
 
+/* --- Route & Departures Panel --- */
 .route-arrivals-container {
     background-color: #413C96;
-    padding: 15px 15px 0 15px;
-    flex: 0 0 120px;
+    padding: 12px 16px;
+    flex: 0 0 auto;
+    min-height: auto;
+    max-height: 128px;
     overflow: hidden;
     width: 100%;
     box-sizing: border-box;
-    height: 120px;
-    min-height: 0;
-    max-height: 120px;
-    border-bottom: none;
     display: flex;
     flex-direction: column;
+    border-radius: 12px 12px 0 0;
 }
 
 .route-arrivals-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .route-arrivals-heading {
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     margin: 0;
     text-align: left;
@@ -79,7 +87,7 @@
     align-items: center;
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 20px;
-    padding: 2px 7px;
+    padding: 4px 10px;
     width: 100px;
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -93,9 +101,9 @@
 }
 
 .pill-search-icon {
-    width: 10px;
-    height: 10px;
-    margin-right: 4px;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
     filter: brightness(0) invert(1);
     opacity: 0.7;
     flex-shrink: 0;
@@ -106,19 +114,13 @@
     border: none;
     color: white;
     font-size: 16px;
-    /* Prevents iOS auto-zoom */
     width: 145.45%;
-    /* Exact math for 1/0.6875 */
     transform: scale(0.6875);
     transform-origin: left center;
     margin-right: -45.45%;
-    /* Offsets visual shrinkage to fix right-side space */
     outline: none;
     font-family: 'Inter', sans-serif;
     padding: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-left: 0;
 }
 
 .route-search-pill input::placeholder {
@@ -132,56 +134,62 @@
     overflow-y: auto;
     min-height: 0;
     flex: 1 1 auto;
-    padding-bottom: 15px;
 }
 
 .route-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 0;
+    padding: 8px 0;
+}
+
+.route-row+.route-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .route-info {
     color: white;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     flex: 1;
+    line-height: 1.3;
 }
 
 .arrival-info {
     color: white;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
     text-align: right;
-    flex: 1;
+    flex: 0 0 auto;
+    margin-left: 12px;
 }
 
+/* --- Shuttle Capacity Panel --- */
 .shuttle-capacity-container {
     background-color: #131516;
-    padding: 15px 15px 0 15px;
-    flex: 0 0 120px;
+    padding: 12px 16px;
+    flex: 0 0 auto;
+    min-height: auto;
+    max-height: 128px;
     overflow: hidden;
     width: 100%;
     box-sizing: border-box;
-    height: 120px;
-    min-height: 0;
-    max-height: 120px;
-    border-top: none;
     display: flex;
     flex-direction: column;
+    border-radius: 0 0 12px 12px;
+    margin-bottom: 10px;
 }
 
 .shuttle-capacity-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .shuttle-capacity-heading {
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     margin: 0;
     text-align: left;
@@ -189,12 +197,14 @@
 }
 
 .predicted-text {
-    color: white;
-    font-size: 18px;
-    font-weight: 600;
+    color: #C8C7C5;
+    font-size: 12px;
+    font-weight: 500;
     margin: 0 0 0 10px;
     text-align: right;
     flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .shuttle-capacity-content {
@@ -204,79 +214,150 @@
     overflow-y: auto;
     min-height: 0;
     flex: 1 1 auto;
-    padding-bottom: 15px;
 }
 
 .shuttle-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 0;
+    padding: 8px 0;
+}
+
+.shuttle-row+.shuttle-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .shuttle-info {
     color: white;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     flex: 1;
 }
 
 .seats-info {
     color: white;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     text-align: right;
-    flex: 1;
+    flex: 0 0 auto;
+    margin-left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }
 
-.seats-info.low-capacity {
+.seats-info.low-capacity .capacity-count {
     color: #ff6b6b;
 }
 
-.seats-info.medium-capacity {
+.seats-info.medium-capacity .capacity-count {
     color: #ffd166;
 }
 
-.seats-info.high-capacity {
+.seats-info.high-capacity .capacity-count {
     color: #06d6a0;
 }
 
+.seats-info .capacity-label {
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+}
+
+.seats-info.low-capacity .capacity-label {
+    background-color: rgba(255, 107, 107, 0.15);
+    color: #ff6b6b;
+}
+
+.seats-info.medium-capacity .capacity-label {
+    background-color: rgba(255, 209, 102, 0.15);
+    color: #ffd166;
+}
+
+.seats-info.high-capacity .capacity-label {
+    background-color: rgba(6, 214, 160, 0.15);
+    color: #06d6a0;
+}
+
+/* --- Routes Empty State --- */
+.routes-empty-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px 32px;
+    text-align: center;
+    width: calc(100% - 20px);
+    margin: 0 auto;
+}
+
+.routes-empty-state.visible {
+    display: flex;
+}
+
+.routes-empty-state img {
+    width: 180px;
+    height: 180px;
+    margin-bottom: 16px;
+}
+
+.routes-empty-state .empty-state-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+.routes-empty-state .empty-state-description {
+    font-size: 14px;
+    color: #C8C7C5;
+    line-height: 1.5;
+}
+
+/* --- Skeleton Loading for Panels --- */
+.route-arrivals-container .skeleton-row,
+.shuttle-capacity-container .skeleton-row {
+    padding: 8px 0;
+}
+
+.route-arrivals-container .skeleton-text,
+.shuttle-capacity-container .skeleton-text {
+    height: 14px;
+    border-radius: 4px;
+}
+
+/* --- Stop Marker --- */
 .stop-marker {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.schedule-info {
-    margin-top: 20px;
-}
-
-.schedule-header {
-    font-size: 18px;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 15px;
-}
-
-.popup-details {
+/* --- Popup Styles (shared with styles.css but scoped here for specificity) --- */
+.bus-stop-popup .popup-details {
     font-size: 14px;
 }
 
-.route-info {
+.bus-stop-popup .route-info {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 6px;
 }
 
-.route-number {
+.bus-stop-popup .route-number {
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: bold;
     font-size: 12px;
 }
 
-.vehicle-type {
+.bus-stop-popup .vehicle-type {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -284,12 +365,12 @@
     font-size: 14px;
 }
 
-.vehicle-type-label {
+.bus-stop-popup .vehicle-type-label {
     font-weight: 600;
     color: #181a1b;
 }
 
-.vehicle-type-value {
+.bus-stop-popup .vehicle-type-value {
     font-weight: 500;
     color: #6A63F6;
     background-color: #e0e0ff;
@@ -298,32 +379,32 @@
     font-size: 12px;
 }
 
-.direction {
+.bus-stop-popup .direction {
     font-weight: 500;
 }
 
-.departure-info {
+.bus-stop-popup .departure-info {
     display: flex;
     flex-direction: column;
     margin-bottom: 6px;
 }
 
-.next-departure {
+.bus-stop-popup .next-departure {
     font-weight: 600;
     margin-bottom: 2px;
 }
 
-.real-time-badge {
+.bus-stop-popup .real-time-badge {
     font-size: 12px;
     color: #06d6a0;
 }
 
-.scheduled-badge {
+.bus-stop-popup .scheduled-badge {
     font-size: 12px;
     color: #595959;
 }
 
-.accessibility-info {
+.bus-stop-popup .accessibility-info {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -331,13 +412,13 @@
     margin-top: 6px;
 }
 
-.accessibility-label {
+.bus-stop-popup .accessibility-label {
     font-weight: 600;
     color: #181a1b;
     font-size: inherit;
 }
 
-.accessibility-value {
+.bus-stop-popup .accessibility-value {
     color: #000000;
     background-color: #f0f0f0;
     padding: 2px 8px;
@@ -346,22 +427,7 @@
     font-size: 12px;
 }
 
-.schedule-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid #333;
-}
-
-.schedule-time {
-    font-weight: bold;
-    color: #fff;
-}
-
-.schedule-location {
-    color: #C8C7C5;
-}
-
+/* --- Layout --- */
 .main-content {
     margin-bottom: 66px;
 }
@@ -373,12 +439,6 @@
 }
 
 @media (max-width: 480px) {
-    .bus-info {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
     .page-title {
         font-size: 28px;
     }

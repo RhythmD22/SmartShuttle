@@ -266,18 +266,28 @@ dotlottie-wc {
     }
 }
 
-@media (min-width: 768px) {
-    .container {
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .status-label {
-        font-size: 32px;
-    }
-}
-
 @media (max-width: 480px) {
     .status-label {
         font-size: 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .grain-overlay {
+        animation: none;
+    }
+
+    .stars-container::before,
+    .stars-container::after {
+        animation: none;
+        opacity: 0.5;
+    }
+
+    .next-button {
+        transition: none;
+    }
+
+    .next-button:hover {
+        transform: translateX(-50%);
     }
 }
