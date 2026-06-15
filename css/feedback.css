@@ -65,9 +65,9 @@
     width: 100%;
     padding: 14px 40px 14px 14px;
     background-color: #131516;
-    border: 1px solid #70685C;
+    border: 1px solid #ACA9A6;
     border-radius: 8px;
-    color: #A0A0A0;
+    color: #ABA9A6;
     font-size: 16px;
     font-weight: 500;
     appearance: none;
@@ -88,7 +88,7 @@
 .issue-dropdown option {
     font-weight: 500;
     font-size: 16px;
-    color: #C8C7C5;
+    color: #ABA9A6;
     background-color: #131516;
 }
 
@@ -101,7 +101,7 @@
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 6px solid #C8C7C5;
+    border-top: 6px solid #ABA9A6;
     pointer-events: none;
 }
 
@@ -110,9 +110,9 @@
     height: 120px;
     padding: 14px;
     background-color: #131516;
-    border: 1px solid #70685C;
+    border: 1px solid #ACA9A6;
     border-radius: 8px;
-    color: #C8C7C5;
+    color: #ABA9A6;
     font-size: 16px;
     font-weight: 500;
     font-family: 'Inter', Arial, sans-serif;
@@ -126,7 +126,7 @@
 }
 
 .description-textarea::placeholder {
-    color: #A0A0A0;
+    color: #ABA9A6;
 }
 
 .attachment-area {
@@ -145,7 +145,7 @@
     justify-content: center;
     padding: 14px;
     background-color: #131516;
-    border: 1px solid #70685C;
+    border: 1px solid #ACA9A6;
     border-radius: 8px;
     cursor: pointer;
     height: 52px;
@@ -168,7 +168,7 @@
 }
 
 .attach-text {
-    color: #A0A0A0;
+    color: #ABA9A6;
     font-size: 16px;
     font-weight: 500;
 }
@@ -198,7 +198,7 @@
 }
 
 .attachment-preview-text {
-    color: #A0A0A0;
+    color: #ABA9A6;
     font-size: 16px;
     font-weight: 500;
 }
@@ -313,7 +313,7 @@
 }
 
 .popup-message {
-    color: #C8C7C5;
+    color: #ABA9A6;
     font-size: 14px;
     margin: 0 0 20px 0;
     line-height: 1.4;

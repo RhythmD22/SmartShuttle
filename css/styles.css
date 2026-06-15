@@ -163,7 +163,7 @@ dotlottie-wc {
 .status-label {
     font-size: 20px;
     font-weight: 600;
-    color: #C8C7C5;
+    color: #ABA9A6;
 }
 
 .page-title {
@@ -406,7 +406,7 @@ dotlottie-wc {
 .close-search-btn {
     background: none;
     border: none;
-    color: #C8C7C5;
+    color: #ABA9A6;
     font-size: 28px;
     cursor: pointer;
     padding: 0 4px 0 12px;
@@ -494,7 +494,7 @@ dotlottie-wc {
     padding: 40px 24px;
     text-align: center;
     flex: 1;
-    color: #aea394;
+    color: #ABA9A6;
     font-size: 14px;
     line-height: 1.5;
 }
@@ -511,7 +511,7 @@ dotlottie-wc {
     justify-content: center;
     padding: 24px;
     gap: 10px;
-    color: #C8C7C5;
+    color: #ABA9A6;
     font-size: 14px;
 }
 
@@ -901,7 +901,7 @@ dotlottie-wc {
 
 .empty-state-description {
     font-size: 14px;
-    color: #C8C7C5;
+    color: #ABA9A6;
     line-height: 1.5;
     max-width: 280px;
 }
@@ -983,7 +983,7 @@ dotlottie-wc {
 
 .error-state-description {
     font-size: 14px;
-    color: #C8C7C5;
+    color: #ABA9A6;
     line-height: 1.5;
     max-width: 280px;
     margin-bottom: 20px;

@@ -195,7 +195,7 @@
 }
 
 .predicted-text {
-    color: #C8C7C5;
+    color: #ABA9A6;
     font-size: 12px;
     font-weight: 500;
     margin: 0 0 0 10px;
@@ -313,7 +313,7 @@
 
 .routes-empty-state .empty-state-description {
     font-size: 14px;
-    color: #C8C7C5;
+    color: #ABA9A6;
     line-height: 1.5;
 }
 
