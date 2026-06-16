@@ -4,39 +4,40 @@ html {
 }
 
 body.home-page {
-  background:
-    linear-gradient(180deg, #0b0c15 0%, #0c0b1a 150px, #13112a 100%) #0b0c15 no-repeat fixed;
+  background: linear-gradient(180deg, #0b0c15 0%, #0c0b1a 150px, #13112a 100%) #0b0c15 no-repeat fixed;
+  background-size: 100% 200vh;
   background-size: 100% 200dvh;
   min-height: 100dvh;
 }
 
-.home-page .container {
+.landing-page {
   background: transparent;
   position: relative;
   overflow: hidden;
 }
 
-.main-content {
+.landing-page .main-content {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 10px 0 60px;
+  padding: 10px 0 0;
   text-align: center;
   overflow: hidden;
   position: relative;
   z-index: 15;
+  min-height: 0;
 }
 
-.app-title {
+.landing-page .app-title {
   font-size: 40px;
   font-weight: bold;
   color: #fff;
   margin-bottom: 5px;
 }
 
-.header {
+.landing-page .header {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,7 +49,7 @@ body.home-page {
   z-index: 20;
 }
 
-.status-container {
+.landing-page .status-container {
   margin-bottom: 10px;
   display: inline-flex;
   align-items: center;
@@ -56,20 +57,20 @@ body.home-page {
   gap: 6px;
 }
 
-.status-label {
+.landing-page .status-label {
   font-size: 24px;
   font-weight: 600;
-  color: #ABA9A6;
+  color: #aba9a6;
 }
 
-.header dotlottie-wc {
+.landing-page .header dotlottie-wc {
   width: 12px !important;
   height: 12px !important;
   display: inline-block;
   vertical-align: middle;
 }
 
-.status-container dotlottie-wc {
+.landing-page .status-container dotlottie-wc {
   width: 20px !important;
   height: 20px !important;
   margin: 0;
@@ -80,8 +81,8 @@ body.home-page {
   align-self: center;
 }
 
-.next-button {
-  background: linear-gradient(135deg, #8277ff 0%, #6A63F6 100%);
+.landing-page .next-button {
+  background: linear-gradient(135deg, #8277ff 0%, #6a63f6 100%);
   border: none;
   border-radius: 999px;
   width: 200px;
@@ -90,48 +91,49 @@ body.home-page {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  position: absolute;
-  bottom: 0px;
-  left: 50%;
-  transform: translateX(-50%);
+  flex-shrink: 0;
+  margin: 8px 0 32px;
   box-shadow: 0 8px 25px rgba(106, 99, 246, 0.4);
-  transition: all 0.3s ease, transform 0.1s;
+  transition:
+    all 0.3s ease,
+    transform 0.1s;
   z-index: 20;
 }
 
-.next-button:hover {
+.landing-page .next-button:hover {
   box-shadow: 0 10px 30px rgba(106, 99, 246, 0.6);
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateY(-2px);
 }
 
-.next-button:active {
-  transform: translateX(-50%) translateY(1px) scale(0.98);
+.landing-page .next-button:active {
+  transform: translateY(1px) scale(0.98);
 }
 
-.button-text {
+.landing-page .button-text {
   color: #fff;
   font-size: 18px;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
 }
 
-.bus-image-container {
-  margin: 200px auto;
+.landing-page .bus-image-container {
+  flex: 1;
+  min-height: 0;
   width: 100%;
-  overflow: visible;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 0 0 auto;
   position: relative;
   z-index: 15;
+  margin: 0;
 }
 
-dotlottie-wc {
+.landing-page dotlottie-wc {
   width: 100%;
   max-width: 900px;
+  max-height: 100%;
   height: auto;
-  min-height: 450px;
   display: block;
   transform: scale(1.6);
   transform-origin: center;
@@ -143,7 +145,6 @@ dotlottie-wc {
   left: 0;
   width: 100%;
   height: 100%;
-  /* Layered gradients for a rich Lo-Fi sky - Shifted down significantly */
   background:
     radial-gradient(circle at 50% 65%, rgba(165, 201, 255, 0.35) 0%, transparent 60%),
     radial-gradient(circle at 15% 55%, rgba(255, 138, 255, 0.18) 0%, transparent 45%),
@@ -177,29 +178,47 @@ dotlottie-wc {
 }
 
 .stars-container::before {
-  content: "";
+  content: '';
   position: absolute;
   width: 1px;
   height: 1px;
   background: transparent;
   box-shadow:
-    10vw 8vh rgba(255, 255, 255, 0.45), 30vw 12vh rgba(255, 255, 255, 0.45), 60vw 6vh rgba(255, 255, 255, 0.45), 80vw 10vh rgba(255, 255, 255, 0.45),
-    20vw 22vh rgba(255, 255, 255, 0.45), 50vw 18vh rgba(255, 255, 255, 0.45), 70vw 25vh rgba(255, 255, 255, 0.45), 90vw 14vh rgba(255, 255, 255, 0.45),
-    5vw 32vh rgba(255, 255, 255, 0.45), 40vw 28vh rgba(255, 255, 255, 0.45), 55vw 34vh rgba(255, 255, 255, 0.45), 75vw 26vh rgba(255, 255, 255, 0.45);
+    10vw 8vh rgba(255, 255, 255, 0.45),
+    30vw 12vh rgba(255, 255, 255, 0.45),
+    60vw 6vh rgba(255, 255, 255, 0.45),
+    80vw 10vh rgba(255, 255, 255, 0.45),
+    20vw 22vh rgba(255, 255, 255, 0.45),
+    50vw 18vh rgba(255, 255, 255, 0.45),
+    70vw 25vh rgba(255, 255, 255, 0.45),
+    90vw 14vh rgba(255, 255, 255, 0.45),
+    5vw 32vh rgba(255, 255, 255, 0.45),
+    40vw 28vh rgba(255, 255, 255, 0.45),
+    55vw 34vh rgba(255, 255, 255, 0.45),
+    75vw 26vh rgba(255, 255, 255, 0.45);
   border-radius: 50%;
   animation: twinkling-slow 12s ease-in-out infinite alternate;
 }
 
 .stars-container::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 1.5px;
   height: 1.5px;
   background: transparent;
   box-shadow:
-    15vw 10vh #fff, 35vw 15vh #fff, 65vw 5vh #fff, 85vw 12vh #fff,
-    25vw 25vh #fff, 55vw 20vh #fff, 75vw 28vh #fff, 95vw 18vh #fff,
-    10vw 35vh #fff, 45vw 32vh #fff, 60vw 38vh #fff, 80vw 30vh #fff;
+    15vw 10vh #fff,
+    35vw 15vh #fff,
+    65vw 5vh #fff,
+    85vw 12vh #fff,
+    25vw 25vh #fff,
+    55vw 20vh #fff,
+    75vw 28vh #fff,
+    95vw 18vh #fff,
+    10vw 35vh #fff,
+    45vw 32vh #fff,
+    60vw 38vh #fff,
+    80vw 30vh #fff;
   border-radius: 50%;
   animation: twinkling-fast 8s ease-in-out infinite alternate;
 }
@@ -267,8 +286,32 @@ dotlottie-wc {
 }
 
 @media (max-width: 480px) {
-  .status-label {
+  .landing-page .status-label {
     font-size: 20px;
+  }
+}
+
+@media (max-width: 375px) {
+  .landing-page .app-title {
+    font-size: 32px;
+  }
+
+  .landing-page .bus-image-container {
+    margin: 0;
+  }
+
+  .landing-page dotlottie-wc {
+    transform: scale(1);
+  }
+
+  .landing-page .next-button {
+    width: 180px;
+    height: 52px;
+    margin-bottom: 24px;
+  }
+
+  .landing-page .button-text {
+    font-size: 16px;
   }
 }
 
@@ -288,6 +331,6 @@ dotlottie-wc {
   }
 
   .next-button:hover {
-    transform: translateX(-50%);
+    transform: translateY(-2px);
   }
 }

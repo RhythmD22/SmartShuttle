@@ -1,4 +1,4 @@
-#selectedLocationDisplay {
+.routes-page #selectedLocationDisplay {
   flex: 1;
   word-wrap: break-word;
   white-space: normal;
@@ -7,7 +7,7 @@
   font-size: 13px;
 }
 
-.map-container {
+.routes-page .map-container {
   flex: 1;
   min-height: 0;
   width: calc(100% - 20px);
@@ -21,7 +21,7 @@
   isolation: isolate;
 }
 
-.transit-api-badge {
+.routes-page .transit-api-badge {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -30,18 +30,18 @@
   z-index: 1000;
 }
 
-.leaflet-control-attribution {
+.routes-page .leaflet-control-attribution {
   margin-bottom: 0 !important;
 }
 
-.transit-api-logo {
+.routes-page .transit-api-logo {
   max-height: 24px;
   width: auto;
   display: block;
 }
 
 /* --- Info Panels Wrapper --- */
-.info-containers-wrapper {
+.routes-page .info-containers-wrapper {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -53,8 +53,8 @@
 }
 
 /* --- Route & Departures Panel --- */
-.route-arrivals-container {
-  background-color: #413C96;
+.routes-page .route-arrivals-container {
+  background-color: #413c96;
   padding: 12px 16px 0 16px;
   flex: 0 0 auto;
   min-height: auto;
@@ -66,14 +66,14 @@
   border-radius: 12px 12px 0 0;
 }
 
-.route-arrivals-header {
+.routes-page .route-arrivals-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
 
-.route-arrivals-heading {
+.routes-page .route-arrivals-heading {
   color: white;
   font-size: 16px;
   font-weight: 600;
@@ -81,7 +81,7 @@
   text-align: left;
 }
 
-.route-search-pill {
+.routes-page .route-search-pill {
   display: flex;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.15);
@@ -93,13 +93,13 @@
   overflow: hidden;
 }
 
-.route-search-pill:focus-within {
+.routes-page .route-search-pill:focus-within {
   width: 140px;
   background-color: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
-.pill-search-icon {
+.routes-page .pill-search-icon {
   width: 12px;
   height: 12px;
   margin-right: 6px;
@@ -108,7 +108,7 @@
   flex-shrink: 0;
 }
 
-.route-search-pill input {
+.routes-page .route-search-pill input {
   background: none;
   border: none;
   color: white;
@@ -122,11 +122,11 @@
   padding: 0;
 }
 
-.route-search-pill input::placeholder {
+.routes-page .route-search-pill input::placeholder {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.route-arrivals-content {
+.routes-page .route-arrivals-content {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -135,18 +135,18 @@
   flex: 1 1 auto;
 }
 
-.route-row {
+.routes-page .route-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
 }
 
-.route-row+.route-row {
+.routes-page .route-row+.route-row {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.route-info {
+.routes-page .route-info {
   color: white;
   font-size: 14px;
   font-weight: 500;
@@ -154,7 +154,7 @@
   line-height: 1.3;
 }
 
-.arrival-info {
+.routes-page .arrival-info {
   color: white;
   font-size: 14px;
   font-weight: 600;
@@ -164,7 +164,7 @@
 }
 
 /* --- Shuttle Capacity Panel --- */
-.shuttle-capacity-container {
+.routes-page .shuttle-capacity-container {
   background-color: #131516;
   padding: 12px 16px 0 16px;
   flex: 0 0 auto;
@@ -178,14 +178,14 @@
   margin-bottom: 10px;
 }
 
-.shuttle-capacity-header {
+.routes-page .shuttle-capacity-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
 
-.shuttle-capacity-heading {
+.routes-page .shuttle-capacity-heading {
   color: white;
   font-size: 16px;
   font-weight: 600;
@@ -194,8 +194,8 @@
   flex: 1;
 }
 
-.predicted-text {
-  color: #ABA9A6;
+.routes-page .predicted-text {
+  color: #aba9a6;
   font-size: 12px;
   font-weight: 500;
   margin: 0 0 0 10px;
@@ -205,7 +205,7 @@
   letter-spacing: 0.5px;
 }
 
-.shuttle-capacity-content {
+.routes-page .shuttle-capacity-content {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -214,25 +214,25 @@
   flex: 1 1 auto;
 }
 
-.shuttle-row {
+.routes-page .shuttle-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
 }
 
-.shuttle-row+.shuttle-row {
+.routes-page .shuttle-row+.shuttle-row {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.shuttle-info {
+.routes-page .shuttle-info {
   color: white;
   font-size: 14px;
   font-weight: 500;
   flex: 1;
 }
 
-.seats-info {
+.routes-page .seats-info {
   color: white;
   font-size: 14px;
   font-weight: 500;
@@ -244,19 +244,19 @@
   gap: 2px;
 }
 
-.seats-info.low-capacity .capacity-count {
+.routes-page .seats-info.low-capacity .capacity-count {
   color: #ff6b6b;
 }
 
-.seats-info.medium-capacity .capacity-count {
+.routes-page .seats-info.medium-capacity .capacity-count {
   color: #ffd166;
 }
 
-.seats-info.high-capacity .capacity-count {
+.routes-page .seats-info.high-capacity .capacity-count {
   color: #06d6a0;
 }
 
-.seats-info .capacity-label {
+.routes-page .seats-info .capacity-label {
   font-size: 10px;
   font-weight: 600;
   margin-left: 6px;
@@ -267,23 +267,23 @@
   line-height: 1;
 }
 
-.seats-info.low-capacity .capacity-label {
+.routes-page .seats-info.low-capacity .capacity-label {
   background-color: rgba(255, 107, 107, 0.15);
   color: #ff6b6b;
 }
 
-.seats-info.medium-capacity .capacity-label {
+.routes-page .seats-info.medium-capacity .capacity-label {
   background-color: rgba(255, 209, 102, 0.15);
   color: #ffd166;
 }
 
-.seats-info.high-capacity .capacity-label {
+.routes-page .seats-info.high-capacity .capacity-label {
   background-color: rgba(6, 214, 160, 0.15);
   color: #06d6a0;
 }
 
 /* --- Routes Empty State --- */
-.routes-empty-state {
+.routes-page .routes-empty-state {
   display: none;
   flex-direction: column;
   align-items: center;
@@ -294,154 +294,65 @@
   margin: 0 auto;
 }
 
-.routes-empty-state.visible {
+.routes-page .routes-empty-state.visible {
   display: flex;
 }
 
-.routes-empty-state img {
+.routes-page .routes-empty-state img {
   width: 180px;
   height: 180px;
   margin-bottom: 16px;
 }
 
-.routes-empty-state .empty-state-title {
+.routes-page .routes-empty-state .empty-state-title {
   font-size: 18px;
   font-weight: 600;
   color: #fff;
   margin-bottom: 6px;
 }
 
-.routes-empty-state .empty-state-description {
+.routes-page .routes-empty-state .empty-state-description {
   font-size: 14px;
-  color: #ABA9A6;
+  color: #aba9a6;
   line-height: 1.5;
 }
 
 /* --- Skeleton Loading for Panels --- */
-.route-arrivals-container .skeleton-row,
-.shuttle-capacity-container .skeleton-row {
+.routes-page .route-arrivals-container .skeleton-row,
+.routes-page .shuttle-capacity-container .skeleton-row {
   padding: 8px 0;
 }
 
-.route-arrivals-container .skeleton-text,
-.shuttle-capacity-container .skeleton-text {
+.routes-page .route-arrivals-container .skeleton-text,
+.routes-page .shuttle-capacity-container .skeleton-text {
   height: 14px;
   border-radius: 4px;
 }
 
 /* --- Stop Marker --- */
-.stop-marker {
+.routes-page .stop-marker {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* --- Popup Styles (shared with styles.css but scoped here for specificity) --- */
-.bus-stop-popup .popup-details {
-  font-size: 14px;
-}
-
-.bus-stop-popup .route-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.bus-stop-popup .route-number {
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 12px;
-}
-
-.bus-stop-popup .vehicle-type {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
-.bus-stop-popup .vehicle-type-label {
-  font-weight: 600;
-  color: #181a1b;
-}
-
-.bus-stop-popup .vehicle-type-value {
-  font-weight: 500;
-  color: #6A63F6;
-  background-color: #e0e0ff;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-}
-
-.bus-stop-popup .direction {
-  font-weight: 500;
-}
-
-.bus-stop-popup .departure-info {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 6px;
-}
-
-.bus-stop-popup .next-departure {
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.bus-stop-popup .real-time-badge {
-  font-size: 12px;
-  color: #06d6a0;
-}
-
-.bus-stop-popup .scheduled-badge {
-  font-size: 12px;
-  color: #595959;
-}
-
-.bus-stop-popup .accessibility-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  margin-top: 6px;
-}
-
-.bus-stop-popup .accessibility-label {
-  font-weight: 600;
-  color: #181a1b;
-  font-size: inherit;
-}
-
-.bus-stop-popup .accessibility-value {
-  color: #000000;
-  background-color: #f0f0f0;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-weight: 500;
-  font-size: 12px;
-}
-
 /* --- Layout --- */
-.main-content {
+.routes-page .main-content {
   margin-bottom: 66px;
 }
 
 @media (display-mode: standalone) {
-  .main-content {
+  .routes-page .main-content {
     margin-bottom: 65px;
   }
 }
 
 @media (max-width: 480px) {
-  .page-title {
+  .routes-page .page-title {
     font-size: 28px;
   }
 
-  .status-label {
+  .routes-page .status-label {
     font-size: 18px;
   }
 }
