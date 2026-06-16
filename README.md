@@ -72,6 +72,7 @@ SmartShuttle/
 ├── manifest.json          # PWA manifest
 ├── service-worker.js      # Cache-first service worker
 ├── vercel.json            # Vercel routing, headers, rewrites
+├── .env.example            # Environment variable template
 ├── api/
 │   ├── transit-proxy.js   # Transit API proxy (rate-limited, key on server)
 │   └── send-feedback.js   # GitHub Issues webhook for feedback
