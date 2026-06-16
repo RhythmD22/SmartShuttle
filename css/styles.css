@@ -211,7 +211,6 @@ dotlottie-wc {
   border-top: 1px solid #333;
   padding: 10px 0 env(safe-area-inset-bottom, 0px);
   height: auto;
-  view-transition-name: bottom-nav;
   opacity: 0;
   pointer-events: none;
   transform: translateY(70px);
@@ -240,12 +239,6 @@ dotlottie-wc {
   opacity: 0;
   pointer-events: none;
   transform: translateY(100px);
-}
-
-::view-transition-old(bottom-nav),
-::view-transition-new(bottom-nav) {
-  animation: none;
-  mix-blend-mode: normal;
 }
 
 .bottom-nav-content {
@@ -779,22 +772,6 @@ dotlottie-wc {
   font-size: 12px;
 }
 
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 280ms;
-  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
-  animation-fill-mode: both;
-  mix-blend-mode: normal;
-}
-
-::view-transition-old(root) {
-  animation-name: app-page-exit;
-}
-
-::view-transition-new(root) {
-  animation-name: app-page-enter;
-}
-
 @keyframes app-page-exit {
   from {
     opacity: 1;
@@ -1037,10 +1014,5 @@ dotlottie-wc {
 
   .nav-item {
     transition: none !important;
-  }
-
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.01ms !important;
   }
 }
