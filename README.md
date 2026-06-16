@@ -4,6 +4,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Deploy](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://smartshuttle.vercel.app)
+[![PWA Ready](https://img.shields.io/badge/PWA-ready-brightgreen)](#progressive-web-app-pwa-support)
 
 ---
 
@@ -18,6 +19,8 @@
 - [Scripts](#scripts)
 - [API](#api)
 - [Environment Variables](#environment-variables)
+- [PWA Support](#progressive-web-app-pwa-support)
+- [Contributing](#contributing)
 - [License](#license)
 
 ---
@@ -47,14 +50,6 @@ Visit **[smartshuttle.vercel.app](https://smartshuttle.vercel.app)** or scan the
 ---
 
 ## Install
-
-### As a Progressive Web App
-
-1. Open the app on your mobile device
-2. **iOS Safari**: Tap Share → Add to Home Screen
-3. **Android Chrome**: Tap the install banner or ⋮ → Add to Home Screen
-
-### As a developer
 
 ```bash
 git clone https://github.com/rhythmd22/SmartShuttle.git
@@ -199,6 +194,30 @@ Creates a GitHub Issue in the configured repository. Input is sanitized to preve
 | `GITHUB_TOKEN` | No | GitHub personal access token for feedback issue creation |
 | `GITHUB_REPO_OWNER` | No | GitHub username or org for feedback issues |
 | `GITHUB_REPO_NAME` | No | GitHub repository name for feedback issues |
+
+---
+
+## Progressive Web App (PWA) Support
+
+SmartShuttle can be installed on mobile devices:
+
+1. Open the app on your mobile device
+2. **iOS Safari**: Tap Share → **Add to Home Screen**
+3. **Android Chrome**: Tap the install banner or ⋮ → **Add to Home Screen**
+
+The app launches in standalone full-screen mode with offline support. The service worker caches static assets using a cache-first strategy.
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+Keep the app dependency-free where possible. All third-party libraries are loaded via CDN — minimize new npm dependencies.
 
 ---
 
