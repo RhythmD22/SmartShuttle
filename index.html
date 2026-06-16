@@ -1,41 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
     <script>
         (function (c, l, a, r, i, t, y) {
-            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
-            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
-            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
-        })(window, document, "clarity", "script", "ws8ibzq4q7");
+            c[a] =
+                c[a] ||
+                function () {
+                    (c[a].q = c[a].q || []).push(arguments);
+                };
+            t = l.createElement(r);
+            t.async = 1;
+            t.src = 'https://www.clarity.ms/tag/' + i;
+            y = l.getElementsByTagName(r)[0];
+            y.parentNode.insertBefore(t, y);
+        })(window, document, 'clarity', 'script', 'ws8ibzq4q7');
     </script>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="Live Shuttle Tracker">
-    <meta name="theme-color" content="#6A63F6">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Live Shuttle Tracker" />
+    <meta name="theme-color" content="#6A63F6" />
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SmartShuttle">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="SmartShuttle" />
 
     <title>SmartShuttle - Live Shuttle Tracker</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
     <!-- Leaflet Map CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- CSS Stylesheets scoped by ID for the SPA Router -->
-    <link rel="stylesheet" href="css/styles.css">
-    <link id="style-index" rel="stylesheet" href="css/index.css" disabled>
-    <link id="style-stops" rel="stylesheet" href="css/stops.css" disabled>
-    <link id="style-routes" rel="stylesheet" href="css/routes.css" disabled>
-    <link id="style-notifications" rel="stylesheet" href="css/notifications.css" disabled>
-    <link id="style-feedback" rel="stylesheet" href="css/feedback.css" disabled>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link id="style-index" rel="stylesheet" href="css/index.css" disabled />
+    <link id="style-stops" rel="stylesheet" href="css/stops.css" disabled />
+    <link id="style-routes" rel="stylesheet" href="css/routes.css" disabled />
+    <link id="style-notifications" rel="stylesheet" href="css/notifications.css" disabled />
+    <link id="style-feedback" rel="stylesheet" href="css/feedback.css" disabled />
 </head>
 
 <body class="home-page">
@@ -44,30 +51,45 @@
         <button id="closeNotification" aria-label="Close notification">&times;</button>
     </div>
 
-    <img src="images/QR.svg" alt="Scan to open on mobile" class="desktop-qr-code">
+    <img src="images/QR.svg" alt="Scan to open on mobile" class="desktop-qr-code" />
 
-    <!-- Active View Container -->
     <div id="app-root"></div>
 
     <nav class="bottom-nav" id="bottomNav" aria-label="Main navigation">
         <div class="bottom-nav-content" id="bottomNavContent">
             <a href="/stops" class="nav-item" data-route="stops" aria-label="Stops">
-                <img src="images/map.svg" alt="" class="nav-icon-img">
+                <img src="images/map.svg" alt="" class="nav-icon-img" />
             </a>
             <a href="/routes" class="nav-item" data-route="routes" aria-label="Routes">
-                <img src="images/location.svg" alt="" class="nav-icon-img">
+                <img src="images/location.svg" alt="" class="nav-icon-img" />
             </a>
             <a href="/notifications" class="nav-item" data-route="notifications" aria-label="Notifications">
-                <img src="images/notification.svg" alt="" class="nav-icon-img">
+                <img src="images/notification.svg" alt="" class="nav-icon-img" />
             </a>
         </div>
     </nav>
 
     <!-- SPA Page Templates -->
 
+    <!-- Shared Search Modal Template -->
+    <template id="template-search-modal">
+        <div id="searchModal" class="search-modal" aria-hidden="true">
+            <div class="search-modal-content">
+                <div class="search-header">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search for a location..."
+                        aria-label="Search for a location" />
+                    <button id="closeSearchModal" class="close-search-btn" aria-label="Close search">
+                        &times;
+                    </button>
+                </div>
+                <div id="searchResults" class="search-results" role="listbox"></div>
+            </div>
+        </div>
+    </template>
+
     <!-- 1. Landing / Index Page -->
     <template id="template-landing">
-        <div class="container">
+        <div class="container landing-page">
             <div class="night-glow"></div>
             <div class="grain-overlay"></div>
             <div class="stars-container"></div>
@@ -96,11 +118,11 @@
 
     <!-- 2. Stops Page -->
     <template id="template-stops">
-        <div class="container">
+        <div class="container stops-page">
             <header class="header">
                 <div class="header-left">
                     <button class="search-btn" aria-label="Search">
-                        <img src="images/search.svg" alt="Search" class="icon">
+                        <img src="images/search.svg" alt="Search" class="icon" />
                     </button>
                 </div>
                 <div class="header-center">
@@ -110,41 +132,28 @@
                         <div class="header-text">LIVE stops</div>
                     </div>
                     <div class="current-location">
-                        <img src="images/curvedright.svg" alt="Current Location" class="icon">
+                        <img src="images/curvedright.svg" alt="Current Location" class="icon" />
                         <span>Current Location</span>
                     </div>
                     <div class="stop-count" id="stopCountDisplay">Loading...</div>
                 </div>
                 <div class="header-right">
                     <button class="feedback-btn" aria-label="Feedback">
-                        <img src="images/feedback.svg" alt="Feedback" class="icon">
+                        <img src="images/feedback.svg" alt="Feedback" class="icon" />
                     </button>
                 </div>
             </header>
 
-            <!-- Search Modal -->
-            <div id="searchModal" class="search-modal" aria-hidden="true">
-                <div class="search-modal-content">
-                    <div class="search-header">
-                        <input type="text" id="searchInput" class="search-input" placeholder="Search for a location..."
-                            aria-label="Search for a location">
-                        <button id="closeSearchModal" class="close-search-btn"
-                            aria-label="Close search">&times;</button>
-                    </div>
-                    <div id="searchResults" class="search-results" role="listbox"></div>
-                </div>
-            </div>
-
             <main class="main-content">
                 <div id="map" class="map-container" aria-label="Map" role="application">
                     <button class="refresh-btn" id="refreshBtn" aria-label="Refresh map">
-                        <img src="images/refresh.svg" alt="Refresh" class="icon">
+                        <img src="images/refresh.svg" alt="Refresh" class="icon" />
                     </button>
 
                     <div class="transit-api-badge">
                         <a href="https://transitapp.com" target="_blank" rel="noopener noreferrer"
                             aria-label="Powered by Transit API">
-                            <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo">
+                            <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo" />
                         </a>
                     </div>
                 </div>
@@ -154,11 +163,11 @@
 
     <!-- 3. Routes Page -->
     <template id="template-routes">
-        <div class="container">
+        <div class="container routes-page">
             <header class="header">
                 <div class="header-left">
                     <button class="search-btn" aria-label="Search">
-                        <img src="images/search.svg" alt="Search" class="icon">
+                        <img src="images/search.svg" alt="Search" class="icon" />
                     </button>
                 </div>
                 <div class="header-center">
@@ -168,40 +177,27 @@
                         <div class="header-text">LIVE route tracking</div>
                     </div>
                     <div class="current-location">
-                        <img src="images/curvedright.svg" alt="Current Location" class="icon">
+                        <img src="images/curvedright.svg" alt="Current Location" class="icon" />
                         <span id="selectedLocationDisplay">Select a location</span>
                     </div>
                 </div>
                 <div class="header-right">
                     <button class="menu-btn" aria-label="Menu">
-                        <img src="images/feedback.svg" alt="Feedback" class="icon">
+                        <img src="images/feedback.svg" alt="Feedback" class="icon" />
                     </button>
                 </div>
             </header>
 
-            <!-- Search Modal -->
-            <div id="searchModal" class="search-modal" aria-hidden="true">
-                <div class="search-modal-content">
-                    <div class="search-header">
-                        <input type="text" id="searchInput" class="search-input" placeholder="Search for a location..."
-                            aria-label="Search for a location">
-                        <button id="closeSearchModal" class="close-search-btn"
-                            aria-label="Close search">&times;</button>
-                    </div>
-                    <div id="searchResults" class="search-results" role="listbox"></div>
-                </div>
-            </div>
-
             <main class="main-content">
                 <div id="map" class="map-container" aria-label="Map" role="application">
                     <button class="refresh-btn" id="refreshBtn" aria-label="Refresh map">
-                        <img src="images/refresh.svg" alt="Refresh" class="icon">
+                        <img src="images/refresh.svg" alt="Refresh" class="icon" />
                     </button>
 
                     <div class="transit-api-badge">
                         <a href="https://transitapp.com" target="_blank" rel="noopener noreferrer"
                             aria-label="Powered by Transit API">
-                            <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo">
+                            <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo" />
                         </a>
                     </div>
                 </div>
@@ -213,9 +209,9 @@
                         <div class="route-arrivals-header">
                             <h2 class="route-arrivals-heading">Route & Departures</h2>
                             <div class="route-search-pill">
-                                <img src="images/search.svg" alt="" class="pill-search-icon">
+                                <img src="images/search.svg" alt="" class="pill-search-icon" />
                                 <input type="text" id="routeSearchInput" placeholder="Search"
-                                    aria-label="Search routes">
+                                    aria-label="Search routes" />
                             </div>
                         </div>
                         <div class="route-arrivals-content" id="routeArrivalsContent">
@@ -226,16 +222,16 @@
                         </div>
                     </div>
 
-                    <!-- Shuttle Capacity Container -->
+                    <!-- Estimated Occupancy Container -->
                     <div class="shuttle-capacity-container">
                         <div class="shuttle-capacity-header">
-                            <h2 class="shuttle-capacity-heading">Shuttle Capacity</h2>
-                            <div class="predicted-text">Predicted</div>
+                            <h2 class="shuttle-capacity-heading">Estimated Occupancy</h2>
+                            <div class="predicted-text">Estimated</div>
                         </div>
                         <div class="shuttle-capacity-content" id="shuttleCapacityContent">
                             <div class="shuttle-row">
-                                <div class="shuttle-info">Loading capacity...</div>
-                                <div class="seats-info">-</div>
+                                <div class="shuttle-info">Loading occupancy...</div>
+                                <div class="seats-info">—</div>
                             </div>
                         </div>
                     </div>
@@ -243,9 +239,10 @@
 
                 <!-- Empty State (shown when no transit found) -->
                 <div class="routes-empty-state" id="routesEmptyState">
-                    <img src="images/undraw_location-search.png" alt="No transit found">
+                    <img src="images/undraw_location-search.png" alt="No transit found" />
                     <div class="empty-state-title">No Transit Nearby</div>
-                    <div class="empty-state-description">Try searching for a different location or check back later.
+                    <div class="empty-state-description">
+                        Try searching for a different location or check back later.
                     </div>
                 </div>
             </main>
@@ -254,17 +251,17 @@
 
     <!-- 4. Notifications Page -->
     <template id="template-notifications">
-        <div class="container">
+        <div class="container notifications-page">
             <header class="header">
                 <div class="header-left">
-                    <img src="images/icon.svg" alt="SmartShuttle" class="app-icon">
+                    <img src="images/icon.svg" alt="SmartShuttle" class="app-icon" />
                 </div>
                 <div class="header-center">
                     <h1 class="header-text">SmartShuttle</h1>
                 </div>
                 <div class="header-right">
                     <button class="feedback-btn" aria-label="Feedback">
-                        <img src="images/feedback.svg" alt="Feedback" class="icon">
+                        <img src="images/feedback.svg" alt="Feedback" class="icon" />
                     </button>
                 </div>
             </header>
@@ -284,20 +281,27 @@
                             <span class="live-feed-updated" id="liveFeedUpdated"></span>
                         </span>
                         <button class="refresh-btn" id="refreshBtn" aria-label="Refresh alerts">
-                            <img src="images/refresh.svg" alt="Refresh" class="icon">
+                            <img src="images/refresh.svg" alt="Refresh" class="icon" />
                         </button>
                     </h2>
 
                     <div class="alert-filter-container">
-                        <button class="alert-filter-btn active" data-filter="all" aria-pressed="true">All</button>
-                        <button class="alert-filter-btn" data-filter="SERVICE" aria-pressed="false">Service</button>
-                        <button class="alert-filter-btn" data-filter="SIGNIFICANT_DELAYS"
-                            aria-pressed="false">Delays</button>
-                        <button class="alert-filter-btn" data-filter="DETOUR" aria-pressed="false">Detour</button>
+                        <button class="alert-filter-btn active" data-filter="all" aria-pressed="true">
+                            All
+                        </button>
+                        <button class="alert-filter-btn" data-filter="SERVICE" aria-pressed="false">
+                            Service
+                        </button>
+                        <button class="alert-filter-btn" data-filter="SIGNIFICANT_DELAYS" aria-pressed="false">
+                            Delays
+                        </button>
+                        <button class="alert-filter-btn" data-filter="DETOUR" aria-pressed="false">
+                            Detour
+                        </button>
                         <div class="notification-search-pill">
                             <span class="pill-search-icon"></span>
                             <input type="text" id="notificationSearchInput" placeholder="Search"
-                                aria-label="Search notifications">
+                                aria-label="Search notifications" />
                         </div>
                     </div>
 
@@ -315,12 +319,12 @@
             <header class="header">
                 <div class="header-left">
                     <button class="back-btn" aria-label="Back">
-                        <img src="images/back.svg" alt="Back" class="icon">
+                        <img src="images/back.svg" alt="Back" class="icon" />
                     </button>
                 </div>
                 <div class="header-center">
                     <div class="header-center-content">
-                        <img src="images/icon.svg" alt="SmartShuttle" class="app-icon">
+                        <img src="images/icon.svg" alt="SmartShuttle" class="app-icon" />
                         <h1 class="header-text">SmartShuttle</h1>
                     </div>
                 </div>
@@ -361,13 +365,13 @@
                         <p class="field-label">Add Attachment</p>
                         <div class="attachment-area">
                             <input type="file" id="attachmentInput" class="attachment-input"
-                                accept="image/*,.pdf,.doc,.docx,.txt" aria-label="Upload attachment">
+                                accept="image/*,.pdf,.doc,.docx,.txt" aria-label="Upload attachment" />
                             <label for="attachmentInput" class="attachment-wrapper" id="attachmentLabel">
-                                <img src="images/attach.svg" alt="" class="attach-icon">
+                                <img src="images/attach.svg" alt="" class="attach-icon" />
                                 <span class="attach-text">Attach file</span>
                             </label>
                             <div id="attachmentPreview" class="attachment-preview" aria-live="polite"
-                                style="display: none;">
+                                style="display: none">
                                 <div class="attachment-preview-content">
                                     <span class="attachment-preview-icon"></span>
                                     <span class="attachment-preview-text">File attached</span>
@@ -388,15 +392,15 @@
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.14/dist/dotlottie-wc.js" type="module"></script>
 
     <!-- Application Scripts -->
-    <script src="js/utils.js"></script>
-    <script src="js/index.js"></script>
-    <script src="js/stops.js"></script>
-    <script src="js/routes.js"></script>
-    <script src="js/notifications.js"></script>
-    <script src="js/feedback.js"></script>
+    <script type="module" src="js/utils.js"></script>
+    <script type="module" src="js/index.js"></script>
+    <script type="module" src="js/stops.js"></script>
+    <script type="module" src="js/routes.js"></script>
+    <script type="module" src="js/notifications.js"></script>
+    <script type="module" src="js/feedback.js"></script>
 
     <!-- Router Initialization -->
-    <script src="js/router.js"></script>
+    <script type="module" src="js/router.js"></script>
 </body>
 
 </html>
