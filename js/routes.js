@@ -1,3 +1,5 @@
+import { SS } from './utils.js';
+
 (() => {
   let map;
   let routeMarkers = [];
@@ -9,23 +11,18 @@
     currentRoutes = [];
 
     initializeMap();
-    loadSelectedLocation();
     initializeSearch();
     initializeRouteSearch();
-    initializeDesktopNotification();
-    initializeFeedbackButton();
+    SS.initializeDesktopNotification();
+    SS.initializeFeedbackButton();
     updateShuttleCapacitySection();
-    initializeRefreshButton(refreshPageData);
+    SS.initializeRefreshButton(refreshPageData);
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    if (!window.isSPA) {
-      window.initRoutesPage();
-    }
-  });
+  SS.pageInit(window.initRoutesPage);
 
   const initializeSearch = () => {
-    initializeLocationSearch(map, (lat, lng) => {
+    SS.initializeLocationSearch(map, (lat, lng) => {
       fetchRealTimeBuses(lat, lng);
     });
   };
@@ -34,41 +31,42 @@
     const routeSearchInput = document.getElementById('routeSearchInput');
     if (!routeSearchInput) return;
 
-    routeSearchInput.addEventListener('focus', function () {
-      const nav = document.getElementById('bottomNav');
-      if (nav) nav.classList.add('search-active');
-    });
-
-    routeSearchInput.addEventListener('blur', function () {
-      const nav = document.getElementById('bottomNav');
-      if (nav) nav.classList.remove('search-active');
-      setTimeout(function () {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-      }, 100);
-    });
+    SS.hideBottomNavOnSearch(routeSearchInput);
 
     routeSearchInput.addEventListener('input', () => {
       const query = routeSearchInput.value.toLowerCase().trim();
 
       if (query === '') {
         updateRouteArrivalsSection(currentRoutes);
+        routeMarkers.forEach((m) => {
+          if (map.hasLayer(m)) return;
+          m.addTo(map);
+        });
         return;
       }
 
-      const filteredRoutes = currentRoutes.filter(route => {
+      const filteredRoutes = currentRoutes.filter((route) => {
         const shortName = (route.route_short_name || '').toLowerCase();
         const longName = (route.route_long_name || '').toLowerCase();
         const routeName = (route.route_name || '').toLowerCase();
         const routeId = (route.real_time_route_id || '').toLowerCase();
         const headsign = route.itineraries?.[0]?.headsign?.toLowerCase() || '';
 
-        return shortName.includes(query) ||
+        return (
+          shortName.includes(query) ||
           longName.includes(query) ||
           routeName.includes(query) ||
           routeId.includes(query) ||
-          headsign.includes(query);
+          headsign.includes(query)
+        );
+      });
+
+      routeMarkers.forEach((m) => {
+        if (m.searchText && m.searchText.includes(query)) {
+          if (!map.hasLayer(m)) m.addTo(map);
+        } else {
+          if (map.hasLayer(m)) map.removeLayer(m);
+        }
       });
 
       updateRouteArrivalsSection(filteredRoutes);
@@ -76,90 +74,24 @@
   };
 
   const initializeMap = () => {
-    map = createLeafletMap('map');
-
-    setTimeout(() => {
-      if (map) map.invalidateSize();
-    }, 350);
-
-    const getUserLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showUserLocation, handleLocationError);
-      } else {
-        console.error('Geolocation is not supported by this browser.');
-        loadSelectedLocation();
-      }
-    };
-
-    const showUserLocation = async (position) => {
-      const userLat = position.coords.latitude;
-      const userLng = position.coords.longitude;
-
-      addMapUserMarker(map, userLat, userLng, position);
-      map.setView([userLat, userLng], 13);
-
-      try {
-        const displayName = await reverseGeocodeLocation(userLat, userLng);
-        updateLocationDisplay(displayName);
-        fetchRealTimeBuses(userLat, userLng);
-      } catch (error) {
-        console.error('Error getting location name:', error);
-        updateLocationDisplay('Current Location');
-      }
-    };
-
-    const handleLocationError = (error) => {
-      console.error('Unable to retrieve your location. Error code: ' + error.code + ', Message: ' + error.message);
-      updateLocationDisplay('Location unavailable');
-      loadSelectedLocation();
-    };
-
-    map.whenReady(() => {
-      const savedLocation = localStorage.getItem('selectedLocation');
-      if (savedLocation) {
-        const locationData = JSON.parse(savedLocation);
-
-        const locationDisplay = document.getElementById('selectedLocationDisplay');
-        if (locationDisplay) {
-          locationDisplay.textContent = locationData.displayName || 'Saved Location';
-        }
-
-        map.setView([locationData.lat, locationData.lon], 13);
-        fetchRealTimeBuses(locationData.lat, locationData.lon);
-      } else {
-        getUserLocation();
-      }
+    map = SS.initializeTransitMap({
+      elementId: 'map',
+      zoom: 13,
+      invalidateDelay: 350,
+      fallbackToSaved: true,
+      onLocationReady: (lat, lng) => fetchRealTimeBuses(lat, lng),
     });
   };
 
-  const loadSelectedLocation = () => {
-    const savedLocation = localStorage.getItem('selectedLocation');
-    if (savedLocation) {
-      const locationData = JSON.parse(savedLocation);
-
-      const locationDisplay = document.getElementById('selectedLocationDisplay');
-      if (locationDisplay) {
-        locationDisplay.textContent = locationData.displayName || 'Saved Location';
-      }
-
-      if (locationData) {
-        map.setView([locationData.lat, locationData.lon], 13);
-        fetchRealTimeBuses(locationData.lat, locationData.lon);
-      }
-    } else {
-      const locationDisplay = document.getElementById('selectedLocationDisplay');
-      if (locationDisplay) {
-        locationDisplay.textContent = 'Select a location';
-      }
-    }
-  };
-
   const fetchRealTimeBuses = async (lat, lng) => {
-    showRouteSkeletons();
+    SS.showSkeletons(document.getElementById('routeArrivalsContent'));
+    SS.showSkeletons(document.getElementById('shuttleCapacityContent'));
     hideRoutesEmptyState();
 
     try {
-      const response = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`);
+      const response = await fetch(
+        `/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`
+      );
 
       if (!response.ok) {
         throw new Error(`Transit API error: ${response.status}`);
@@ -167,7 +99,7 @@
 
       const data = await response.json();
 
-      clearBusMarkers();
+      SS.clearMapMarkers(map, routeMarkers);
 
       if (data.routes && data.routes.length > 0) {
         currentRoutes = data.routes;
@@ -183,7 +115,7 @@
       }
     } catch (error) {
       console.error('Error fetching real-time transit:', error);
-      clearBusMarkers();
+      SS.clearMapMarkers(map, routeMarkers);
 
       const locationDisplay = document.getElementById('selectedLocationDisplay');
       if (locationDisplay) {
@@ -196,9 +128,9 @@
   };
 
   const processRoutesData = (routes) => {
-    routes.forEach(route => {
+    routes.forEach((route) => {
       if (route.itineraries && route.itineraries.length > 0) {
-        route.itineraries.forEach(itinerary => {
+        route.itineraries.forEach((itinerary) => {
           if (itinerary.closest_stop) {
             const stop = itinerary.closest_stop;
 
@@ -208,17 +140,8 @@
             if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
               const nextDeparture = itinerary.schedule_items[0];
               if (nextDeparture.departure_time) {
-                const now = Date.now() / 1000;
-                const timeDiff = Math.max(0, nextDeparture.departure_time - now);
-                const minutes = Math.ceil(timeDiff / 60);
-
-                if (minutes === 0) {
-                  nextDepartureTime = 'Departing now';
-                } else {
-                  nextDepartureTime = `Departing in ${minutes} min`;
-                }
-
-                isRealTime = nextDeparture.is_real_time || false;
+                nextDepartureTime = SS.formatDepartureTime(nextDeparture.departure_time);
+                isRealTime = SS.isRealTimeDeparture(nextDeparture);
               }
             }
 
@@ -226,8 +149,10 @@
               className: 'stop-marker',
               html: `<div style="background-color: #${route.route_color || '6A63F6'}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
               iconSize: [16, 16],
-              iconAnchor: [8, 8]
+              iconAnchor: [8, 8],
             });
+
+            const { cls: vehicleClass, text: vehicleText } = SS.getVehicleDisplayData(route);
 
             const popupContent = `
                         <div class="bus-stop-popup">
@@ -241,14 +166,14 @@
                                 </div>
                                 <div class="vehicle-type">
                                     <span class="vehicle-type-label">Vehicle:</span>
-                                    <span class="vehicle-type-value ${getVehicleTypeClass(route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus')))}">${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}</span>
+                                    <span class="vehicle-type-value ${vehicleClass}">${vehicleText}</span>
                                 </div>
                                 <div class="departure-info">
                                     <span class="next-departure">
                                         ${nextDepartureTime}
                                     </span>
                                     <span class="${isRealTime ? 'real-time-badge' : 'scheduled-badge'}">
-                                        ${isRealTime ? '• Real-time' : '• Scheduled'}
+                                        ${isRealTime ? '\u2022 Real-time' : '\u2022 Scheduled'}
                                     </span>
                                 </div>
                                 <div class="accessibility-info">
@@ -265,23 +190,23 @@
               .addTo(map)
               .bindPopup(popupContent);
 
+            stopMarker.searchText = [
+              route.route_short_name,
+              route.route_long_name,
+              route.route_name,
+              route.real_time_route_id,
+              itinerary.headsign,
+              stop.stop_name,
+            ]
+              .filter(Boolean)
+              .map((s) => s.toLowerCase())
+              .join(' ');
+
             routeMarkers.push(stopMarker);
           }
-
         });
       }
     });
-  };
-
-  const clearBusMarkers = () => {
-    if (routeMarkers && Array.isArray(routeMarkers)) {
-      routeMarkers.forEach(marker => {
-        if (map.hasLayer(marker)) {
-          map.removeLayer(marker);
-        }
-      });
-      routeMarkers = [];
-    }
   };
 
   const updateRouteArrivalsSection = (routes) => {
@@ -292,38 +217,28 @@
     routeArrivalsContent.innerHTML = '';
 
     if (!routes || routes.length === 0) {
-      routeArrivalsContent.innerHTML = '<div class="route-row"><div class="route-info" style="color:#ABA9A6;">No matching routes</div><div class="arrival-info" style="color:#ABA9A6;">-</div></div>';
+      routeArrivalsContent.innerHTML =
+        '<div class="route-row"><div class="route-info" style="color:#ABA9A6;">No matching routes</div><div class="arrival-info" style="color:#ABA9A6;">-</div></div>';
       updateShuttleCapacitySection([]);
       return;
     }
 
-    routes.forEach(route => {
+    routes.forEach((route) => {
       if (route.itineraries && route.itineraries.length > 0) {
-        route.itineraries.forEach(itinerary => {
+        route.itineraries.forEach((itinerary) => {
           if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
             const scheduleItem = itinerary.schedule_items[0];
-
-            let arrivalText = 'Departing soon';
-            if (scheduleItem.departure_time) {
-              const now = Date.now() / 1000;
-              const timeDiff = Math.max(0, scheduleItem.departure_time - now);
-              const minutes = Math.ceil(timeDiff / 60);
-
-              if (minutes === 0) {
-                arrivalText = 'Departing now';
-              } else {
-                arrivalText = `Departing in ${minutes} min`;
-              }
-            }
+            const arrivalText = SS.formatDepartureTimeShort(scheduleItem.departure_time);
 
             const routeRow = document.createElement('div');
             routeRow.className = 'route-row';
 
-            const routeName = route.route_short_name || route.real_time_route_id || 'Unknown Route';
+            const routeName = SS.getRouteDisplayName(route);
+            const modeText = SS.getVehicleDisplayData(route).text;
 
             routeRow.innerHTML = `
                         <div class="route-info">
-                            ${routeName} (${route.mode_name || (route.route_type !== undefined ? getRouteTypeText(route.route_type) : (route.route_type_id !== undefined ? getRouteTypeText(route.route_type_id) : 'Bus'))}) - ${itinerary.headsign || 'Direction Unknown'}
+                            ${routeName} (${modeText}) - ${itinerary.headsign || 'Direction Unknown'}
                         </div>
                         <div class="arrival-info">${arrivalText}</div>
                     `;
@@ -333,7 +248,7 @@
             const routeRow = document.createElement('div');
             routeRow.className = 'route-row';
 
-            const routeName = route.route_short_name || route.real_time_route_id || 'Unknown Route';
+            const routeName = SS.getRouteDisplayName(route);
 
             routeRow.innerHTML = `
                         <div class="route-info">
@@ -349,7 +264,7 @@
         const routeRow = document.createElement('div');
         routeRow.className = 'route-row';
 
-        const routeName = route.route_short_name || route.real_time_route_id || 'Unknown Route';
+        const routeName = SS.getRouteDisplayName(route);
 
         routeRow.innerHTML = `
                 <div class="route-info">
@@ -365,106 +280,83 @@
     updateShuttleCapacitySection(routes);
   };
 
-  const SHUTTLE_CAPACITY_MAP = {
-    micro: 6,
-    small: 12,
-    standard: 16,
-    large: 24,
-    minibus: 30,
-    bus: 40
-  };
+  function hashString(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash * 31 + str.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash);
+  }
+
+  function getOccupancyLevel(route, index) {
+    const hour = new Date().getHours();
+    const day = new Date().getDay();
+
+    const isPeak = (hour >= 7 && hour <= 9) || (hour >= 16 && hour <= 18);
+    const isWeekend = day === 0 || day === 6;
+
+    let baseOccupancy;
+    if (isPeak) {
+      baseOccupancy = 0.82;
+    } else if (isWeekend) {
+      baseOccupancy = 0.35;
+    } else {
+      baseOccupancy = 0.55;
+    }
+
+    const typeText = SS.getRouteTypeText(route.route_type || 3).toLowerCase();
+    if (typeText.includes('subway') || typeText.includes('metro')) {
+      baseOccupancy += 0.07;
+    } else if (typeText.includes('ferry')) {
+      baseOccupancy -= 0.1;
+    } else if (typeText.includes('cable') || typeText.includes('aerial')) {
+      baseOccupancy -= 0.1;
+    }
+
+    const routeName = route.route_short_name || route.real_time_route_id || `Route ${index}`;
+    const variation = (hashString(routeName) % 140) / 1000 - 0.07;
+    return Math.max(0.1, Math.min(0.95, baseOccupancy + variation));
+  }
 
   const updateShuttleCapacitySection = (routes) => {
     const shuttleCapacityContent = document.querySelector('.shuttle-capacity-content');
-
     if (!shuttleCapacityContent) return;
 
-    if (routes === undefined) {
-      return;
-    }
+    if (routes === undefined) return;
 
     shuttleCapacityContent.innerHTML = '';
 
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentDay = now.getDay();
-
-    const isPeakTime = (currentHour >= 7 && currentHour <= 9) || (currentHour >= 16 && currentHour <= 18);
-    const isWeekend = (currentDay === 0 || currentDay === 6);
-
-    let shuttles = [];
-
-    if (routes && routes.length > 0) {
-      routes.forEach((route, index) => {
-        const routeType = getRouteTypeText(route.route_type || 3);
-        let shuttleType = 'bus';
-
-        if (routeType.includes('Light rail') || routeType.includes('Tram')) {
-          shuttleType = 'standard';
-        } else if (routeType.includes('Subway') || routeType.includes('Metro')) {
-          shuttleType = 'large';
-        } else if (routeType.includes('Bus')) {
-          shuttleType = 'bus';
-        } else if (routeType.includes('Ferry')) {
-          shuttleType = 'large';
-        } else if (routeType.includes('Cable tram') || routeType.includes('Aerial lift')) {
-          shuttleType = 'small';
-        }
-
-        shuttles.push({
-          id: index + 1,
-          name: route.route_short_name || route.real_time_route_id || `Route ${index + 1}`,
-          type: shuttleType
-        });
-      });
-    }
-
-    if (!shuttles || shuttles.length === 0) {
-      shuttleCapacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info" style="color:#ABA9A6;">No shuttles available</div><div class="seats-info" style="color:#ABA9A6;">-</div></div>';
+    if (!routes || routes.length === 0) {
+      shuttleCapacityContent.innerHTML =
+        '<div class="shuttle-row"><div class="shuttle-info" style="color:#ABA9A6;">No routes available</div><div class="seats-info" style="color:#ABA9A6;">—</div></div>';
       return;
     }
 
-    shuttles.forEach(shuttle => {
+    routes.forEach((route, index) => {
+      const occupancy = getOccupancyLevel(route, index);
+
+      let occupancyClass;
+      let occupancyLabel;
+      if (occupancy >= 0.7) {
+        occupancyClass = 'low-capacity';
+        occupancyLabel = 'Likely Full';
+      } else if (occupancy >= 0.4) {
+        occupancyClass = 'medium-capacity';
+        occupancyLabel = 'Moderate';
+      } else {
+        occupancyClass = 'high-capacity';
+        occupancyLabel = 'Seats Available';
+      }
+
+      const routeName = SS.getRouteDisplayName(route);
       const shuttleRow = document.createElement('div');
       shuttleRow.className = 'shuttle-row';
-
-      const baseCapacity = SHUTTLE_CAPACITY_MAP[shuttle.type] || SHUTTLE_CAPACITY_MAP['standard'];
-
-      let dynamicCapacity = baseCapacity;
-      let capacityStatus = 'seats';
-
-      if (isPeakTime) {
-        dynamicCapacity = Math.max(1, Math.floor(baseCapacity * 0.3));
-        capacityStatus = 'seats available';
-      } else if (isWeekend) {
-        dynamicCapacity = Math.max(1, Math.floor(baseCapacity * 0.8));
-        capacityStatus = 'seats available';
-      } else {
-        dynamicCapacity = Math.max(1, Math.floor(baseCapacity * 0.6));
-        capacityStatus = 'seats available';
-      }
-
-      let capacityClass = '';
-      let capacityLabel = '';
-      if (dynamicCapacity / baseCapacity < 0.4) {
-        capacityClass = 'low-capacity';
-        capacityLabel = 'Low';
-      } else if (dynamicCapacity / baseCapacity < 0.7) {
-        capacityClass = 'medium-capacity';
-        capacityLabel = 'Medium';
-      } else {
-        capacityClass = 'high-capacity';
-        capacityLabel = 'High';
-      }
-
       shuttleRow.innerHTML = `
-      <div class="shuttle-info">${shuttle.name}</div>
-      <div class="seats-info ${capacityClass}">
-        <span class="capacity-count">${dynamicCapacity} seats</span>
-        <span class="capacity-label">${capacityLabel}</span>
-      </div>
-    `;
-
+        <div class="shuttle-info">${routeName}</div>
+        <div class="seats-info ${occupancyClass}">
+          <span class="capacity-label">${occupancyLabel}</span>
+        </div>
+      `;
       shuttleCapacityContent.appendChild(shuttleRow);
     });
   };
@@ -472,42 +364,17 @@
   const refreshPageData = async () => {
     const center = map.getCenter();
 
-    clearBusMarkers();
+    SS.clearMapMarkers(map, routeMarkers);
     fetchRealTimeBuses(center.lat, center.lng);
 
     try {
-      const displayName = await reverseGeocodeLocation(center.lat, center.lng);
-      updateLocationDisplay(displayName);
+      const displayName = await SS.reverseGeocodeLocation(center.lat, center.lng);
+      SS.updateLocationDisplay(displayName);
     } catch (error) {
       console.error('Error getting location name:', error);
-      updateLocationDisplay('Current Location');
+      SS.updateLocationDisplay('Current Location');
     }
   };
-
-  function showRouteSkeletons() {
-    const routeContent = document.getElementById('routeArrivalsContent');
-    const capacityContent = document.getElementById('shuttleCapacityContent');
-
-    if (routeContent) {
-      routeContent.innerHTML = '';
-      for (let i = 0; i < 3; i++) {
-        const row = document.createElement('div');
-        row.className = 'skeleton-row';
-        row.innerHTML = '<div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div>';
-        routeContent.appendChild(row);
-      }
-    }
-
-    if (capacityContent) {
-      capacityContent.innerHTML = '';
-      for (let i = 0; i < 3; i++) {
-        const row = document.createElement('div');
-        row.className = 'skeleton-row';
-        row.innerHTML = '<div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div>';
-        capacityContent.appendChild(row);
-      }
-    }
-  }
 
   function showRoutesEmptyState() {
     const wrapper = document.querySelector('.info-containers-wrapper');
@@ -535,10 +402,12 @@
     const capacityContent = document.getElementById('shuttleCapacityContent');
 
     if (routeContent) {
-      routeContent.innerHTML = '<div class="route-row"><div class="route-info" style="color:#ff6b6b;">Could not load routes</div><div class="arrival-info">-</div></div>';
+      routeContent.innerHTML =
+        '<div class="route-row"><div class="route-info" style="color:#ff6b6b;">Could not load routes</div><div class="arrival-info">-</div></div>';
     }
     if (capacityContent) {
-      capacityContent.innerHTML = '<div class="shuttle-row"><div class="shuttle-info" style="color:#ff6b6b;">Could not load capacity</div><div class="seats-info">-</div></div>';
+      capacityContent.innerHTML =
+        '<div class="shuttle-row"><div class="shuttle-info" style="color:#ff6b6b;">Could not load occupancy</div><div class="seats-info">—</div></div>';
     }
 
     hideRoutesEmptyState();

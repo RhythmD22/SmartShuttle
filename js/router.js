@@ -1,4 +1,10 @@
-// SPA Router for SmartShuttle
+import './utils.js';
+import './index.js';
+import './stops.js';
+import './routes.js';
+import './notifications.js';
+import './feedback.js';
+
 window.isSPA = true;
 
 const routes = {
@@ -8,7 +14,7 @@ const routes = {
     bodyClass: 'home-page',
     init: () => window.initIndexPage && window.initIndexPage(),
     title: 'SmartShuttle - Live Shuttle Tracker',
-    path: '/'
+    path: '/',
   },
   stops: {
     templateId: 'template-stops',
@@ -17,7 +23,7 @@ const routes = {
     init: () => window.initStopsPage && window.initStopsPage(),
     title: 'SmartShuttle - Stops',
     path: '/stops',
-    swipeEnabled: true
+    swipeEnabled: true,
   },
   routes: {
     templateId: 'template-routes',
@@ -26,7 +32,7 @@ const routes = {
     init: () => window.initRoutesPage && window.initRoutesPage(),
     title: 'SmartShuttle - Routes',
     path: '/routes',
-    swipeEnabled: true
+    swipeEnabled: true,
   },
   notifications: {
     templateId: 'template-notifications',
@@ -35,7 +41,7 @@ const routes = {
     init: () => window.initNotificationsPage && window.initNotificationsPage(),
     title: 'SmartShuttle - Notifications',
     path: '/notifications',
-    swipeEnabled: true
+    swipeEnabled: true,
   },
   feedback: {
     templateId: 'template-feedback',
@@ -43,8 +49,8 @@ const routes = {
     bodyClass: '',
     init: () => window.initFeedbackPage && window.initFeedbackPage(),
     title: 'SmartShuttle - Feedback',
-    path: '/feedback'
-  }
+    path: '/feedback',
+  },
 };
 
 function resolveRouteFromUrl() {
@@ -55,7 +61,14 @@ function resolveRouteFromUrl() {
   if (hash.includes('routes') || path.includes('routes')) return 'routes';
   if (hash.includes('notifications') || path.includes('notifications')) return 'notifications';
   if (hash.includes('feedback') || path.includes('feedback')) return 'feedback';
-  if (hash.includes('landing') || path.includes('landing') || path.includes('index') || path === '/' || path === '') return 'landing';
+  if (
+    hash.includes('landing') ||
+    path.includes('landing') ||
+    path.includes('index') ||
+    path === '/' ||
+    path === ''
+  )
+    return 'landing';
 
   return 'landing';
 }
@@ -83,10 +96,10 @@ window.navigateTo = function (routeName, pushState = true, options = {}) {
   // The new content is serialized to a string first so #app-root is never
   // momentarily empty.
   const performSwap = () => {
-    Object.values(routes).forEach(r => {
+    Object.values(routes).forEach((r) => {
       const link = document.getElementById(r.styleId);
       if (link) {
-        link.disabled = (r.styleId !== route.styleId);
+        link.disabled = r.styleId !== route.styleId;
       }
     });
 
@@ -95,9 +108,7 @@ window.navigateTo = function (routeName, pushState = true, options = {}) {
     const appRoot = document.getElementById('app-root');
     const template = document.getElementById(route.templateId);
     if (appRoot && template) {
-      const wrapper = document.createElement('div');
-      wrapper.appendChild(template.content.cloneNode(true));
-      appRoot.innerHTML = wrapper.innerHTML;
+      appRoot.replaceChildren(template.content.cloneNode(true));
     }
     document.title = route.title;
 
@@ -163,7 +174,7 @@ function setupSwipeNavigation(currentRoute) {
     swipeState = {
       startX: touch.clientX,
       startY: touch.clientY,
-      startTime: Date.now()
+      startTime: Date.now(),
     };
   };
 
@@ -215,9 +226,9 @@ function setupSwipeNavigation(currentRoute) {
 function setFixedLayoutHeight() {
   document.body.style.height = window.innerHeight + 'px';
   const containers = document.querySelectorAll('.container');
-  for (let i = 0; i < containers.length; i++) {
-    containers[i].style.height = '';
-  }
+  containers.forEach((c) => {
+    c.style.height = '';
+  });
 }
 
 function repositionBottomNav() {
@@ -238,7 +249,9 @@ function updateBottomNav(routeName, options = {}) {
   const route = routes[routeName];
   const shouldShow = !!(route && route.swipeEnabled);
 
-  if (options.instant) {
+  const supportsViewTransition = typeof document.startViewTransition === 'function';
+
+  if (options.instant || supportsViewTransition) {
     const prev = bottomNav.style.transition;
     bottomNav.style.transition = 'none';
     bottomNav.classList.toggle('visible', shouldShow);
@@ -250,7 +263,7 @@ function updateBottomNav(routeName, options = {}) {
 
   if (shouldShow) {
     const items = bottomNav.querySelectorAll('.nav-item');
-    items.forEach(item => {
+    items.forEach((item) => {
       item.classList.toggle('active', item.dataset.route === routeName);
     });
   }
@@ -267,7 +280,7 @@ window.addEventListener('orientationchange', function () {
   }, 100);
 });
 
-window.addEventListener('popstate', (event) => {
+window.addEventListener('popstate', () => {
   const routeName = resolveRouteFromUrl();
   window.navigateTo(routeName, false);
 });
@@ -279,7 +292,11 @@ document.addEventListener('click', (e) => {
   const href = anchor.getAttribute('href');
   if (!href) return;
 
-  if (anchor.getAttribute('target') === '_blank' || href.startsWith('http') || href.startsWith('//')) {
+  if (
+    anchor.getAttribute('target') === '_blank' ||
+    href.startsWith('http') ||
+    href.startsWith('//')
+  ) {
     return;
   }
 
@@ -288,7 +305,12 @@ document.addEventListener('click', (e) => {
   else if (href.toLowerCase().includes('routes')) route = 'routes';
   else if (href.toLowerCase().includes('notifications')) route = 'notifications';
   else if (href.toLowerCase().includes('feedback')) route = 'feedback';
-  else if (href.toLowerCase().includes('index') || href.toLowerCase().includes('landing') || href === '/') route = 'landing';
+  else if (
+    href.toLowerCase().includes('index') ||
+    href.toLowerCase().includes('landing') ||
+    href === '/'
+  )
+    route = 'landing';
 
   if (route) {
     e.preventDefault();

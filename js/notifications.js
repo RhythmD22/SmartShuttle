@@ -1,45 +1,31 @@
+import { SS } from './utils.js';
+
 (() => {
   let currentFilter = 'all';
   let currentSearchTerm = '';
   let lastUpdated = null;
+  let timestampInterval = null;
 
   window.initNotificationsPage = () => {
     currentFilter = 'all';
     currentSearchTerm = '';
 
-    initializeDesktopNotification();
-    initializeFeedbackButton();
-    initializeRefreshButton(refreshLiveAlerts);
+    SS.initializeDesktopNotification();
+    SS.initializeFeedbackButton();
+    SS.initializeRefreshButton(refreshLiveAlerts);
     initializeSearch();
     initializePullToRefresh();
     setupLiveFeedUpdates();
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    if (!window.isSPA) {
-      window.initNotificationsPage();
-    }
-  });
+  SS.pageInit(window.initNotificationsPage);
 
   const initializeSearch = () => {
     const searchInput = document.getElementById('notificationSearchInput');
     const searchPill = document.querySelector('.notification-search-pill');
 
     if (searchInput) {
-      searchInput.addEventListener('focus', function () {
-        const nav = document.getElementById('bottomNav');
-        if (nav) nav.classList.add('search-active');
-      });
-
-      searchInput.addEventListener('blur', function () {
-        const nav = document.getElementById('bottomNav');
-        if (nav) nav.classList.remove('search-active');
-        setTimeout(function () {
-          window.scrollTo(0, 0);
-          document.documentElement.scrollTop = 0;
-          document.body.scrollTop = 0;
-        }, 100);
-      });
+      SS.hideBottomNavOnSearch(searchInput);
     }
 
     if (searchPill && searchInput) {
@@ -84,22 +70,22 @@
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        position => {
+        (position) => {
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
 
-          saveLocationToStorage(userLat, userLng, 'Current Location');
+          SS.saveLocationToStorage(userLat, userLng, 'Current Location');
 
           fetchLiveAlerts(userLat, userLng);
         },
-        error => {
+        (error) => {
           console.error('Error getting current location:', error);
           displayNoLocationMessage();
         },
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 60000
+          maximumAge: 60000,
         }
       );
     } else {
@@ -110,7 +96,8 @@
 
   const displayNoLocationMessage = () => {
     const container = document.getElementById('liveAlertsContainer');
-    container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No location selected</div><div class="live-alert-description">Please select a location in Routes first</div></div></div>';
+    container.innerHTML =
+      '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No location selected</div><div class="live-alert-description">Please select a location in Routes first</div></div></div>';
 
     applyAlertFilter(currentFilter);
   };
@@ -118,12 +105,12 @@
   const fetchLiveAlerts = async (lat, lon) => {
     const container = document.getElementById('liveAlertsContainer');
 
-    showAlertSkeletons(container);
+    SS.showSkeletons(container);
 
     try {
-      // The Transit API returns routes near the user, and each
-      // route carries its own alerts.
-      const response = await fetch(`/api/transit/nearby_routes?lat=${lat}&lon=${lon}&max_distance=1500&should_update_realtime=true`);
+      const response = await fetch(
+        `/api/transit/nearby_routes?lat=${lat}&lon=${lon}&max_distance=1500&should_update_realtime=true`
+      );
 
       if (!response.ok) {
         throw new Error(`Transit API error: ${response.status}`);
@@ -135,15 +122,13 @@
 
       if (data.routes && data.routes.length > 0) {
         const allAlerts = [];
-        // Alerts can appear under multiple nearby routes; dedupe by an
-        // id (or a content hash when no id is provided) so the user
-        // doesn't see the same disruption twice.
         const displayedAlerts = new Set();
 
-        data.routes.forEach(route => {
+        data.routes.forEach((route) => {
           if (route.alerts && route.alerts.length > 0) {
-            route.alerts.forEach(alert => {
-              const alertIdentifier = alert.id ||
+            route.alerts.forEach((alert) => {
+              const alertIdentifier =
+                alert.id ||
                 `${alert.effect}-${alert.title || ''}-${alert.description || ''}-${JSON.stringify(alert.informed_entities || [])}`;
 
               if (!displayedAlerts.has(alertIdentifier)) {
@@ -159,17 +144,20 @@
             addAlertToFeed(alert, route);
           });
         } else {
-          container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No alerts</div><div class="live-alert-description">No transit disruptions in your area at this time.</div></div></div>';
+          container.innerHTML =
+            '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No alerts</div><div class="live-alert-description">No transit disruptions in your area at this time.</div></div></div>';
         }
       } else {
-        container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No routes found</div><div class="live-alert-description">No transit routes found in your area</div></div></div>';
+        container.innerHTML =
+          '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No routes found</div><div class="live-alert-description">No transit routes found in your area</div></div></div>';
       }
 
       applyAlertFilter(currentFilter);
       updateLiveFeedTimestamp();
     } catch (error) {
       console.error('Error fetching live alerts:', error);
-      container.innerHTML = '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">Error loading alerts</div><div class="live-alert-description">Could not fetch service alerts. Please check your connection.</div></div></div>';
+      container.innerHTML =
+        '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">Error loading alerts</div><div class="live-alert-description">Could not fetch service alerts. Please check your connection.</div></div></div>';
 
       applyAlertFilter(currentFilter);
     }
@@ -193,11 +181,21 @@
           title = alert.title;
         } else {
           switch (alert.effect) {
-            case 'NO_SERVICE': title = 'No Service'; break;
-            case 'REDUCED_SERVICE': title = 'Reduced Service'; break;
-            case 'ADDITIONAL_SERVICE': title = 'Additional Service'; break;
-            case 'MODIFIED_SERVICE': title = 'Modified Service'; break;
-            default: title = 'Service Alert'; break;
+            case 'NO_SERVICE':
+              title = 'No Service';
+              break;
+            case 'REDUCED_SERVICE':
+              title = 'Reduced Service';
+              break;
+            case 'ADDITIONAL_SERVICE':
+              title = 'Additional Service';
+              break;
+            case 'MODIFIED_SERVICE':
+              title = 'Modified Service';
+              break;
+            default:
+              title = 'Service Alert';
+              break;
           }
         }
         displayEffect = 'SERVICE';
@@ -249,7 +247,7 @@
     if (!informedEntities || !informedEntities.length) return '';
 
     const routeIds = [];
-    informedEntities.forEach(entity => {
+    informedEntities.forEach((entity) => {
       if (entity.global_route_id) {
         const parts = entity.global_route_id.split('|');
         const shortName = parts.length > 1 ? parts[1] : entity.global_route_id;
@@ -259,15 +257,24 @@
       }
     });
 
-    if (currentRoute && currentRoute.route_short_name && !routeIds.includes(currentRoute.route_short_name)) {
+    if (
+      currentRoute &&
+      currentRoute.route_short_name &&
+      !routeIds.includes(currentRoute.route_short_name)
+    ) {
       routeIds.push(currentRoute.route_short_name);
     }
 
     if (!routeIds.length) return '';
 
     const displayRoutes = routeIds.slice(0, 5);
-    const tags = displayRoutes.map(id => `<span class="live-alert-route-tag">${id}</span>`).join('');
-    const more = routeIds.length > 5 ? `<span class="live-alert-route-tag">+${routeIds.length - 5} more</span>` : '';
+    const tags = displayRoutes
+      .map((id) => `<span class="live-alert-route-tag">${id}</span>`)
+      .join('');
+    const more =
+      routeIds.length > 5
+        ? `<span class="live-alert-route-tag">+${routeIds.length - 5} more</span>`
+        : '';
 
     return tags + more;
   }
@@ -303,14 +310,17 @@
     }
   }
 
-  let timestampInterval = setInterval(refreshLiveFeedTimestamp, 30000);
+  function startTimestampInterval() {
+    if (timestampInterval) clearInterval(timestampInterval);
+    timestampInterval = setInterval(refreshLiveFeedTimestamp, 30000);
+  }
 
   const initializeAlertFilters = () => {
     const filterButtons = document.querySelectorAll('.alert-filter-btn');
 
-    filterButtons.forEach(button => {
+    filterButtons.forEach((button) => {
       button.addEventListener('click', function () {
-        filterButtons.forEach(btn => btn.classList.remove('active'));
+        filterButtons.forEach((btn) => btn.classList.remove('active'));
 
         this.classList.add('active');
 
@@ -323,13 +333,12 @@
   const applyAlertFilter = (filterValue) => {
     const alertItems = document.querySelectorAll('.live-alert-item');
 
-    alertItems.forEach(item => {
+    alertItems.forEach((item) => {
       const alertEffect = item.dataset.effect || '';
       const searchText = item.textContent.toLowerCase();
 
       const matchesFilter = filterValue === 'all' || alertEffect === filterValue;
-      const matchesSearch = currentSearchTerm === '' ||
-        searchText.includes(currentSearchTerm);
+      const matchesSearch = currentSearchTerm === '' || searchText.includes(currentSearchTerm);
 
       item.style.display = matchesFilter && matchesSearch ? 'flex' : 'none';
     });
@@ -356,24 +365,13 @@
 
     initializeLiveFeed();
     initializeAlertFilters();
+    startTimestampInterval();
 
     if (window.notificationsInterval) {
       clearInterval(window.notificationsInterval);
     }
     window.notificationsInterval = setInterval(initializeLiveFeed, 5 * 60 * 1000);
   };
-
-  function showAlertSkeletons(container) {
-    if (!container) return;
-    container.innerHTML = '';
-    for (let i = 0; i < 3; i++) {
-      const row = document.createElement('div');
-      row.className = 'skeleton-row';
-      row.style.padding = '10px 0';
-      row.innerHTML = '<div class="skeleton skeleton-text" style="height:14px; width:80%;"></div>';
-      container.appendChild(row);
-    }
-  }
 
   function initializePullToRefresh() {
     const mainContent = document.getElementById('notificationsMainContent');
@@ -385,20 +383,29 @@
     let pulling = false;
     const threshold = 80;
 
-    mainContent.addEventListener('touchstart', function (e) {
-      if (mainContent.scrollTop <= 0) {
-        startY = e.touches[0].clientY;
-        pulling = true;
-      }
-    }, { passive: true });
+    mainContent.addEventListener(
+      'touchstart',
+      function (e) {
+        if (mainContent.scrollTop <= 0) {
+          startY = e.touches[0].clientY;
+          pulling = true;
+        }
+      },
+      { passive: true }
+    );
 
-    mainContent.addEventListener('touchmove', function (e) {
-      if (!pulling) return;
-      const deltaY = e.touches[0].clientY - startY;
-      if (deltaY > 0 && mainContent.scrollTop <= 0) {
-        ptr.style.height = Math.min(deltaY * 0.5, 60) + 'px';
-      }
-    }, { passive: true });
+    mainContent.addEventListener(
+      'touchmove',
+      function (e) {
+        if (!pulling) return;
+        const deltaY = e.touches[0].clientY - startY;
+        if (deltaY > 0 && mainContent.scrollTop <= 0) {
+          e.preventDefault();
+          ptr.style.height = Math.min(deltaY * 0.5, 60) + 'px';
+        }
+      },
+      { passive: false }
+    );
 
     mainContent.addEventListener('touchend', function () {
       if (!pulling) return;
