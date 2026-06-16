@@ -1,447 +1,447 @@
 #selectedLocationDisplay {
-    flex: 1;
-    word-wrap: break-word;
-    white-space: normal;
-    max-width: 100%;
-    display: block;
-    font-size: 13px;
+  flex: 1;
+  word-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
+  display: block;
+  font-size: 13px;
 }
 
 .map-container {
-    flex: 1;
-    min-height: 0;
-    width: calc(100% - 20px);
-    z-index: 0;
-    overflow: hidden;
-    position: relative;
-    margin: 0 auto 8px auto;
-    padding: 0;
-    border-radius: 12px;
-    background: #181a1b;
-    isolation: isolate;
+  flex: 1;
+  min-height: 0;
+  width: calc(100% - 20px);
+  z-index: 0;
+  overflow: hidden;
+  position: relative;
+  margin: 0 auto 8px auto;
+  padding: 0;
+  border-radius: 12px;
+  background: #181a1b;
+  isolation: isolate;
 }
 
 .transit-api-badge {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    padding: 0;
-    margin: 0;
-    z-index: 1000;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+  z-index: 1000;
 }
 
 .leaflet-control-attribution {
-    margin-bottom: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .transit-api-logo {
-    max-height: 24px;
-    width: auto;
-    display: block;
+  max-height: 24px;
+  width: auto;
+  display: block;
 }
 
 /* --- Info Panels Wrapper --- */
 .info-containers-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    width: calc(100% - 20px);
-    margin: 0 auto;
-    box-sizing: border-box;
-    flex: 0 0 auto;
-    flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: calc(100% - 20px);
+  margin: 0 auto;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  flex-shrink: 0;
 }
 
 /* --- Route & Departures Panel --- */
 .route-arrivals-container {
-    background-color: #413C96;
-    padding: 12px 16px 0 16px;
-    flex: 0 0 auto;
-    min-height: auto;
-    max-height: 128px;
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    border-radius: 12px 12px 0 0;
+  background-color: #413C96;
+  padding: 12px 16px 0 16px;
+  flex: 0 0 auto;
+  min-height: auto;
+  max-height: 128px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px 12px 0 0;
 }
 
 .route-arrivals-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .route-arrivals-heading {
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0;
-    text-align: left;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  text-align: left;
 }
 
 .route-search-pill {
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    padding: 4px 10px;
-    width: 100px;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    overflow: hidden;
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 4px 10px;
+  width: 100px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
 }
 
 .route-search-pill:focus-within {
-    width: 140px;
-    background-color: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.4);
+  width: 140px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .pill-search-icon {
-    width: 12px;
-    height: 12px;
-    margin-right: 6px;
-    filter: brightness(0) invert(1);
-    opacity: 0.7;
-    flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  flex-shrink: 0;
 }
 
 .route-search-pill input {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 16px;
-    width: 145.45%;
-    transform: scale(0.6875);
-    transform-origin: left center;
-    margin-right: -45.45%;
-    outline: none;
-    font-family: 'Inter', sans-serif;
-    padding: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  width: 145.45%;
+  transform: scale(0.6875);
+  transform-origin: left center;
+  margin-right: -45.45%;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  padding: 0;
 }
 
 .route-search-pill input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .route-arrivals-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    overflow-y: auto;
-    min-height: 0;
-    flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1 1 auto;
 }
 
 .route-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
 }
 
 .route-row+.route-row {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .route-info {
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    flex: 1;
-    line-height: 1.3;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
+  line-height: 1.3;
 }
 
 .arrival-info {
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: right;
-    flex: 0 0 auto;
-    margin-left: 12px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+  flex: 0 0 auto;
+  margin-left: 12px;
 }
 
 /* --- Shuttle Capacity Panel --- */
 .shuttle-capacity-container {
-    background-color: #131516;
-    padding: 12px 16px 0 16px;
-    flex: 0 0 auto;
-    min-height: auto;
-    max-height: 128px;
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    border-radius: 0 0 12px 12px;
-    margin-bottom: 10px;
+  background-color: #131516;
+  padding: 12px 16px 0 16px;
+  flex: 0 0 auto;
+  min-height: auto;
+  max-height: 128px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0 0 12px 12px;
+  margin-bottom: 10px;
 }
 
 .shuttle-capacity-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .shuttle-capacity-heading {
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0;
-    text-align: left;
-    flex: 1;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  text-align: left;
+  flex: 1;
 }
 
 .predicted-text {
-    color: #ABA9A6;
-    font-size: 12px;
-    font-weight: 500;
-    margin: 0 0 0 10px;
-    text-align: right;
-    flex-shrink: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  color: #ABA9A6;
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0 0 0 10px;
+  text-align: right;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .shuttle-capacity-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    overflow-y: auto;
-    min-height: 0;
-    flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1 1 auto;
 }
 
 .shuttle-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
 }
 
 .shuttle-row+.shuttle-row {
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .shuttle-info {
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    flex: 1;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
 }
 
 .seats-info {
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: right;
-    flex: 0 0 auto;
-    margin-left: 12px;
-    display: flex;
-    align-items: center;
-    gap: 2px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+  flex: 0 0 auto;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .seats-info.low-capacity .capacity-count {
-    color: #ff6b6b;
+  color: #ff6b6b;
 }
 
 .seats-info.medium-capacity .capacity-count {
-    color: #ffd166;
+  color: #ffd166;
 }
 
 .seats-info.high-capacity .capacity-count {
-    color: #06d6a0;
+  color: #06d6a0;
 }
 
 .seats-info .capacity-label {
-    font-size: 10px;
-    font-weight: 600;
-    margin-left: 6px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    line-height: 1;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
 }
 
 .seats-info.low-capacity .capacity-label {
-    background-color: rgba(255, 107, 107, 0.15);
-    color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
 }
 
 .seats-info.medium-capacity .capacity-label {
-    background-color: rgba(255, 209, 102, 0.15);
-    color: #ffd166;
+  background-color: rgba(255, 209, 102, 0.15);
+  color: #ffd166;
 }
 
 .seats-info.high-capacity .capacity-label {
-    background-color: rgba(6, 214, 160, 0.15);
-    color: #06d6a0;
+  background-color: rgba(6, 214, 160, 0.15);
+  color: #06d6a0;
 }
 
 /* --- Routes Empty State --- */
 .routes-empty-state {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 20px 32px;
-    text-align: center;
-    width: calc(100% - 20px);
-    margin: 0 auto;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px 32px;
+  text-align: center;
+  width: calc(100% - 20px);
+  margin: 0 auto;
 }
 
 .routes-empty-state.visible {
-    display: flex;
+  display: flex;
 }
 
 .routes-empty-state img {
-    width: 180px;
-    height: 180px;
-    margin-bottom: 16px;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 16px;
 }
 
 .routes-empty-state .empty-state-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
 }
 
 .routes-empty-state .empty-state-description {
-    font-size: 14px;
-    color: #ABA9A6;
-    line-height: 1.5;
+  font-size: 14px;
+  color: #ABA9A6;
+  line-height: 1.5;
 }
 
 /* --- Skeleton Loading for Panels --- */
 .route-arrivals-container .skeleton-row,
 .shuttle-capacity-container .skeleton-row {
-    padding: 8px 0;
+  padding: 8px 0;
 }
 
 .route-arrivals-container .skeleton-text,
 .shuttle-capacity-container .skeleton-text {
-    height: 14px;
-    border-radius: 4px;
+  height: 14px;
+  border-radius: 4px;
 }
 
 /* --- Stop Marker --- */
 .stop-marker {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* --- Popup Styles (shared with styles.css but scoped here for specificity) --- */
 .bus-stop-popup .popup-details {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .bus-stop-popup .route-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
 .bus-stop-popup .route-number {
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 12px;
 }
 
 .bus-stop-popup .vehicle-type {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
 }
 
 .bus-stop-popup .vehicle-type-label {
-    font-weight: 600;
-    color: #181a1b;
+  font-weight: 600;
+  color: #181a1b;
 }
 
 .bus-stop-popup .vehicle-type-value {
-    font-weight: 500;
-    color: #6A63F6;
-    background-color: #e0e0ff;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 12px;
+  font-weight: 500;
+  color: #6A63F6;
+  background-color: #e0e0ff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
 }
 
 .bus-stop-popup .direction {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .bus-stop-popup .departure-info {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
 }
 
 .bus-stop-popup .next-departure {
-    font-weight: 600;
-    margin-bottom: 2px;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 
 .bus-stop-popup .real-time-badge {
-    font-size: 12px;
-    color: #06d6a0;
+  font-size: 12px;
+  color: #06d6a0;
 }
 
 .bus-stop-popup .scheduled-badge {
-    font-size: 12px;
-    color: #595959;
+  font-size: 12px;
+  color: #595959;
 }
 
 .bus-stop-popup .accessibility-info {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  margin-top: 6px;
 }
 
 .bus-stop-popup .accessibility-label {
-    font-weight: 600;
-    color: #181a1b;
-    font-size: inherit;
+  font-weight: 600;
+  color: #181a1b;
+  font-size: inherit;
 }
 
 .bus-stop-popup .accessibility-value {
-    color: #000000;
-    background-color: #f0f0f0;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-weight: 500;
-    font-size: 12px;
+  color: #000000;
+  background-color: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 12px;
 }
 
 /* --- Layout --- */
 .main-content {
-    margin-bottom: 66px;
+  margin-bottom: 66px;
 }
 
 @media (display-mode: standalone) {
-    .main-content {
-        margin-bottom: 65px;
-    }
+  .main-content {
+    margin-bottom: 65px;
+  }
 }
 
 @media (max-width: 480px) {
-    .page-title {
-        font-size: 28px;
-    }
+  .page-title {
+    font-size: 28px;
+  }
 
-    .status-label {
-        font-size: 18px;
-    }
+  .status-label {
+    font-size: 18px;
+  }
 }

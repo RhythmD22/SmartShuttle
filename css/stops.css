@@ -1,70 +1,70 @@
 .map-container {
-    flex: 1 1 auto;
-    height: 100%;
-    width: 100%;
-    border-radius: 0;
-    z-index: 0;
-    overflow: hidden;
-    position: relative;
-    min-height: 0;
-    padding-bottom: 5px;
+  flex: 1 1 auto;
+  height: 100%;
+  width: 100%;
+  border-radius: 0;
+  z-index: 0;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+  padding-bottom: 5px;
 }
 
 .transit-api-badge {
-    position: absolute;
-    bottom: 5px;
-    left: 0;
-    padding: 0;
-    margin: 0;
-    z-index: 1000;
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  padding: 0;
+  margin: 0;
+  z-index: 1000;
 }
 
 .leaflet-control-attribution {
-    margin-bottom: 3px !important;
+  margin-bottom: 3px !important;
 }
 
 .transit-api-logo {
-    max-height: 24px;
-    width: auto;
-    display: block;
+  max-height: 24px;
+  width: auto;
+  display: block;
 }
 
 .user-location-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .user-location-dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background-color: #6A63F6;
-    border: 2px solid white;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #6A63F6;
+  border: 2px solid white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .bus-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .stop-count {
-    font-size: 12px;
-    color: #ABA9A6;
-    font-weight: 500;
-    margin-top: 2px;
-    text-align: center;
+  font-size: 12px;
+  color: #ABA9A6;
+  font-weight: 500;
+  margin-top: 2px;
+  text-align: center;
 }
 
 .main-content {
-    margin-top: 0;
-    margin-bottom: 66px;
+  margin-top: 0;
+  margin-bottom: 66px;
 }
 
 @media (display-mode: standalone) {
-    .main-content {
-        margin-bottom: 65px;
-    }
+  .main-content {
+    margin-bottom: 65px;
+  }
 }
