@@ -108,7 +108,7 @@ SmartShuttle/
 |-------|-----------|
 | Frontend | HTML5, CSS3, ES6+ (vanilla, no framework) |
 | Maps | [Leaflet.js](https://leafletjs.com) 1.9.4 + OpenStreetMap tiles |
-| Animations | [dotlottie-wc](https://github.com/dotlottie/dotlottie-web) (Lottie) |
+| Animations | [dotLottie Web Component](https://github.com/LottieFiles/dotlottie-web) (Lottie) |
 | Font | [Inter](https://fonts.google.com/specimen/Inter) |
 | API Backend | [Vercel serverless functions](https://vercel.com/docs/functions) (Node.js) |
 | Transit Data | [Transit API v3](https://transitapp.com) (`external.transitapp.com`) |
