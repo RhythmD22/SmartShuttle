@@ -68,11 +68,9 @@ npm start
 
 ```
 SmartShuttle/
-  ├── index.html           # Entry point, page templates, SPA boot
-  ├── manifest.json        # PWA manifest
-  ├── service-worker.js    # Cache-first service worker
-  ├── vercel.json          # Vercel routing, headers, rewrites
-  ├── .env.example         # Environment variable template
+├── index.html             # Entry point, page templates, SPA boot
+├── vercel.json            # Vercel routing, headers, rewrites
+├── .env.example           # Environment variable template
 ├── api/
 │   ├── transit-proxy.js   # Transit API proxy (rate-limited, key on server)
 │   └── send-feedback.js   # GitHub Issues webhook for feedback
@@ -85,13 +83,15 @@ SmartShuttle/
 │   ├── notifications.js   # Live service alerts page
 │   └── feedback.js        # Feedback submission form
 ├── css/
-  │   ├── styles.css       # Design system (CSS custom properties), reset, shared components, states
+│   ├── styles.css         # Design system, reset, shared components, states
 │   ├── index.css          # Landing page (stars, night glow, gradient button)
 │   ├── stops.css          # Stops map layout
 │   ├── routes.css         # Route panels, occupancy rows, search pill
 │   ├── notifications.css  # Alert feed, filter buttons, pull-to-refresh
 │   └── feedback.css       # Form fields, popup, attachment preview
-└── images/                # SVG icons and assets
+├── images/                # SVG icons and assets
+├── manifest.json          # PWA manifest
+└── service-worker.js      # Cache-first service worker
 ```
 
 ## Design System
