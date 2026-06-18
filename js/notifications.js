@@ -22,10 +22,26 @@ import { SS } from './utils.js';
 
   const initializeSearch = () => {
     const searchInput = document.getElementById('notificationSearchInput');
-    const searchPill = document.querySelector('.notification-search-pill');
+    const searchPill = document.getElementById('notificationSearchPill');
+    const searchClear = document.getElementById('notificationSearchClear');
 
     if (searchInput) {
       SS.hideBottomNavOnSearch(searchInput);
+    }
+
+    if (searchClear && searchInput) {
+      searchClear.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+      });
+      searchClear.addEventListener('click', (e) => {
+        e.stopPropagation();
+        searchInput.value = '';
+        currentSearchTerm = '';
+        applyAlertFilter(currentFilter);
+        searchPill.classList.remove('expanded');
+        searchClear.classList.remove('visible');
+        searchInput.focus();
+      });
     }
 
     if (searchPill && searchInput) {
@@ -39,14 +55,17 @@ import { SS } from './utils.js';
 
         if (currentSearchTerm.length > 0) {
           searchPill.classList.add('expanded');
+          if (searchClear) searchClear.classList.add('visible');
         } else {
           searchPill.classList.remove('expanded');
+          if (searchClear) searchClear.classList.remove('visible');
         }
       });
 
       searchInput.addEventListener('blur', () => {
         if (searchInput.value.trim() === '') {
           searchPill.classList.remove('expanded');
+          if (searchClear) searchClear.classList.remove('visible');
         }
       });
     }
@@ -97,7 +116,7 @@ import { SS } from './utils.js';
   const displayNoLocationMessage = () => {
     const container = document.getElementById('liveAlertsContainer');
     container.innerHTML =
-      '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">No location selected</div><div class="live-alert-description">Please select a location in Routes first</div></div></div>';
+      '<div class="live-alert-item"><div class="live-alert-text"><div class="live-alert-title">Location needed</div><div class="live-alert-description">Enable location services to see transit alerts in your area.</div></div></div>';
 
     applyAlertFilter(currentFilter);
   };

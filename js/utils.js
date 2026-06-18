@@ -344,19 +344,22 @@ const SS = (() => {
     const searchResults = document.getElementById('searchResults');
 
     const closeSearchModalFn = () => {
-      searchModal.style.display = 'none';
+      searchModal.classList.remove('visible');
       searchInput.value = '';
       searchResults.innerHTML = '';
     };
 
     searchBtn.addEventListener('click', () => {
-      searchModal.style.display = 'block';
+      searchModal.classList.add('visible');
       searchInput.focus();
       showSearchPrompt();
       showCurrentLocationOption();
     });
 
-    closeSearchModal.addEventListener('click', closeSearchModalFn);
+    closeSearchModal.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      closeSearchModalFn();
+    });
 
     window.addEventListener('click', (event) => {
       if (event.target === searchModal) {
@@ -544,7 +547,7 @@ const SS = (() => {
       updateLocationDisplay(displayName);
       map.setView([lat, lng], 13);
 
-      searchModal.style.display = 'none';
+      searchModal.classList.remove('visible');
       searchInput.value = '';
       searchResults.innerHTML = '';
 
@@ -597,6 +600,13 @@ const SS = (() => {
     });
   }
 
+  function hideMapLoadingOverlay() {
+    const overlay = document.getElementById('mapLoadingOverlay');
+    if (overlay) {
+      overlay.classList.add('hidden');
+    }
+  }
+
   function initializeTransitMap(options) {
     const {
       elementId = 'map',
@@ -607,6 +617,12 @@ const SS = (() => {
     } = options;
 
     const mapInstance = createLeafletMap(elementId);
+
+    mapInstance.whenReady(() => {
+      setTimeout(() => {
+        hideMapLoadingOverlay();
+      }, 600);
+    });
 
     if (options.invalidateDelay) {
       setTimeout(() => {
@@ -738,6 +754,7 @@ const SS = (() => {
     showSkeletons,
     pageInit,
     initializeTransitMap,
+    hideMapLoadingOverlay,
   };
 })();
 

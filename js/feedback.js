@@ -17,6 +17,7 @@ import { SS } from './utils.js';
     const attachmentInput = document.getElementById('attachmentInput');
     const attachmentLabel = document.getElementById('attachmentLabel');
     const attachmentPreview = document.getElementById('attachmentPreview');
+    const charCount = document.getElementById('charCount');
     const attachmentPreviewIcon = document.querySelector(
       '#attachmentPreview .attachment-preview-icon'
     );
@@ -27,6 +28,12 @@ import { SS } from './utils.js';
     if (issueType) {
       issueType.addEventListener('change', function () {
         issueType.classList.toggle('has-value', this.value !== '');
+      });
+    }
+
+    if (descriptionText && charCount) {
+      descriptionText.addEventListener('input', function () {
+        charCount.textContent = `${this.value.length} / 1000`;
       });
     }
 

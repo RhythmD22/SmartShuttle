@@ -29,12 +29,33 @@ import { SS } from './utils.js';
 
   const initializeRouteSearch = () => {
     const routeSearchInput = document.getElementById('routeSearchInput');
+    const routeSearchClear = document.getElementById('routeSearchClear');
     if (!routeSearchInput) return;
 
     SS.hideBottomNavOnSearch(routeSearchInput);
 
+    if (routeSearchClear) {
+      routeSearchClear.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+      });
+      routeSearchClear.addEventListener('click', (e) => {
+        e.stopPropagation();
+        routeSearchInput.value = '';
+        routeSearchClear.classList.remove('visible');
+        updateRouteArrivalsSection(currentRoutes);
+        routeMarkers.forEach((m) => {
+          if (!map.hasLayer(m)) m.addTo(map);
+        });
+        routeSearchInput.focus();
+      });
+    }
+
     routeSearchInput.addEventListener('input', () => {
       const query = routeSearchInput.value.toLowerCase().trim();
+
+      if (routeSearchClear) {
+        routeSearchClear.classList.toggle('visible', query.length > 0);
+      }
 
       if (query === '') {
         updateRouteArrivalsSection(currentRoutes);
@@ -70,6 +91,12 @@ import { SS } from './utils.js';
       });
 
       updateRouteArrivalsSection(filteredRoutes);
+    });
+
+    routeSearchInput.addEventListener('blur', () => {
+      if (routeSearchClear && routeSearchInput.value.trim() === '') {
+        routeSearchClear.classList.remove('visible');
+      }
     });
   };
 
@@ -218,7 +245,7 @@ import { SS } from './utils.js';
 
     if (!routes || routes.length === 0) {
       routeArrivalsContent.innerHTML =
-        '<div class="route-row"><div class="route-info" style="color:#ABA9A6;">No matching routes</div><div class="arrival-info" style="color:#ABA9A6;">-</div></div>';
+        '<div class="route-row"><div class="route-info" style="color:#ABA9A6;">No matching routes</div><div class="arrival-info" style="color:#ABA9A6;">\u2014</div></div>';
       updateShuttleCapacitySection([]);
       return;
     }
@@ -403,7 +430,7 @@ import { SS } from './utils.js';
 
     if (routeContent) {
       routeContent.innerHTML =
-        '<div class="route-row"><div class="route-info" style="color:#ff6b6b;">Could not load routes</div><div class="arrival-info">-</div></div>';
+        '<div class="route-row"><div class="route-info" style="color:#ff6b6b;">Could not load routes</div><div class="arrival-info">\u2014</div></div>';
     }
     if (capacityContent) {
       capacityContent.innerHTML =
