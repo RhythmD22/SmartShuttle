@@ -224,10 +224,13 @@
   width: 150px;
   flex-grow: 1;
   height: 36px;
-  transition: all 0.3s ease;
   border: 1px solid var(--brand-primary);
   flex-shrink: 0;
   margin-top: 6px;
+  overflow: hidden;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .notifications-page .notification-search-pill:focus-within,
