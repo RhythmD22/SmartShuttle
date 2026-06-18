@@ -14,6 +14,7 @@
 - [Demo](#demo)
 - [Install](#install)
 - [Architecture](#architecture)
+- [Design System](#design-system)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [Scripts](#scripts)
@@ -93,6 +94,8 @@ SmartShuttle/
 ├── manifest.json          # PWA manifest
 └── service-worker.js      # Cache-first service worker
 ```
+
+---
 
 ## Design System
 
