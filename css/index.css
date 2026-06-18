@@ -1,10 +1,9 @@
 html {
-  background-color: #0b0c15;
-  /* Match status bar color */
+  background-color: var(--bg-landing);
 }
 
 body.home-page {
-  background: linear-gradient(180deg, #0b0c15 0%, #0c0b1a 150px, #13112a 100%) #0b0c15 no-repeat fixed;
+  background: linear-gradient(180deg, var(--bg-landing) 0%, #0c0b1a 150px, #13112a 100%) var(--bg-landing) no-repeat fixed;
   background-size: 100% 200vh;
   background-size: 100% 200dvh;
   min-height: 100dvh;
@@ -22,7 +21,7 @@ body.home-page {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 10px 0 0;
+  padding: var(--space-sm) 0 0;
   text-align: center;
   overflow: hidden;
   position: relative;
@@ -31,7 +30,7 @@ body.home-page {
 }
 
 .landing-page .app-title {
-  font-size: 40px;
+  font-size: var(--text-3xl);
   font-weight: bold;
   color: #fff;
   margin-bottom: 5px;
@@ -41,12 +40,14 @@ body.home-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 20px;
+  padding-top: var(--space-xl);
   margin-bottom: 5px;
   flex: none;
   border-bottom: none;
+  background: transparent;
   position: relative;
   z-index: 20;
+  min-height: auto;
 }
 
 .landing-page .status-container {
@@ -58,9 +59,9 @@ body.home-page {
 }
 
 .landing-page .status-label {
-  font-size: 24px;
+  font-size: var(--text-xl);
   font-weight: 600;
-  color: #aba9a6;
+  color: var(--gray-300);
 }
 
 .landing-page .header dotlottie-wc {
@@ -82,9 +83,9 @@ body.home-page {
 }
 
 .landing-page .next-button {
-  background: linear-gradient(135deg, #8277ff 0%, #6a63f6 100%);
+  background: linear-gradient(135deg, var(--brand-primary-light) 0%, var(--brand-primary) 100%);
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   width: 200px;
   height: 60px;
   display: flex;
@@ -92,8 +93,8 @@ body.home-page {
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  margin: 8px 0 32px;
-  box-shadow: 0 8px 25px rgba(106, 99, 246, 0.4);
+  margin: 8px 0 var(--space-3xl);
+  box-shadow: var(--shadow-md);
   transition:
     all 0.3s ease,
     transform 0.1s;
@@ -101,7 +102,7 @@ body.home-page {
 }
 
 .landing-page .next-button:hover {
-  box-shadow: 0 10px 30px rgba(106, 99, 246, 0.6);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
@@ -111,7 +112,7 @@ body.home-page {
 
 .landing-page .button-text {
   color: #fff;
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-weight: 600;
   font-family: 'Inter', sans-serif;
 }
@@ -287,13 +288,13 @@ body.home-page {
 
 @media (max-width: 480px) {
   .landing-page .status-label {
-    font-size: 20px;
+    font-size: var(--text-lg);
   }
 }
 
 @media (max-width: 375px) {
   .landing-page .app-title {
-    font-size: 32px;
+    font-size: var(--text-2xl);
   }
 
   .landing-page .bus-image-container {
@@ -307,11 +308,11 @@ body.home-page {
   .landing-page .next-button {
     width: 180px;
     height: 52px;
-    margin-bottom: 24px;
+    margin-bottom: var(--space-2xl);
   }
 
   .landing-page .button-text {
-    font-size: 16px;
+    font-size: var(--text-md);
   }
 }
 
