@@ -58,13 +58,22 @@
     <nav class="bottom-nav" id="bottomNav" aria-label="Main navigation">
         <div class="bottom-nav-content" id="bottomNavContent">
             <a href="/stops" class="nav-item" data-route="stops" aria-label="Stops">
-                <img src="images/map.svg" alt="" class="nav-icon-img">
+                <div class="nav-icon-wrapper">
+                    <img src="images/map.svg" alt="" class="nav-icon-img">
+                    <span class="nav-label">Stops</span>
+                </div>
             </a>
             <a href="/routes" class="nav-item" data-route="routes" aria-label="Routes">
-                <img src="images/location.svg" alt="" class="nav-icon-img">
+                <div class="nav-icon-wrapper">
+                    <img src="images/location.svg" alt="" class="nav-icon-img">
+                    <span class="nav-label">Routes</span>
+                </div>
             </a>
             <a href="/notifications" class="nav-item" data-route="notifications" aria-label="Notifications">
-                <img src="images/notification.svg" alt="" class="nav-icon-img">
+                <div class="nav-icon-wrapper">
+                    <img src="images/notification.svg" alt="" class="nav-icon-img">
+                    <span class="nav-label">Alerts</span>
+                </div>
             </a>
         </div>
     </nav>
@@ -146,6 +155,10 @@
 
             <main class="main-content">
                 <div id="map" class="map-container" aria-label="Map" role="application">
+                    <div class="map-loading-overlay" id="mapLoadingOverlay">
+                        <div class="map-loading-spinner"></div>
+                        <span class="map-loading-text">Loading map...</span>
+                    </div>
                     <button class="refresh-btn" id="refreshBtn" aria-label="Refresh map">
                         <img src="images/refresh.svg" alt="Refresh" class="icon">
                     </button>
@@ -178,7 +191,7 @@
                     </div>
                     <div class="current-location">
                         <img src="images/curvedright.svg" alt="Current Location" class="icon">
-                        <span id="selectedLocationDisplay">Select a location</span>
+                        <span id="selectedLocationDisplay">Search to get started</span>
                     </div>
                 </div>
                 <div class="header-right">
@@ -190,6 +203,10 @@
 
             <main class="main-content">
                 <div id="map" class="map-container" aria-label="Map" role="application">
+                    <div class="map-loading-overlay" id="mapLoadingOverlay">
+                        <div class="map-loading-spinner"></div>
+                        <span class="map-loading-text">Loading map...</span>
+                    </div>
                     <button class="refresh-btn" id="refreshBtn" aria-label="Refresh map">
                         <img src="images/refresh.svg" alt="Refresh" class="icon">
                     </button>
@@ -208,16 +225,18 @@
                     <div class="route-arrivals-container">
                         <div class="route-arrivals-header">
                             <h2 class="route-arrivals-heading">Route & Departures</h2>
-                            <div class="route-search-pill">
+                            <div class="route-search-pill" id="routeSearchPill">
                                 <img src="images/search.svg" alt="" class="pill-search-icon">
                                 <input type="text" id="routeSearchInput" placeholder="Search"
                                     aria-label="Search routes">
+                                <button class="search-clear-btn" id="routeSearchClear" aria-label="Clear search"
+                                    type="button">&times;</button>
                             </div>
                         </div>
                         <div class="route-arrivals-content" id="routeArrivalsContent">
                             <div class="route-row">
                                 <div class="route-info">Loading routes...</div>
-                                <div class="arrival-info">-</div>
+                                <div class="arrival-info">&mdash;</div>
                             </div>
                         </div>
                     </div>
@@ -298,10 +317,12 @@
                         <button class="alert-filter-btn" data-filter="DETOUR" aria-pressed="false">
                             Detour
                         </button>
-                        <div class="notification-search-pill">
+                        <div class="notification-search-pill" id="notificationSearchPill">
                             <span class="pill-search-icon"></span>
                             <input type="text" id="notificationSearchInput" placeholder="Search"
                                 aria-label="Search notifications">
+                            <button class="search-clear-btn" id="notificationSearchClear" aria-label="Clear search"
+                                type="button">&times;</button>
                         </div>
                     </div>
 
@@ -359,6 +380,7 @@
                         <label for="descriptionText" class="field-label">Description</label>
                         <textarea id="descriptionText" class="description-textarea" placeholder="Describe the issue..."
                             aria-required="true" rows="5" maxlength="1000"></textarea>
+                        <span class="char-count" id="charCount">0 / 1000</span>
                     </div>
 
                     <div class="form-field">

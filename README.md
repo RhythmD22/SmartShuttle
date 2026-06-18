@@ -68,11 +68,11 @@ npm start
 
 ```
 SmartShuttle/
-├── index.html             # Entry point, page templates, SPA boot
-├── manifest.json          # PWA manifest
-├── service-worker.js      # Cache-first service worker
-├── vercel.json            # Vercel routing, headers, rewrites
-├── .env.example            # Environment variable template
+  ├── index.html             # Entry point, page templates, SPA boot
+  ├── manifest.json          # PWA manifest
+  ├── service-worker.js      # Cache-first service worker
+  ├── vercel.json            # Vercel routing, headers, rewrites
+  ├── .env.example            # Environment variable template
 ├── api/
 │   ├── transit-proxy.js   # Transit API proxy (rate-limited, key on server)
 │   └── send-feedback.js   # GitHub Issues webhook for feedback
@@ -85,7 +85,7 @@ SmartShuttle/
 │   ├── notifications.js   # Live service alerts page
 │   └── feedback.js        # Feedback submission form
 ├── css/
-│   ├── styles.css         # Reset, shared components, skeleton/empty/error states
+  │   ├── styles.css         # Design system (CSS custom properties), reset, shared components, states
 │   ├── index.css          # Landing page (stars, night glow, gradient button)
 │   ├── stops.css          # Stops map layout
 │   ├── routes.css         # Route panels, occupancy rows, search pill
@@ -93,6 +93,51 @@ SmartShuttle/
 │   └── feedback.css       # Form fields, popup, attachment preview
 └── images/                # SVG icons and assets
 ```
+
+## Design System
+
+SmartShuttle uses a CSS custom properties system consolidated into a cohesive dark theme:
+
+### Backgrounds
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--bg-body` | `#181a1b` | Page background |
+| `--bg-surface` | `#131516` | Cards, panels, form inputs |
+| `--bg-surface-hover` | `#2a2d2e` | Hover states, button fills |
+| `--bg-input` | `#2a2d2e` | Input fields |
+| `--bg-input-focus` | `#333333` | Input focus state |
+| `--bg-landing` | `#0b0c15` | Landing page gradient base |
+
+### Text & Grays
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--gray-200` | `#bababa` | Header location text |
+| `--gray-300` | `#aba9a6` | Body text, descriptions, icons |
+| `--gray-500` | `#6e6e6e` | Form field borders |
+| `--border-color` | `#333333` | Dividers, card borders |
+| `--border-light` | `rgba(255,255,255,0.06)` | Subtle row separators |
+
+### Brand
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--brand-primary` | `#6a63f6` | Buttons, active nav, refresh, filters |
+| `--brand-primary-hover` | `#7b75ff` | Button hover |
+| `--brand-primary-dark` | `#413c96` | Route arrivals panel, inactive nav |
+| `--brand-primary-light` | `#8277ff` | Landing button gradient |
+
+### Semantic Colors
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--color-success` | `#06d6a0` | Real-time badges, high capacity |
+| `--color-warning` | `#ffd166` | Warning severity, medium capacity |
+| `--color-danger` | `#ff6b6b` | Severe alerts, low capacity, errors |
+| `--color-info` | `#7b75ff` | Info severity, search result badges |
+
+Typography uses **Inter** at a 7-step scale (`--text-xs` through `--text-3xl`: 0.75rem–2.5rem). Spacing follows a 4px base (`--space-xs`: 4px through `--space-3xl`: 32px). Corners use a 4-step radius (`--radius-sm`: 4px through `--radius-full`: 999px for pills).
 
 **Key design decisions:**
 - **ES Modules** — explicit `import`/`export` dependency graph
