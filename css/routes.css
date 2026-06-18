@@ -58,7 +58,7 @@
   padding: var(--space-md) var(--space-lg) var(--space-sm);
   flex: 0 0 auto;
   min-height: auto;
-  max-height: 28vh;
+  max-height: 116px;
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -168,7 +168,7 @@
   padding: var(--space-md) var(--space-lg) var(--space-sm);
   flex: 0 0 auto;
   min-height: auto;
-  max-height: 28vh;
+  max-height: 116px;
   width: 100%;
   box-sizing: border-box;
   display: flex;
