@@ -68,11 +68,11 @@ npm start
 
 ```
 SmartShuttle/
-  ├── index.html             # Entry point, page templates, SPA boot
-  ├── manifest.json          # PWA manifest
-  ├── service-worker.js      # Cache-first service worker
-  ├── vercel.json            # Vercel routing, headers, rewrites
-  ├── .env.example            # Environment variable template
+  ├── index.html           # Entry point, page templates, SPA boot
+  ├── manifest.json        # PWA manifest
+  ├── service-worker.js    # Cache-first service worker
+  ├── vercel.json          # Vercel routing, headers, rewrites
+  ├── .env.example         # Environment variable template
 ├── api/
 │   ├── transit-proxy.js   # Transit API proxy (rate-limited, key on server)
 │   └── send-feedback.js   # GitHub Issues webhook for feedback
@@ -85,7 +85,7 @@ SmartShuttle/
 │   ├── notifications.js   # Live service alerts page
 │   └── feedback.js        # Feedback submission form
 ├── css/
-  │   ├── styles.css         # Design system (CSS custom properties), reset, shared components, states
+  │   ├── styles.css       # Design system (CSS custom properties), reset, shared components, states
 │   ├── index.css          # Landing page (stars, night glow, gradient button)
 │   ├── stops.css          # Stops map layout
 │   ├── routes.css         # Route panels, occupancy rows, search pill
@@ -137,7 +137,48 @@ SmartShuttle uses a CSS custom properties system consolidated into a cohesive da
 | `--color-danger` | `#ff6b6b` | Severe alerts, low capacity, errors |
 | `--color-info` | `#7b75ff` | Info severity, search result badges |
 
-Typography uses **Inter** at a 7-step scale (`--text-xs` through `--text-3xl`: 0.75rem–2.5rem). Spacing follows a 4px base (`--space-xs`: 4px through `--space-3xl`: 32px). Corners use a 4-step radius (`--radius-sm`: 4px through `--radius-full`: 999px for pills).
+### Type Scale
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--text-xs` | `0.75rem` | Captions, meta labels |
+| `--text-sm` | `0.8125rem` | Current location, loading text |
+| `--text-base` | `0.875rem` | Body text, button labels |
+| `--text-md` | `1rem` | Header text, popup headings |
+| `--text-lg` | `1.25rem` | Empty state titles |
+| `--text-xl` | `1.5rem` | Status labels |
+| `--text-2xl` | `2rem` | Page titles |
+| `--text-3xl` | `2.5rem` | Landing hero text |
+
+### Spacing
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--space-xs` | `4px` | Micro gaps |
+| `--space-sm` | `8px` | Standard padding, button gaps |
+| `--space-md` | `12px` | Search modal padding |
+| `--space-lg` | `16px` | Header padding, element margins |
+| `--space-xl` | `20px` | Illustration spacing |
+| `--space-2xl` | `24px` | Section padding |
+| `--space-3xl` | `32px` | Empty/error state padding |
+
+### Border Radius
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--radius-sm` | `4px` | Badges, stop codes |
+| `--radius-md` | `8px` | Inputs, buttons |
+| `--radius-lg` | `12px` | Search modal, popup tags |
+| `--radius-xl` | `20px` | Large cards |
+| `--radius-full` | `999px` | Pill buttons |
+
+### Shadows
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--shadow-sm` | `0 4px 20px rgba(0,0,0,0.4)` | Search modal, general elevation |
+| `--shadow-md` | `0 8px 25px rgba(106,99,246,0.4)` | Branded elevation |
+| `--shadow-lg` | `0 10px 30px rgba(106,99,246,0.6)` | Heavy branded elevation |
 
 **Key design decisions:**
 - **ES Modules** — explicit `import`/`export` dependency graph
