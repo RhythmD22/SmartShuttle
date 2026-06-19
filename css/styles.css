@@ -998,6 +998,15 @@ dotlottie-wc {
   opacity: 0;
 }
 
+.user-location-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.user-location-icon img {
+  transition: transform 0.3s ease;
+}
+
 .map-loading-spinner {
   width: 28px;
   height: 28px;
