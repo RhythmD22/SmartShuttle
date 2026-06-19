@@ -31,6 +31,8 @@
 | Feature | Description |
 |---------|------------|
 | Live Stop Map | Interactive Leaflet map with nearby transit stops and route info popups |
+| Live GPS Tracking | Continuous `watchPosition` with auto-follow — map follows you as you walk |
+| Compass Heading | Directional cone on your location marker rotates with device orientation |
 | Route & Departures | Real-time departure countdowns for nearby routes |
 | Estimated Occupancy | Per-route crowding estimate (Likely Full / Moderate / Seats Available) based on vehicle type, time of day, and day of week |
 | Live Alerts | Service disruptions, delays, and detours from the Transit API |
