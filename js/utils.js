@@ -251,37 +251,26 @@ const SS = (() => {
     return location;
   }
 
-  function addMapUserMarker(map, lat, lng, position) {
-    const userIcon = L.divIcon({
-      className: 'user-location-icon',
-      html: `<img src="images/current.svg" style="width: 24px; height: 24px;">`,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
-    });
+  function addMapUserMarker(map, lat, lng, heading) {
+    const h = heading != null ? heading : 0;
 
     if (window.userLocationMarker) {
-      map.removeLayer(window.userLocationMarker);
+      window.userLocationMarker.setLatLng([lat, lng]);
+      if (window.userLocationMarker._icon) {
+        var img = window.userLocationMarker._icon.querySelector('img');
+        if (img) img.style.transform = 'rotate(' + h + 'deg)';
+      }
+    } else {
+      const userIcon = L.divIcon({
+        className: 'user-location-icon',
+        html: `<img src="images/direction.svg" style="width: 48px; height: 48px; transform: rotate(${h}deg);">`,
+        iconSize: [48, 48],
+        iconAnchor: [24, 24],
+      });
+      const userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
+      userMarker.bindPopup('Your Location');
+      window.userLocationMarker = userMarker;
     }
-
-    const userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
-    userMarker.bindPopup('Your Location').openPopup();
-    window.userLocationMarker = userMarker;
-
-    const accuracy = position?.coords?.accuracy || 100;
-    L.circle([lat, lng], {
-      color: '#6A63F6',
-      fillColor: '#6A63F6',
-      fillOpacity: 0.5,
-      radius: accuracy,
-    }).addTo(map);
-
-    L.circle([lat, lng], {
-      color: '#CCCAF6',
-      fillColor: '#CCCAF6',
-      fillOpacity: 0.5,
-      radius: accuracy * 1.5,
-      purpose: 'user-location',
-    }).addTo(map);
   }
 
   async function reverseGeocodeLocation(lat, lng) {
@@ -551,7 +540,11 @@ const SS = (() => {
       searchInput.value = '';
       searchResults.innerHTML = '';
 
-      addMapUserMarker(map, lat, lng, null);
+      addMapUserMarker(map, lat, lng);
+
+      if (map._disableAutoFollow) {
+        map._disableAutoFollow();
+      }
 
       onLocationSelected(lat, lng, displayName);
     };
@@ -607,6 +600,18 @@ const SS = (() => {
     }
   }
 
+  function stopLocationTracking() {
+    if (window.__geoWatchId != null) {
+      navigator.geolocation.clearWatch(window.__geoWatchId);
+      window.__geoWatchId = null;
+    }
+    if (window.__compassHandler) {
+      window.removeEventListener('deviceorientation', window.__compassHandler);
+      window.__compassHandler = null;
+    }
+    window.userLocationMarker = null;
+  }
+
   function initializeTransitMap(options) {
     const {
       elementId = 'map',
@@ -630,31 +635,55 @@ const SS = (() => {
       }, options.invalidateDelay);
     }
 
-    const getUserLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showUserLocation, handleLocationError);
-      } else {
-        console.error('Geolocation is not supported by this browser.');
-        handleLocationError({ code: -1, message: 'Not supported' });
-      }
-    };
+    stopLocationTracking();
+
+    var isFirstPosition = true;
+    var isAutoFollowing = true;
+    var currentHeading = 0;
+    var hasHadPosition = false;
+    var lastAutoFollowCenter = null;
 
     const showUserLocation = async (position) => {
       const userLat = position.coords.latitude;
       const userLng = position.coords.longitude;
+      const speed = position.coords.speed || 0;
 
-      addMapUserMarker(mapInstance, userLat, userLng, position);
-      mapInstance.setView([userLat, userLng], zoom);
+      hasHadPosition = true;
 
-      try {
-        const displayName = await reverseGeocodeLocation(userLat, userLng);
-        updateLocationDisplay(displayName);
-      } catch (error) {
-        console.error('Error getting location name:', error);
-        updateLocationDisplay('Current Location');
+      if (speed > 1 && position.coords.heading != null) {
+        currentHeading = position.coords.heading;
       }
 
-      if (onLocationReady) onLocationReady(userLat, userLng);
+      addMapUserMarker(mapInstance, userLat, userLng, currentHeading);
+
+      if (isAutoFollowing) {
+        var shouldRecenter = true;
+        if (lastAutoFollowCenter) {
+          var dlat = userLat - lastAutoFollowCenter[0];
+          var dlng = userLng - lastAutoFollowCenter[1];
+          var distMeters = Math.sqrt(dlat * dlat + dlng * dlng) * 111000;
+          if (distMeters < 15) {
+            shouldRecenter = false;
+          }
+        }
+        if (shouldRecenter) {
+          lastAutoFollowCenter = [userLat, userLng];
+          mapInstance._programmaticMove = true;
+          mapInstance.setView([userLat, userLng], zoom);
+        }
+      }
+
+      if (isFirstPosition) {
+        isFirstPosition = false;
+        try {
+          const displayName = await reverseGeocodeLocation(userLat, userLng);
+          updateLocationDisplay(displayName);
+        } catch (error) {
+          console.error('Error getting location name:', error);
+          updateLocationDisplay('Current Location');
+        }
+        if (onLocationReady) onLocationReady(userLat, userLng);
+      }
     };
 
     const handleLocationError = async (error) => {
@@ -664,6 +693,9 @@ const SS = (() => {
         ', Message: ' +
         error.message
       );
+
+      if (hasHadPosition) return;
+
       updateLocationDisplay('Location unavailable');
 
       if (options.fallbackToSaved) {
@@ -697,9 +729,67 @@ const SS = (() => {
       if (onLocationReady) onLocationReady(defaultLat, defaultLng);
     };
 
-    mapInstance.whenReady(() => {
-      let savedLocationHandled = false;
+    const startTracking = () => {
+      if (navigator.geolocation) {
+        window.__geoWatchId = navigator.geolocation.watchPosition(
+          showUserLocation,
+          handleLocationError,
+          {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 20000,
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+        handleLocationError({ code: -1, message: 'Not supported' });
+      }
+    };
 
+    if (window.DeviceOrientationEvent) {
+      const handleOrientation = (event) => {
+        var heading;
+        if (event.webkitCompassHeading != null && isFinite(event.webkitCompassHeading)) {
+          heading = event.webkitCompassHeading;
+        } else if (
+          event.alpha != null &&
+          isFinite(event.alpha) &&
+          event.webkitCompassHeading == null
+        ) {
+          heading = 360 - event.alpha;
+        }
+        if (heading != null && isFinite(heading)) {
+          currentHeading = heading;
+          if (window.userLocationMarker && window.userLocationMarker._icon) {
+            var imgEl = window.userLocationMarker._icon.querySelector('img');
+            if (imgEl) imgEl.style.transform = 'rotate(' + heading + 'deg)';
+          }
+        }
+      };
+
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        var permissionRequested = false;
+        var requestCompass = function () {
+          if (permissionRequested) return;
+          permissionRequested = true;
+          DeviceOrientationEvent.requestPermission()
+            .then(function (state) {
+              if (state === 'granted') {
+                window.addEventListener('deviceorientation', handleOrientation);
+                window.__compassHandler = handleOrientation;
+              }
+            })
+            .catch(console.error);
+        };
+        document.addEventListener('click', requestCompass, { once: true });
+        document.addEventListener('touchstart', requestCompass, { once: true });
+      } else {
+        window.addEventListener('deviceorientation', handleOrientation);
+        window.__compassHandler = handleOrientation;
+      }
+    }
+
+    mapInstance.whenReady(() => {
       if (options.useSavedLocation !== false) {
         const savedLocation = localStorage.getItem('selectedLocation');
         if (savedLocation) {
@@ -707,22 +797,43 @@ const SS = (() => {
             const locationData = JSON.parse(savedLocation);
             updateLocationDisplay(locationData.displayName || 'Current Location');
             mapInstance.setView([locationData.lat, locationData.lon], zoom);
-            addMapUserMarker(mapInstance, locationData.lat, locationData.lon, null);
+            addMapUserMarker(mapInstance, locationData.lat, locationData.lon, 0);
             if (onLocationReady) onLocationReady(locationData.lat, locationData.lon);
-            savedLocationHandled = true;
           } catch (e) {
             console.error('Error loading saved location:', e);
           }
         }
       }
 
-      if (!savedLocationHandled) {
-        getUserLocation();
-      }
+      startTracking();
     });
+
+    var disableAutoFollow = function () {
+      if (!isFirstPosition) {
+        isAutoFollowing = false;
+      }
+    };
+    mapInstance.on('dragstart zoomstart', disableAutoFollow);
+
+    mapInstance._toggleAutoFollow = function () {
+      isAutoFollowing = !isAutoFollowing;
+      if (isAutoFollowing && window.userLocationMarker) {
+        var ll = window.userLocationMarker.getLatLng();
+        lastAutoFollowCenter = [ll.lat, ll.lng];
+        mapInstance._programmaticMove = true;
+        mapInstance.setView([ll.lat, ll.lng], zoom);
+      }
+      return isAutoFollowing;
+    };
+
+    mapInstance._disableAutoFollow = function () {
+      isAutoFollowing = false;
+    };
 
     return mapInstance;
   }
+
+  window.__stopTracking = stopLocationTracking;
 
   return {
     initializeDesktopNotification,
@@ -755,6 +866,7 @@ const SS = (() => {
     pageInit,
     initializeTransitMap,
     hideMapLoadingOverlay,
+    stopTracking: stopLocationTracking,
   };
 })();
 

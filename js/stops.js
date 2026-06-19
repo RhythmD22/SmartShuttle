@@ -119,6 +119,10 @@ import { SS } from './utils.js';
     });
 
     map.on('moveend', () => {
+      if (map._programmaticMove) {
+        map._programmaticMove = false;
+        return;
+      }
       const center = map.getCenter();
       findNearbyShuttles(center.lat, center.lng);
     });

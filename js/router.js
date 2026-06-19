@@ -91,6 +91,11 @@ window.navigateTo = function (routeName, pushState = true, options = {}) {
     window.__tearDownSwipeNavigation();
   }
 
+  // Stop any location tracking from the previous route
+  if (window.__stopTracking) {
+    window.__stopTracking();
+  }
+
   // All visual state changes go inside performSwap so the View Transitions
   // API sees one atomic old -> new transition with no intermediate paint.
   // The new content is serialized to a string first so #app-root is never
