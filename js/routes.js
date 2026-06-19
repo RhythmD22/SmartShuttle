@@ -108,6 +108,14 @@ import { SS } from './utils.js';
       fallbackToSaved: true,
       onLocationReady: (lat, lng) => fetchRealTimeBuses(lat, lng),
     });
+
+    map.on('click', function () {
+      if (window.__activePolyline) {
+        map.removeLayer(window.__activePolyline);
+        window.__activePolyline = null;
+        window.__activePolylineTarget = null;
+      }
+    });
   };
 
   const fetchRealTimeBuses = async (lat, lng) => {
@@ -216,6 +224,22 @@ import { SS } from './utils.js';
             const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], { icon: stopIcon })
               .addTo(map)
               .bindPopup(popupContent);
+
+            stopMarker.on('popupopen', function () {
+              if (window.userLocationMarker) {
+                if (window.__activePolyline) {
+                  map.removeLayer(window.__activePolyline);
+                }
+                var userPos = window.userLocationMarker.getLatLng();
+                window.__activePolylineTarget = [stop.stop_lat, stop.stop_lon];
+                window.__activePolyline = L.polyline([userPos, [stop.stop_lat, stop.stop_lon]], {
+                  color: '#6A63F6',
+                  weight: 3,
+                  dashArray: '8 6',
+                  opacity: 0.8,
+                }).addTo(map);
+              }
+            });
 
             stopMarker.searchText = [
               route.route_short_name,

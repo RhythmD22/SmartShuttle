@@ -81,6 +81,20 @@ import { SS } from './utils.js';
                     .addTo(map)
                     .bindPopup(popupContent);
 
+                  stopMarker.on('popupopen', function () {
+                    if (window.userLocationMarker) {
+                      if (window.__activePolyline) {
+                        map.removeLayer(window.__activePolyline);
+                      }
+                      var userPos = window.userLocationMarker.getLatLng();
+                      window.__activePolylineTarget = [stop.stop_lat, stop.stop_lon];
+                      window.__activePolyline = L.polyline(
+                        [userPos, [stop.stop_lat, stop.stop_lon]],
+                        { color: '#6A63F6', weight: 3, dashArray: '8 6', opacity: 0.8 }
+                      ).addTo(map);
+                    }
+                  });
+
                   shuttleMarkers.push(stopMarker);
                 }
               });
@@ -125,6 +139,14 @@ import { SS } from './utils.js';
       }
       const center = map.getCenter();
       findNearbyShuttles(center.lat, center.lng);
+    });
+
+    map.on('click', function () {
+      if (window.__activePolyline) {
+        map.removeLayer(window.__activePolyline);
+        window.__activePolyline = null;
+        window.__activePolylineTarget = null;
+      }
     });
   };
 

@@ -610,6 +610,8 @@ const SS = (() => {
       window.__compassHandler = null;
     }
     window.userLocationMarker = null;
+    window.__activePolyline = null;
+    window.__activePolylineTarget = null;
   }
 
   function initializeTransitMap(options) {
@@ -655,6 +657,10 @@ const SS = (() => {
       }
 
       addMapUserMarker(mapInstance, userLat, userLng, currentHeading);
+
+      if (window.__activePolyline && window.__activePolylineTarget) {
+        window.__activePolyline.setLatLngs([[userLat, userLng], window.__activePolylineTarget]);
+      }
 
       if (isAutoFollowing) {
         var shouldRecenter = true;
