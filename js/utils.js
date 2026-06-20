@@ -64,7 +64,7 @@ const SS = (() => {
     return true;
   }
 
-  function validateFileSize(file, maxSizeMB = 5) {
+  function validateFileSize(file, maxSizeMB = 3) {
     if (file && file.size > maxSizeMB * 1024 * 1024) {
       alert(`File size exceeds ${maxSizeMB}MB limit. Please choose a smaller file.`);
       return false;
