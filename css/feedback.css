@@ -184,6 +184,7 @@
 
 .feedback-page .attachment-preview {
   display: none;
+  width: 100%;
 }
 
 .feedback-page .attachment-preview-content {
