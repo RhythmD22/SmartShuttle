@@ -64,7 +64,8 @@ import { SS } from './utils.js';
     }
 
     if (submitBtn) {
-      submitBtn.addEventListener('click', () => {
+      submitBtn.addEventListener('click', (e) => {
+        e.preventDefault();
         handleFeedbackSubmission(
           submitBtn,
           issueType,
