@@ -9,6 +9,14 @@ function sanitizeText(text, maxLength = 5000) {
     .trim();
 }
 
+function formatIssueTypeLabel(value) {
+  if (!value) return '';
+  return value
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 function decodeBase64Image(dataUrl) {
   const matches = dataUrl.match(/^data:(image\/[\w+.-]+);base64,(.+)$/i);
   if (!matches) return null;
@@ -77,6 +85,7 @@ export default async function handler(request, response) {
     }
 
     const sanitizedIssueType = sanitizeText(issue_type, 200);
+    const displayIssueType = formatIssueTypeLabel(sanitizedIssueType);
     const sanitizedDescription = sanitizeText(description, 5000);
     const sanitizedAttachmentInfo = sanitizeText(attachment_info, 500);
 
@@ -94,10 +103,10 @@ export default async function handler(request, response) {
     }
 
     const timestamp = new Date().toISOString();
-    let issueBody = `**Issue Type:** ${sanitizedIssueType}\n\n**Description:**\n${sanitizedDescription}\n\n**From:** SmartShuttle Feedback Form\n**Timestamp:** ${timestamp}\n\n**Attachment Info:** ${sanitizedAttachmentInfo || 'No attachment'}`;
+    let issueBody = `**Issue Type:** ${displayIssueType}\n\n**Description:**\n${sanitizedDescription}\n\n**From:** SmartShuttle Feedback Form\n**Timestamp:** ${timestamp}\n\n**Attachment Info:** ${sanitizedAttachmentInfo || 'No attachment'}`;
 
     const issueData = {
-      title: `Feedback: ${sanitizedIssueType}`,
+      title: `Feedback: ${displayIssueType}`,
       body: issueBody,
       labels: ['feedback', 'smartshuttle'],
     };
