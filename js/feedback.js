@@ -240,10 +240,20 @@ import { SS } from './utils.js';
     suffixMessage
   ) {
     if (data && data.success) {
-      showFeedbackPopup(
-        'Thank You!',
-        `Your feedback has been received!${suffixMessage ? ' (' + suffixMessage + ')' : ''}`
-      );
+      let msg = 'Your feedback has been received!';
+      if (suffixMessage) msg += ' (' + suffixMessage + ')';
+      if (data.imageStatus === 'uploaded') {
+        msg += ' \u2014 Image attached.';
+      } else if (data.imageStatus === 'upload_failed') {
+        msg += ' \u2014 Image upload failed: check GitHub token has contents:write scope.';
+      } else if (data.imageStatus === 'decode_failed') {
+        msg += ' \u2014 Image could not be processed.';
+      } else if (data.imageStatus === 'patch_failed') {
+        msg += ' \u2014 Image uploaded but could not be linked to issue.';
+      } else if (data.imageStatus === 'not_data_uri') {
+        msg += ' \u2014 Image format not recognized.';
+      }
+      showFeedbackPopup('Thank You!', msg);
 
       if (issueType) issueType.value = '';
       if (descriptionText) descriptionText.value = '';
