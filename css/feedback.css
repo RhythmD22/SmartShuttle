@@ -271,7 +271,7 @@
   gap: var(--space-sm);
 }
 
-.feedback-page .popup-overlay {
+.popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -289,12 +289,12 @@
     visibility 0.3s ease;
 }
 
-.feedback-page .popup-overlay.show {
+.popup-overlay.show {
   opacity: 1;
   visibility: visible;
 }
 
-.feedback-page .popup-content {
+.popup-content {
   background: var(--bg-body);
   border-radius: var(--radius-lg);
   padding: var(--space-2xl);
@@ -306,30 +306,30 @@
   transition: transform 0.3s ease;
 }
 
-.feedback-page .popup-overlay.show .popup-content {
+.popup-overlay.show .popup-content {
   transform: scale(1);
 }
 
-.feedback-page .popup-icon {
+.popup-icon {
   font-size: 48px;
   margin-bottom: 15px;
 }
 
-.feedback-page .popup-title {
+.popup-title {
   color: #fff;
   font-size: var(--text-lg);
   font-weight: 600;
   margin: 0 0 10px 0;
 }
 
-.feedback-page .popup-message {
+.popup-message {
   color: var(--gray-300);
   font-size: var(--text-base);
   margin: 0 0 var(--space-xl) 0;
   line-height: 1.4;
 }
 
-.feedback-page .popup-button {
+.popup-button {
   background-color: var(--brand-primary);
   color: white;
   border: none;
@@ -345,6 +345,6 @@
   transition: background-color 0.2s ease;
 }
 
-.feedback-page .popup-button:hover {
+.popup-button:hover {
   background-color: var(--brand-primary-hover);
 }
