@@ -139,18 +139,12 @@ export default async function handler(request, response) {
     let imageStatus = 'none';
 
     if (image_attachment) {
-      console.log(
-        `Image attachment received: length=${image_attachment.length}, starts_with_data_image=${image_attachment.startsWith('data:image/')}`
-      );
-
       if (image_attachment.startsWith('data:image/')) {
         const decoded = decodeBase64Image(image_attachment);
         if (decoded) {
           const ext = getExtensionFromMime(decoded.mimeType);
           const safeName = (attachment_name || 'screenshot').replace(/[^a-zA-Z0-9._-]/g, '_');
           const fileName = safeName.includes('.') ? safeName : safeName + ext;
-
-          console.log(`Uploading image: fileName=${fileName}, size=${decoded.buffer.length}`);
 
           const imageUrl = await uploadImageToRepo(
             githubToken,
