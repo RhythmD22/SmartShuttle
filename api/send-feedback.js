@@ -127,50 +127,79 @@ export default async function handler(request, response) {
     const result = await githubResponse.json();
     console.log('Feedback created as GitHub issue:', result.number);
 
-    if (image_attachment && image_attachment.startsWith('data:image/')) {
-      const decoded = decodeBase64Image(image_attachment);
-      if (decoded) {
-        const ext = getExtensionFromMime(decoded.mimeType);
-        const safeName = (attachment_name || 'screenshot').replace(/[^a-zA-Z0-9._-]/g, '_');
-        const fileName = safeName.includes('.') ? safeName : safeName + ext;
+    let imageStatus = 'none';
 
-        const imageUrl = await uploadImageToRepo(
-          githubToken,
-          repoOwner,
-          repoName,
-          result.number,
-          fileName,
-          decoded.buffer
-        );
+    if (image_attachment) {
+      console.log(
+        `Image attachment received: length=${image_attachment.length}, starts_with_data_image=${image_attachment.startsWith('data:image/')}`
+      );
 
-        if (imageUrl) {
-          const updatedBody =
-            issueBody + `\n\n![${sanitizeText(attachment_name || 'attachment', 200)}](${imageUrl})`;
-          await fetch(
-            `https://api.github.com/repos/${repoOwner}/${repoName}/issues/${result.number}`,
-            {
-              method: 'PATCH',
-              headers: {
-                Authorization: `Bearer ${githubToken}`,
-                Accept: 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ body: updatedBody }),
-            }
+      if (image_attachment.startsWith('data:image/')) {
+        const decoded = decodeBase64Image(image_attachment);
+        if (decoded) {
+          const ext = getExtensionFromMime(decoded.mimeType);
+          const safeName = (attachment_name || 'screenshot').replace(/[^a-zA-Z0-9._-]/g, '_');
+          const fileName = safeName.includes('.') ? safeName : safeName + ext;
+
+          console.log(`Uploading image: fileName=${fileName}, size=${decoded.buffer.length}`);
+
+          const imageUrl = await uploadImageToRepo(
+            githubToken,
+            repoOwner,
+            repoName,
+            result.number,
+            fileName,
+            decoded.buffer
           );
-          console.log('Image attached to issue:', result.number);
+
+          if (imageUrl) {
+            const updatedBody =
+              issueBody +
+              `\n\n![${sanitizeText(attachment_name || 'attachment', 200)}](${imageUrl})`;
+            const patchResponse = await fetch(
+              `https://api.github.com/repos/${repoOwner}/${repoName}/issues/${result.number}`,
+              {
+                method: 'PATCH',
+                headers: {
+                  Authorization: `Bearer ${githubToken}`,
+                  Accept: 'application/vnd.github.v3+json',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ body: updatedBody }),
+              }
+            );
+
+            if (patchResponse.ok) {
+              imageStatus = 'uploaded';
+              console.log('Image attached to issue:', result.number);
+            } else {
+              imageStatus = 'patch_failed';
+              console.error('Issue PATCH failed:', await patchResponse.json());
+            }
+          } else {
+            imageStatus = 'upload_failed';
+            console.error('Image upload failed for issue:', result.number);
+          }
         } else {
-          console.error('Image upload failed for issue:', result.number);
+          imageStatus = 'decode_failed';
+          console.error('Failed to decode image attachment for issue:', result.number);
         }
       } else {
-        console.error('Failed to decode image attachment for issue:', result.number);
+        imageStatus = 'not_data_uri';
+        console.error(
+          'image_attachment does not start with data:image/:',
+          String(image_attachment).substring(0, 100)
+        );
       }
+    } else {
+      console.log('No image attachment in request body');
     }
 
     return response.status(200).json({
       success: true,
       message: 'Feedback submitted successfully',
       response: { issueNumber: result.number, url: result.url },
+      imageStatus,
     });
   } catch (error) {
     console.error('Error processing feedback:', error);
