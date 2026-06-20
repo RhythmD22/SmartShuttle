@@ -270,11 +270,13 @@ Content-Type: application/json
 {
   "issue_type": "app-bug",
   "description": "The map doesn't load on iOS 17",
-  "attachment_info": "No attachment"
+  "attachment_info": "Attached: screenshot.png (151564 bytes, type: image/png)",
+  "image_attachment": "data:image/png;base64,...",
+  "attachment_name": "screenshot.png"
 }
 ```
 
-Creates a GitHub Issue in the configured repository. Input is sanitized to prevent Markdown injection.
+Creates a GitHub Issue in the configured repository. Image attachments are uploaded to the repo and linked in the issue body. Input is sanitized to prevent Markdown injection.
 
 ---
 
@@ -283,7 +285,7 @@ Creates a GitHub Issue in the configured repository. Input is sanitized to preve
 | Variable | Required | Description |
 |----------|----------|------------|
 | `TRANSIT_API_KEY` | Yes | Transit API v3 key from [transitapp.com](https://transitapp.com) |
-| `GITHUB_TOKEN` | No | GitHub personal access token for feedback issue creation |
+| `GITHUB_TOKEN` | No | GitHub personal access token (classic: `repo` scope; fine-grained: `Issues` and `Contents` read/write) |
 | `GITHUB_REPO_OWNER` | No | GitHub username or org for feedback issues |
 | `GITHUB_REPO_NAME` | No | GitHub repository name for feedback issues |
 
