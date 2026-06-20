@@ -243,9 +243,7 @@ import { SS } from './utils.js';
     if (data && data.success) {
       let msg = 'Your feedback has been received!';
       if (suffixMessage) msg += ' (' + suffixMessage + ')';
-      if (data.imageStatus === 'uploaded') {
-        msg += ' \u2014 Image attached.';
-      } else if (data.imageStatus === 'upload_failed') {
+      if (data.imageStatus === 'upload_failed') {
         msg += ' \u2014 Image upload failed: check GitHub token has contents:write scope.';
       } else if (data.imageStatus === 'decode_failed') {
         msg += ' \u2014 Image could not be processed.';
