@@ -71,9 +71,10 @@ npm start
 
 ```
 SmartShuttle/
+├── .gitignore             # Git ignore rules
+├── .env.example           # Environment variable template
 ├── index.html             # Entry point, page templates, SPA boot
 ├── vercel.json            # Vercel routing, headers, rewrites
-├── .env.example           # Environment variable template
 ├── api/
 │   ├── transit-proxy.js   # Transit API proxy (rate-limited, key on server)
 │   └── send-feedback.js   # GitHub Issues webhook for feedback
