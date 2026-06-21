@@ -121,7 +121,7 @@ body {
   flex-shrink: 0;
   position: relative;
   z-index: 10;
-  background: var(--bg-body);
+  background: var(--bg-surface);
 }
 
 .header-left {
@@ -283,7 +283,7 @@ dotlottie-wc {
   max-width: 500px;
   margin: 0 auto;
   z-index: 100;
-  background-color: var(--bg-body);
+  background-color: var(--bg-surface);
   border-top: 1px solid var(--border-color);
   padding: var(--space-sm) 0 env(safe-area-inset-bottom, 0px);
   height: auto;
@@ -456,7 +456,7 @@ dotlottie-wc {
   width: 92%;
   max-width: 500px;
   max-height: 84vh;
-  background-color: var(--bg-body);
+  background-color: var(--bg-surface);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -477,7 +477,7 @@ dotlottie-wc {
   display: flex;
   align-items: center;
   padding: var(--space-md) var(--space-lg);
-  background-color: var(--bg-body);
+  background-color: var(--bg-surface);
   position: relative;
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;

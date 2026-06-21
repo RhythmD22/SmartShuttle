@@ -295,7 +295,7 @@
 }
 
 .popup-content {
-  background: var(--bg-body);
+  background: var(--bg-surface);
   border-radius: var(--radius-lg);
   padding: var(--space-2xl);
   max-width: 300px;
