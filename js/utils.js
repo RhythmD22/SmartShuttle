@@ -340,7 +340,9 @@ const SS = (() => {
 
     searchBtn.addEventListener('click', () => {
       searchModal.classList.add('visible');
-      searchInput.focus();
+      requestAnimationFrame(() => {
+        searchInput.focus();
+      });
       showSearchPrompt();
       showCurrentLocationOption();
     });
