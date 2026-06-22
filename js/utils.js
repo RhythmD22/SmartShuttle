@@ -332,12 +332,16 @@ const SS = (() => {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
 
+    let closePointerEventsTimeout = null;
+
     const closeSearchModalFn = () => {
       searchModal.classList.remove('visible');
       searchModal.setAttribute('aria-hidden', 'true');
       searchModal.style.pointerEvents = 'auto';
-      setTimeout(() => {
+      if (closePointerEventsTimeout) clearTimeout(closePointerEventsTimeout);
+      closePointerEventsTimeout = setTimeout(() => {
         searchModal.style.pointerEvents = '';
+        closePointerEventsTimeout = null;
       }, 260);
       searchInput.value = '';
       searchResults.innerHTML = '';
