@@ -335,6 +335,10 @@ const SS = (() => {
     const closeSearchModalFn = () => {
       searchModal.classList.remove('visible');
       searchModal.setAttribute('aria-hidden', 'true');
+      searchModal.style.pointerEvents = 'auto';
+      setTimeout(() => {
+        searchModal.style.pointerEvents = '';
+      }, 260);
       searchInput.value = '';
       searchResults.innerHTML = '';
     };
@@ -538,10 +542,7 @@ const SS = (() => {
       updateLocationDisplay(displayName);
       map.setView([lat, lng], 13);
 
-      searchModal.classList.remove('visible');
-      searchModal.setAttribute('aria-hidden', 'true');
-      searchInput.value = '';
-      searchResults.innerHTML = '';
+      closeSearchModalFn();
 
       addMapUserMarker(map, lat, lng);
 
