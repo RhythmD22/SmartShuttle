@@ -334,15 +334,15 @@ const SS = (() => {
 
     const closeSearchModalFn = () => {
       searchModal.classList.remove('visible');
+      searchModal.setAttribute('aria-hidden', 'true');
       searchInput.value = '';
       searchResults.innerHTML = '';
     };
 
     searchBtn.addEventListener('click', () => {
       searchModal.classList.add('visible');
-      requestAnimationFrame(() => {
-        searchInput.focus();
-      });
+      searchModal.setAttribute('aria-hidden', 'false');
+      searchInput.focus();
       showSearchPrompt();
       showCurrentLocationOption();
     });
@@ -539,6 +539,7 @@ const SS = (() => {
       map.setView([lat, lng], 13);
 
       searchModal.classList.remove('visible');
+      searchModal.setAttribute('aria-hidden', 'true');
       searchInput.value = '';
       searchResults.innerHTML = '';
 
