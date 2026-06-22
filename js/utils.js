@@ -344,6 +344,7 @@ const SS = (() => {
         closePointerEventsTimeout = null;
       }, 260);
       searchInput.value = '';
+      searchInput.blur();
       searchResults.innerHTML = '';
     };
 
