@@ -433,18 +433,15 @@ dotlottie-wc {
   background-color: rgba(0, 0, 0, 0);
   z-index: 2000;
   backdrop-filter: blur(0px);
-  visibility: hidden;
   pointer-events: none;
   transition:
     background-color 250ms ease,
-    backdrop-filter 250ms ease,
-    visibility 250ms ease;
+    backdrop-filter 250ms ease;
 }
 
 .search-modal.visible {
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(5px);
-  visibility: visible;
   pointer-events: auto;
 }
 

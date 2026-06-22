@@ -339,13 +339,10 @@ const SS = (() => {
       searchResults.innerHTML = '';
     };
 
-    searchBtn.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
+    searchBtn.addEventListener('click', () => {
       searchModal.classList.add('visible');
       searchModal.setAttribute('aria-hidden', 'false');
-      searchInput.readOnly = true;
       searchInput.focus();
-      searchInput.readOnly = false;
       showSearchPrompt();
       showCurrentLocationOption();
     });
