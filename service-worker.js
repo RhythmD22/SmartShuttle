@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smart-shuttle-v2.1';
+const CACHE_NAME = 'smart-shuttle-v2.0';
 const urlsToCache = [
   '/',
   '/index.html',

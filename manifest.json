@@ -4,7 +4,7 @@
   "description": "Live Shuttle Tracker",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#131516",
+  "background_color": "#181a1b",
   "theme_color": "#6A63F6",
   "icons": [
     {
