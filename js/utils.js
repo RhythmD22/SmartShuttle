@@ -644,6 +644,7 @@ const SS = (() => {
     var currentHeading = 0;
     var hasHadPosition = false;
     var lastAutoFollowCenter = null;
+    var hasUsedSavedLocation = false;
 
     const showUserLocation = async (position) => {
       const userLat = position.coords.latitude;
@@ -681,14 +682,16 @@ const SS = (() => {
 
       if (isFirstPosition) {
         isFirstPosition = false;
-        try {
-          const displayName = await reverseGeocodeLocation(userLat, userLng);
-          updateLocationDisplay(displayName);
-        } catch (error) {
-          console.error('Error getting location name:', error);
-          updateLocationDisplay('Current Location');
+        if (!hasUsedSavedLocation) {
+          try {
+            const displayName = await reverseGeocodeLocation(userLat, userLng);
+            updateLocationDisplay(displayName);
+          } catch (error) {
+            console.error('Error getting location name:', error);
+            updateLocationDisplay('Current Location');
+          }
+          if (onLocationReady) onLocationReady(userLat, userLng);
         }
-        if (onLocationReady) onLocationReady(userLat, userLng);
       }
     };
 
@@ -711,6 +714,8 @@ const SS = (() => {
             const locationData = JSON.parse(savedLocation);
             updateLocationDisplay(locationData.displayName || 'Current Location');
             mapInstance.setView([locationData.lat, locationData.lon], zoom);
+            hasUsedSavedLocation = true;
+            isAutoFollowing = false;
             if (onLocationReady) onLocationReady(locationData.lat, locationData.lon);
             return;
           } catch (e) {
@@ -804,6 +809,8 @@ const SS = (() => {
             updateLocationDisplay(locationData.displayName || 'Current Location');
             mapInstance.setView([locationData.lat, locationData.lon], zoom);
             addMapUserMarker(mapInstance, locationData.lat, locationData.lon, 0);
+            hasUsedSavedLocation = true;
+            isAutoFollowing = false;
             if (onLocationReady) onLocationReady(locationData.lat, locationData.lon);
           } catch (e) {
             console.error('Error loading saved location:', e);
