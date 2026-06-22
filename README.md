@@ -41,7 +41,8 @@
 | Swipe Navigation | Swipe left/right between Stops, Routes, and Notifications |
 | Pull-to-Refresh | Quick alert refresh on the Notifications page |
 | Feedback Form | Submit issues with optional file attachments (creates a GitHub Issue) |
-| Offline Support | Service worker caches static assets (cache-first strategy) |
+| Transit Data Caching | IndexedDB caches transit API responses per location (stale-while-revalidate: instant display, background refresh) |
+| Offline Support | Service worker caches static assets (cache-first strategy); cached transit data displayed when offline |
 | PWA Installable | Add to home screen for a native app experience |
 
 ---
@@ -80,6 +81,7 @@ SmartShuttle/
 │   └── send-feedback.js   # GitHub Issues webhook for feedback
 ├── js/
 │   ├── utils.js           # Shared utilities (maps, search, markers, helpers)
+│   ├── cache.js           # IndexedDB cache layer (stale-while-revalidate)
 │   ├── router.js          # Client-side SPA router (View Transitions API)
 │   ├── index.js           # Landing page
 │   ├── stops.js           # Stops map page

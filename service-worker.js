@@ -20,6 +20,7 @@ const urlsToCache = [
   '/js/notifications.js',
   '/js/feedback.js',
   '/js/utils.js',
+  '/js/cache.js',
   '/js/router.js',
   '/images/alert.svg',
   '/images/attach.svg',

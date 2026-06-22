@@ -1,4 +1,5 @@
 import { SS } from './utils.js';
+import { TransitCache } from './cache.js';
 
 (() => {
   let map;
@@ -118,10 +119,38 @@ import { SS } from './utils.js';
     });
   };
 
+  const displayRoutesFromData = (data) => {
+    SS.clearMapMarkers(map, routeMarkers);
+
+    if (data.routes && data.routes.length > 0) {
+      currentRoutes = data.routes;
+      processRoutesData(data.routes);
+      updateRouteArrivalsSection(data.routes);
+      hideRoutesEmptyState();
+    } else {
+      currentRoutes = [];
+      showRoutesEmptyState();
+      updateRouteArrivalsSection([]);
+      updateShuttleCapacitySection([]);
+    }
+  };
+
   const fetchRealTimeBuses = async (lat, lng) => {
     SS.showSkeletons(document.getElementById('routeArrivalsContent'));
     SS.showSkeletons(document.getElementById('shuttleCapacityContent'));
     hideRoutesEmptyState();
+
+    let hasCachedData = false;
+
+    try {
+      const cached = await TransitCache.getTransitData(lat, lng);
+      if (cached && cached.data) {
+        displayRoutesFromData(cached.data);
+        hasCachedData = true;
+      }
+    } catch (e) {
+      // Cache read failed — proceed to fetch fresh data
+    }
 
     try {
       const response = await fetch(
@@ -134,31 +163,24 @@ import { SS } from './utils.js';
 
       const data = await response.json();
 
-      SS.clearMapMarkers(map, routeMarkers);
+      TransitCache.setTransitData(lat, lng, data);
 
-      if (data.routes && data.routes.length > 0) {
-        currentRoutes = data.routes;
-
-        processRoutesData(data.routes);
-        updateRouteArrivalsSection(data.routes);
-        hideRoutesEmptyState();
-      } else {
-        currentRoutes = [];
-        showRoutesEmptyState();
-        updateRouteArrivalsSection([]);
-        updateShuttleCapacitySection([]);
-      }
+      displayRoutesFromData(data);
+      hasCachedData = false;
     } catch (error) {
       console.error('Error fetching real-time transit:', error);
-      SS.clearMapMarkers(map, routeMarkers);
 
-      const locationDisplay = document.getElementById('selectedLocationDisplay');
-      if (locationDisplay) {
-        locationDisplay.textContent = 'Error fetching transit data';
+      if (!hasCachedData) {
+        SS.clearMapMarkers(map, routeMarkers);
+
+        const locationDisplay = document.getElementById('selectedLocationDisplay');
+        if (locationDisplay) {
+          locationDisplay.textContent = 'Error fetching transit data';
+        }
+
+        updateShuttleCapacitySection([]);
+        showRouteErrorState();
       }
-
-      updateShuttleCapacitySection([]);
-      showRouteErrorState();
     }
   };
 

@@ -1,4 +1,5 @@
 import { SS } from './utils.js';
+import { TransitCache } from './cache.js';
 
 (() => {
   let map;
@@ -18,45 +19,31 @@ import { SS } from './utils.js';
 
   SS.pageInit(window.initStopsPage);
 
-  const initShuttleFinder = () => {
+  const displayStopsFromData = (transitData) => {
     const stopCountDisplay = document.getElementById('stopCountDisplay');
 
-    debouncedFindShuttles = SS.debounce(async (lat, lng) => {
-      SS.clearMapMarkers(map, shuttleMarkers);
+    SS.clearMapMarkers(map, shuttleMarkers);
 
-      if (stopCountDisplay) stopCountDisplay.textContent = 'Searching...';
+    if (transitData.routes && transitData.routes.length > 0) {
+      let stopCount = 0;
+      transitData.routes.forEach((route) => {
+        if (route.itineraries && route.itineraries.length > 0) {
+          route.itineraries.forEach((itinerary) => {
+            if (itinerary.closest_stop) {
+              stopCount++;
+              const stop = itinerary.closest_stop;
 
-      try {
-        const transitResponse = await fetch(
-          `/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`
-        );
+              const routeColor = route.route_color || '413C96';
+              const stopIcon = L.divIcon({
+                className: 'stop-icon',
+                html: `<div style="background-color: #${routeColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+                iconSize: [16, 16],
+                iconAnchor: [8, 8],
+              });
 
-        if (!transitResponse.ok) {
-          throw new Error(`Transit API error! status: ${transitResponse.status}`);
-        }
+              const { cls: vehicleClass, text: vehicleText } = SS.getVehicleDisplayData(route);
 
-        const transitData = await transitResponse.json();
-
-        if (transitData.routes && transitData.routes.length > 0) {
-          let stopCount = 0;
-          transitData.routes.forEach((route) => {
-            if (route.itineraries && route.itineraries.length > 0) {
-              route.itineraries.forEach((itinerary) => {
-                if (itinerary.closest_stop) {
-                  stopCount++;
-                  const stop = itinerary.closest_stop;
-
-                  const routeColor = route.route_color || '413C96';
-                  const stopIcon = L.divIcon({
-                    className: 'stop-icon',
-                    html: `<div style="background-color: #${routeColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
-                    iconSize: [16, 16],
-                    iconAnchor: [8, 8],
-                  });
-
-                  const { cls: vehicleClass, text: vehicleText } = SS.getVehicleDisplayData(route);
-
-                  const popupContent = `
+              const popupContent = `
                                         <div class="bus-stop-popup">
                                             <h3 class="stop-name">${stop.stop_name}</h3>
                                             <div class="popup-details">
@@ -74,45 +61,84 @@ import { SS } from './utils.js';
                                         </div>
                                     `;
 
-                  const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], {
-                    icon: stopIcon,
-                    purpose: 'bus-stop',
-                  })
-                    .addTo(map)
-                    .bindPopup(popupContent);
+              const stopMarker = L.marker([stop.stop_lat, stop.stop_lon], {
+                icon: stopIcon,
+                purpose: 'bus-stop',
+              })
+                .addTo(map)
+                .bindPopup(popupContent);
 
-                  stopMarker.on('popupopen', function () {
-                    if (window.userLocationMarker) {
-                      if (window.__activePolyline) {
-                        map.removeLayer(window.__activePolyline);
-                      }
-                      var userPos = window.userLocationMarker.getLatLng();
-                      window.__activePolylineTarget = [stop.stop_lat, stop.stop_lon];
-                      window.__activePolyline = L.polyline(
-                        [userPos, [stop.stop_lat, stop.stop_lon]],
-                        { color: '#6A63F6', weight: 3, dashArray: '8 6', opacity: 0.8 }
-                      ).addTo(map);
-                    }
-                  });
-
-                  shuttleMarkers.push(stopMarker);
+              stopMarker.on('popupopen', function () {
+                if (window.userLocationMarker) {
+                  if (window.__activePolyline) {
+                    map.removeLayer(window.__activePolyline);
+                  }
+                  var userPos = window.userLocationMarker.getLatLng();
+                  window.__activePolylineTarget = [stop.stop_lat, stop.stop_lon];
+                  window.__activePolyline = L.polyline([userPos, [stop.stop_lat, stop.stop_lon]], {
+                    color: '#6A63F6',
+                    weight: 3,
+                    dashArray: '8 6',
+                    opacity: 0.8,
+                  }).addTo(map);
                 }
               });
+
+              shuttleMarkers.push(stopMarker);
             }
           });
-
-          if (stopCount === 0) {
-            if (stopCountDisplay) stopCountDisplay.textContent = 'No stops nearby';
-          } else {
-            if (stopCountDisplay)
-              stopCountDisplay.textContent = `${stopCount} ${stopCount === 1 ? 'stop' : 'stops'} nearby`;
-          }
-        } else {
-          if (stopCountDisplay) stopCountDisplay.textContent = 'No stops nearby';
         }
+      });
+
+      if (stopCount === 0) {
+        if (stopCountDisplay) stopCountDisplay.textContent = 'No stops nearby';
+      } else {
+        if (stopCountDisplay)
+          stopCountDisplay.textContent = `${stopCount} ${stopCount === 1 ? 'stop' : 'stops'} nearby`;
+      }
+    } else {
+      if (stopCountDisplay) stopCountDisplay.textContent = 'No stops nearby';
+    }
+  };
+
+  const initShuttleFinder = () => {
+    const stopCountDisplay = document.getElementById('stopCountDisplay');
+
+    debouncedFindShuttles = SS.debounce(async (lat, lng) => {
+      if (stopCountDisplay) stopCountDisplay.textContent = 'Searching...';
+
+      let hasCachedData = false;
+
+      try {
+        const cached = await TransitCache.getTransitData(lat, lng);
+        if (cached && cached.data) {
+          displayStopsFromData(cached.data);
+          hasCachedData = true;
+        }
+      } catch (e) {
+        // Cache read failed — proceed to fetch fresh data
+      }
+
+      try {
+        const transitResponse = await fetch(
+          `/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`
+        );
+
+        if (!transitResponse.ok) {
+          throw new Error(`Transit API error! status: ${transitResponse.status}`);
+        }
+
+        const transitData = await transitResponse.json();
+
+        TransitCache.setTransitData(lat, lng, transitData);
+
+        displayStopsFromData(transitData);
+        hasCachedData = false;
       } catch (error) {
         console.error('Error finding nearby bus stops:', error);
-        if (stopCountDisplay) stopCountDisplay.textContent = 'Unable to load stops';
+        if (!hasCachedData && stopCountDisplay) {
+          stopCountDisplay.textContent = 'Unable to load stops';
+        }
       }
     }, 800);
   };
