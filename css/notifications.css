@@ -22,6 +22,8 @@
   margin-bottom: var(--bottom-nav-offset);
   overflow-y: auto;
   position: relative;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .notifications-page .live-feed-section {

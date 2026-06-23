@@ -1080,12 +1080,12 @@ dotlottie-wc {
   justify-content: center;
   height: 0;
   overflow: hidden;
-  transition: height 0.25s ease;
-  will-change: height;
+  flex-shrink: 0;
 }
 
 .pull-to-refresh.refreshing {
   height: 50px;
+  transition: height 0.25s ease;
 }
 
 .pull-spinner {
