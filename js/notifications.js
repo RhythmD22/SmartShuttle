@@ -395,52 +395,115 @@ import { SS } from './utils.js';
   function initializePullToRefresh() {
     const mainContent = document.getElementById('notificationsMainContent');
     const ptr = document.getElementById('pullToRefresh');
+    const arrowEl = ptr ? ptr.querySelector('.pull-arrow') : null;
+    const textEl = ptr ? ptr.querySelector('.pull-text') : null;
 
     if (!mainContent || !ptr) return;
 
     let startY = 0;
     let pulling = false;
-    const threshold = 80;
+    let refreshing = false;
+    let pullDistance = 0;
+    const PULL_THRESHOLD = 80;
+    const MAX_PULL = 150;
 
-    mainContent.addEventListener(
-      'touchstart',
-      function (e) {
-        if (mainContent.scrollTop <= 0) {
-          startY = e.touches[0].clientY;
-          pulling = true;
-        }
-      },
-      { passive: true }
-    );
+    function snapToHeight(height, callback) {
+      ptr.style.transition = 'height 0.25s ease, opacity 0.25s ease';
+      ptr.style.height = height + 'px';
+      ptr.style.opacity = height > 0 ? '1' : '0';
+      if (callback) {
+        setTimeout(callback, 250);
+      }
+    }
 
-    mainContent.addEventListener(
-      'touchmove',
-      function (e) {
-        if (!pulling) return;
-        const deltaY = e.touches[0].clientY - startY;
-        if (deltaY > 0 && mainContent.scrollTop <= 0) {
-          e.preventDefault();
-          ptr.style.height = Math.min(deltaY * 0.5, 60) + 'px';
+    function resetPull() {
+      snapToHeight(0, function () {
+        ptr.style.transition = '';
+        ptr.classList.remove('refreshing', 'ptr-over-threshold');
+        if (textEl) textEl.textContent = 'Pull to refresh';
+        if (arrowEl) {
+          arrowEl.style.transform = 'rotate(0deg)';
+          arrowEl.classList.remove('spinning');
         }
-      },
-      { passive: false }
-    );
+        refreshing = false;
+      });
+    }
+
+    function startRefresh() {
+      if (refreshing) return;
+      refreshing = true;
+
+      ptr.classList.add('refreshing');
+      if (textEl) textEl.textContent = 'Refreshing...';
+      if (arrowEl) {
+        arrowEl.style.transform = '';
+        arrowEl.classList.add('spinning');
+      }
+
+      snapToHeight(50, function () {
+        refreshLiveAlerts();
+        resetPull();
+      });
+    }
+
+    mainContent.addEventListener('touchstart', function (e) {
+      if (refreshing) return;
+      if (mainContent.scrollTop <= 0) {
+        startY = e.touches[0].clientY;
+        pullDistance = 0;
+        pulling = false;
+      }
+    }, { passive: true });
+
+    mainContent.addEventListener('touchmove', function (e) {
+      if (refreshing) return;
+
+      const currentY = e.touches[0].clientY;
+      const delta = currentY - startY;
+
+      if (!pulling && mainContent.scrollTop <= 0 && delta > 5) {
+        pulling = true;
+        pullDistance = 0;
+        ptr.style.height = '0px';
+        ptr.style.opacity = '0';
+      }
+
+      if (pulling && mainContent.scrollTop <= 0) {
+        e.preventDefault();
+        pullDistance += delta;
+        if (pullDistance < 0) pullDistance = 0;
+        startY = currentY;
+
+        const clamped = Math.min(pullDistance, MAX_PULL);
+        const visualHeight = clamped * 0.5;
+        ptr.style.height = visualHeight + 'px';
+        ptr.style.opacity = Math.min(pullDistance / PULL_THRESHOLD, 1);
+
+        if (pullDistance >= PULL_THRESHOLD) {
+          ptr.classList.add('ptr-over-threshold');
+          if (textEl) textEl.textContent = 'Release to refresh';
+          if (arrowEl) arrowEl.style.transform = 'rotate(180deg)';
+        } else {
+          ptr.classList.remove('ptr-over-threshold');
+          if (textEl) textEl.textContent = 'Pull to refresh';
+          if (arrowEl) arrowEl.style.transform = 'rotate(0deg)';
+        }
+      }
+    }, { passive: false });
 
     mainContent.addEventListener('touchend', function () {
-      if (!pulling) return;
-      pulling = false;
+      if (refreshing) return;
 
-      const currentHeight = parseFloat(ptr.style.height) || 0;
-      if (currentHeight >= threshold) {
-        ptr.classList.add('refreshing');
-        refreshLiveAlerts();
-        setTimeout(function () {
-          ptr.classList.remove('refreshing');
-          ptr.style.height = '0';
-        }, 1000);
-      } else {
-        ptr.style.height = '0';
+      if (pulling) {
+        if (pullDistance >= PULL_THRESHOLD) {
+          startRefresh();
+        } else {
+          resetPull();
+        }
       }
+
+      pulling = false;
+      pullDistance = 0;
     });
   }
 })();
