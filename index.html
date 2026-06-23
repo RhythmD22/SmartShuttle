@@ -17,32 +17,32 @@
     })(window, document, 'clarity', 'script', 'ws8ibzq4q7');
   </script>
 
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="Live Shuttle Tracker" />
-  <meta name="theme-color" content="#6A63F6" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Live Shuttle Tracker">
+  <meta name="theme-color" content="#6A63F6">
 
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="SmartShuttle" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SmartShuttle">
 
   <title>SmartShuttle - Live Shuttle Tracker</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
   <!-- Leaflet Map CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- CSS Stylesheets scoped by ID for the SPA Router -->
-  <link rel="stylesheet" href="css/styles.css" />
-  <link id="style-index" rel="stylesheet" href="css/index.css" disabled />
-  <link id="style-stops" rel="stylesheet" href="css/stops.css" disabled />
-  <link id="style-routes" rel="stylesheet" href="css/routes.css" disabled />
-  <link id="style-notifications" rel="stylesheet" href="css/notifications.css" disabled />
-  <link id="style-feedback" rel="stylesheet" href="css/feedback.css" disabled />
+  <link rel="stylesheet" href="css/styles.css">
+  <link id="style-index" rel="stylesheet" href="css/index.css" disabled>
+  <link id="style-stops" rel="stylesheet" href="css/stops.css" disabled>
+  <link id="style-routes" rel="stylesheet" href="css/routes.css" disabled>
+  <link id="style-notifications" rel="stylesheet" href="css/notifications.css" disabled>
+  <link id="style-feedback" rel="stylesheet" href="css/feedback.css" disabled>
 </head>
 
 <body class="home-page">
@@ -51,7 +51,7 @@
     <button id="closeNotification" aria-label="Close notification">&times;</button>
   </div>
 
-  <img src="images/QR.svg" alt="Scan to open on mobile" class="desktop-qr-code" />
+  <img src="images/QR.svg" alt="Scan to open on mobile" class="desktop-qr-code">
 
   <div id="app-root"></div>
 
@@ -59,19 +59,19 @@
     <div class="bottom-nav-content" id="bottomNavContent">
       <a href="/stops" class="nav-item" data-route="stops" aria-label="Stops">
         <div class="nav-icon-wrapper">
-          <img src="images/map.svg" alt="" class="nav-icon-img" />
+          <img src="images/map.svg" alt="" class="nav-icon-img">
           <span class="nav-label">Stops</span>
         </div>
       </a>
       <a href="/routes" class="nav-item" data-route="routes" aria-label="Routes">
         <div class="nav-icon-wrapper">
-          <img src="images/location.svg" alt="" class="nav-icon-img" />
+          <img src="images/location.svg" alt="" class="nav-icon-img">
           <span class="nav-label">Routes</span>
         </div>
       </a>
       <a href="/notifications" class="nav-item" data-route="notifications" aria-label="Notifications">
         <div class="nav-icon-wrapper">
-          <img src="images/notification.svg" alt="" class="nav-icon-img" />
+          <img src="images/notification.svg" alt="" class="nav-icon-img">
           <span class="nav-label">Alerts</span>
         </div>
       </a>
@@ -86,7 +86,7 @@
       <div class="search-modal-content">
         <div class="search-header">
           <input type="text" id="searchInput" class="search-input" placeholder="Search for a location..."
-            aria-label="Search for a location" />
+            aria-label="Search for a location">
           <button id="closeSearchModal" class="close-search-btn" aria-label="Close search">
             &times;
           </button>
@@ -130,7 +130,7 @@
       <header class="header">
         <div class="header-left">
           <button class="search-btn" aria-label="Search">
-            <img src="images/search.svg" alt="Search" class="icon" />
+            <img src="images/search.svg" alt="Search" class="icon">
           </button>
         </div>
         <div class="header-center">
@@ -140,14 +140,14 @@
             <div class="header-text">LIVE stops</div>
           </div>
           <div class="current-location">
-            <img src="images/curvedright.svg" alt="Current Location" class="icon" />
+            <img src="images/curvedright.svg" alt="Current Location" class="icon">
             <span>Current Location</span>
           </div>
           <div class="stop-count" id="stopCountDisplay">Loading...</div>
         </div>
         <div class="header-right">
           <button class="feedback-btn" aria-label="Feedback">
-            <img src="images/feedback.svg" alt="Feedback" class="icon" />
+            <img src="images/feedback.svg" alt="Feedback" class="icon">
           </button>
         </div>
       </header>
@@ -159,13 +159,13 @@
             <span class="map-loading-text">Loading map...</span>
           </div>
           <button class="refresh-btn" id="refreshBtn" aria-label="Refresh map">
-            <img src="images/refresh.svg" alt="Refresh" class="icon" />
+            <img src="images/refresh.svg" alt="Refresh" class="icon">
           </button>
 
           <div class="transit-api-badge">
             <a href="https://transitapp.com" target="_blank" rel="noopener noreferrer"
               aria-label="Powered by Transit API">
-              <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo" />
+              <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo">
             </a>
           </div>
         </div>
@@ -179,7 +179,7 @@
       <header class="header">
         <div class="header-left">
           <button class="search-btn" aria-label="Search">
-            <img src="images/search.svg" alt="Search" class="icon" />
+            <img src="images/search.svg" alt="Search" class="icon">
           </button>
         </div>
         <div class="header-center">
@@ -189,13 +189,13 @@
             <div class="header-text">LIVE route tracking</div>
           </div>
           <div class="current-location">
-            <img src="images/curvedright.svg" alt="Current Location" class="icon" />
+            <img src="images/curvedright.svg" alt="Current Location" class="icon">
             <span id="selectedLocationDisplay">Search to get started</span>
           </div>
         </div>
         <div class="header-right">
           <button class="menu-btn" aria-label="Menu">
-            <img src="images/feedback.svg" alt="Feedback" class="icon" />
+            <img src="images/feedback.svg" alt="Feedback" class="icon">
           </button>
         </div>
       </header>
@@ -207,13 +207,13 @@
             <span class="map-loading-text">Loading map...</span>
           </div>
           <button class="refresh-btn" id="refreshBtn" aria-label="Refresh map">
-            <img src="images/refresh.svg" alt="Refresh" class="icon" />
+            <img src="images/refresh.svg" alt="Refresh" class="icon">
           </button>
 
           <div class="transit-api-badge">
             <a href="https://transitapp.com" target="_blank" rel="noopener noreferrer"
               aria-label="Powered by Transit API">
-              <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo" />
+              <img src="transit-api-badge.svg" alt="Powered by Transit API" class="transit-api-logo">
             </a>
           </div>
         </div>
@@ -225,8 +225,8 @@
             <div class="route-arrivals-header">
               <h2 class="route-arrivals-heading">Route & Departures</h2>
               <div class="route-search-pill" id="routeSearchPill">
-                <img src="images/search.svg" alt="" class="pill-search-icon" />
-                <input type="text" id="routeSearchInput" placeholder="Search" aria-label="Search routes" />
+                <img src="images/search.svg" alt="" class="pill-search-icon">
+                <input type="text" id="routeSearchInput" placeholder="Search" aria-label="Search routes">
                 <button class="search-clear-btn" id="routeSearchClear" aria-label="Clear search" type="button">
                   &times;
                 </button>
@@ -257,7 +257,7 @@
 
         <!-- Empty State (shown when no transit found) -->
         <div class="routes-empty-state" id="routesEmptyState">
-          <img src="images/undraw_location-search.png" alt="No transit found" />
+          <img src="images/undraw_location-search.png" alt="No transit found">
           <div class="empty-state-title">No Transit Nearby</div>
           <div class="empty-state-description">
             Try searching for a different location or check back later.
@@ -272,14 +272,14 @@
     <div class="container notifications-page">
       <header class="header">
         <div class="header-left">
-          <img src="images/icon.svg" alt="SmartShuttle" class="app-icon" />
+          <img src="images/icon.svg" alt="SmartShuttle" class="app-icon">
         </div>
         <div class="header-center">
           <h1 class="header-text">SmartShuttle</h1>
         </div>
         <div class="header-right">
           <button class="feedback-btn" aria-label="Feedback">
-            <img src="images/feedback.svg" alt="Feedback" class="icon" />
+            <img src="images/feedback.svg" alt="Feedback" class="icon">
           </button>
         </div>
       </header>
@@ -305,7 +305,7 @@
               <span class="live-feed-updated" id="liveFeedUpdated"></span>
             </span>
             <button class="refresh-btn" id="refreshBtn" aria-label="Refresh alerts">
-              <img src="images/refresh.svg" alt="Refresh" class="icon" />
+              <img src="images/refresh.svg" alt="Refresh" class="icon">
             </button>
           </h2>
 
@@ -324,7 +324,7 @@
             </button>
             <div class="notification-search-pill" id="notificationSearchPill">
               <span class="pill-search-icon"></span>
-              <input type="text" id="notificationSearchInput" placeholder="Search" aria-label="Search notifications" />
+              <input type="text" id="notificationSearchInput" placeholder="Search" aria-label="Search notifications">
               <button class="search-clear-btn" id="notificationSearchClear" aria-label="Clear search" type="button">
                 &times;
               </button>
@@ -345,12 +345,12 @@
       <header class="header">
         <div class="header-left">
           <button class="back-btn" aria-label="Back">
-            <img src="images/back.svg" alt="Back" class="icon" />
+            <img src="images/back.svg" alt="Back" class="icon">
           </button>
         </div>
         <div class="header-center">
           <div class="header-center-content">
-            <img src="images/icon.svg" alt="SmartShuttle" class="app-icon" />
+            <img src="images/icon.svg" alt="SmartShuttle" class="app-icon">
             <h1 class="header-text">SmartShuttle</h1>
           </div>
         </div>
@@ -392,9 +392,9 @@
             <p class="field-label">Add Attachment</p>
             <div class="attachment-area">
               <input type="file" id="attachmentInput" class="attachment-input" accept="image/*,.pdf,.doc,.docx,.txt"
-                aria-label="Upload attachment" />
+                aria-label="Upload attachment">
               <label for="attachmentInput" class="attachment-wrapper" id="attachmentLabel">
-                <img src="images/attach.svg" alt="" class="attach-icon" />
+                <img src="images/attach.svg" alt="" class="attach-icon">
                 <span class="attach-text">Attach file</span>
               </label>
               <div id="attachmentPreview" class="attachment-preview" aria-live="polite" style="display: none">
