@@ -21,7 +21,6 @@
 - [API](#api)
 - [Environment Variables](#environment-variables)
 - [PWA Support](#progressive-web-app-pwa-support)
-- [Contributing](#contributing)
 - [License](#license)
 
 ---
