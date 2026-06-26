@@ -95,6 +95,17 @@ SmartShuttle/
 │   ├── notifications.css  # Alert feed, filter buttons, pull-to-refresh
 │   └── feedback.css       # Form fields, popup, attachment preview
 ├── images/                # SVG icons and assets
+├── icon.svg               # Vector PWA icon (source)
+├── icon-maskable.svg      # Maskable icon variant (source)
+├── android-chrome-192x192.png  # PWA icon 192x192
+├── android-chrome-512x512.png  # PWA icon 512x512
+├── android-chrome-maskable-192x192.png  # Android adaptive icon 192x192
+├── android-chrome-maskable-512x512.png  # Android adaptive icon 512x512
+├── apple-touch-icon.png          # iOS home screen 180x180
+├── apple-touch-icon-120x120.png  # iOS home screen 120x120
+├── apple-touch-icon-152x152.png  # iOS home screen 152x152
+├── apple-touch-icon-167x167.png  # iOS home screen 167x167
+├── favicon.ico            # Multi-resolution favicon (16+32+48)
 ├── manifest.json          # PWA manifest
 └── service-worker.js      # Cache-first service worker
 ```

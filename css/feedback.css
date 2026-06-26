@@ -256,7 +256,7 @@
 .feedback-page .app-icon {
   width: 24px;
   height: 24px;
-  margin-right: 5px;
+  margin-right: 4px;
 }
 
 .feedback-page .header-text {
@@ -268,7 +268,7 @@
 .feedback-page .header-center-content {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 4px;
 }
 
 .popup-overlay {
