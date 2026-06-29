@@ -36,6 +36,7 @@ const urlsToCache = [
   '/images/current.svg',
   '/images/curvedright.svg',
   '/images/directions.svg',
+  '/images/direction.svg',
   '/images/feedback.svg',
   '/images/icon.svg',
   '/images/location.svg',
@@ -48,6 +49,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(

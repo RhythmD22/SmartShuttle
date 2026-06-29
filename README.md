@@ -103,8 +103,11 @@ SmartShuttle/
 ├── apple-touch-icon-152x152.png  # iOS home screen 152x152
 ├── apple-touch-icon-167x167.png  # iOS home screen 167x167
 ├── favicon.ico            # Multi-resolution favicon (16+32+48)
+├── transit-api-badge.svg  # Transit API attribution badge
 ├── manifest.json          # PWA manifest
 ├── service-worker.js      # Cache-first service worker
+├── package.json           # Node.js dependencies and scripts
+├── package-lock.json      # Dependency lock file
 ├── .gitignore
 ├── .env.example           # Environment variable template
 ├── vercel.json            # Vercel routing, headers, rewrites
