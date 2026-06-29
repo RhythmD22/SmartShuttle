@@ -2,7 +2,8 @@ const CACHE_NAME = 'smart-shuttle-v2.0';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/manifest.json',
+  '/manifest-light.json',
+  '/manifest-dark.json',
   '/icon.svg',
   '/favicon.ico',
   '/apple-touch-icon.png',
@@ -15,6 +16,8 @@ const urlsToCache = [
   '/apple-touch-icon-167x167-dark.png',
   '/android-chrome-192x192.png',
   '/android-chrome-512x512.png',
+  '/dark-android-chrome-192x192.png',
+  '/dark-android-chrome-512x512.png',
   '/android-chrome-maskable-192x192.png',
   '/android-chrome-maskable-512x512.png',
   '/transit-api-badge.svg',
