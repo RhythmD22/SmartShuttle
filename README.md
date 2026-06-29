@@ -71,10 +71,7 @@ npm start
 
 ```
 SmartShuttle/
-├── .gitignore             # Git ignore rules
-├── .env.example           # Environment variable template
 ├── index.html             # Entry point, page templates, SPA boot
-├── vercel.json            # Vercel routing, headers, rewrites
 ├── api/
 │   ├── transit-proxy.js   # Transit API proxy (rate-limited, key on server)
 │   └── send-feedback.js   # GitHub Issues webhook for feedback
@@ -97,24 +94,21 @@ SmartShuttle/
 ├── images/                # SVG icons and assets
 ├── icon.svg               # Vector PWA icon (source)
 ├── icon-maskable.svg      # Maskable icon variant (source)
-├── android-chrome-192x192.png  # PWA icon 192x192 (light)
-├── dark-android-chrome-192x192.png  # PWA icon 192x192 (dark)
-├── android-chrome-512x512.png  # PWA icon 512x512 (light)
-├── dark-android-chrome-512x512.png  # PWA icon 512x512 (dark)
+├── android-chrome-192x192.png  # PWA icon 192x192
+├── android-chrome-512x512.png  # PWA icon 512x512
 ├── android-chrome-maskable-192x192.png  # Android adaptive icon 192x192
 ├── android-chrome-maskable-512x512.png  # Android adaptive icon 512x512
-├── apple-touch-icon.png          # iOS home screen 180x180 (light)
-├── apple-touch-icon-dark.png     # iOS home screen 180x180 (dark)
-├── apple-touch-icon-120x120.png  # iOS home screen 120x120 (light)
-├── apple-touch-icon-120x120-dark.png  # iOS home screen 120x120 (dark)
-├── apple-touch-icon-152x152.png  # iOS home screen 152x152 (light)
-├── apple-touch-icon-152x152-dark.png  # iOS home screen 152x152 (dark)
-├── apple-touch-icon-167x167.png  # iOS home screen 167x167 (light)
-├── apple-touch-icon-167x167-dark.png  # iOS home screen 167x167 (dark)
+├── apple-touch-icon.png          # iOS home screen 180x180
+├── apple-touch-icon-120x120.png  # iOS home screen 120x120
+├── apple-touch-icon-152x152.png  # iOS home screen 152x152
+├── apple-touch-icon-167x167.png  # iOS home screen 167x167
 ├── favicon.ico            # Multi-resolution favicon (16+32+48)
-├── manifest-light.json    # PWA manifest (light theme)
-├── manifest-dark.json     # PWA manifest (dark theme)
-└── service-worker.js      # Cache-first service worker
+├── manifest.json          # PWA manifest
+├── service-worker.js      # Cache-first service worker
+├── .gitignore
+├── .env.example           # Environment variable template
+├── vercel.json            # Vercel routing, headers, rewrites
+└── LICENSE
 ```
 
 ---
