@@ -103,7 +103,9 @@ SmartShuttle/
 ├── transit-api-badge.svg  # Transit API attribution badge
 ├── manifest.json          # PWA manifest
 ├── service-worker.js      # Cache-first service worker
-├── .eslintrc.json         # ESLint config
+├── package.json           # npm scripts (lint, start) and dev dependencies
+├── package-lock.json      # Lockfile for dev dependencies
+├── eslint.config.js       # ESLint flat config (browser, serviceworker, node globals)
 ├── .gitignore
 ├── .env.example           # Environment variable template
 ├── vercel.json            # Vercel routing, headers, rewrites
@@ -256,8 +258,8 @@ npx vercel dev     # Starts Vercel Dev server on localhost:3000
 
 | Command | Description |
 |---------|------------|
-| `npx vercel dev` | Start local dev server with all API functions |
-| `npx eslint js/ api/ service-worker.js` | Lint JS files with ESLint |
+| `npm start` | Start local dev server with all API functions (`vercel dev`) |
+| `npm run lint` | Lint JS files with ESLint (`js/`, `api/`, `service-worker.js`) |
 ---
 
 ## API
