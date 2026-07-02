@@ -58,11 +58,8 @@ Visit **[smartshuttle.vercel.app](https://smartshuttle.vercel.app)** or scan the
 git clone https://github.com/rhythmd22/SmartShuttle.git
 cd SmartShuttle
 
-# Install dev dependencies (ESLint, Prettier)
-npm install
-
 # Run locally (requires Vercel CLI)
-npm start
+npx vercel dev
 ```
 
 ---
@@ -106,8 +103,7 @@ SmartShuttle/
 ├── transit-api-badge.svg  # Transit API attribution badge
 ├── manifest.json          # PWA manifest
 ├── service-worker.js      # Cache-first service worker
-├── package.json           # Node.js dependencies and scripts
-├── package-lock.json      # Dependency lock file
+├── .eslintrc.json         # ESLint config
 ├── .gitignore
 ├── .env.example           # Environment variable template
 ├── vercel.json            # Vercel routing, headers, rewrites
@@ -224,9 +220,7 @@ SmartShuttle uses a CSS custom properties system consolidated into a cohesive da
 | Feedback | [GitHub Issues API](https://docs.github.com/en/rest/issues/issues) |
 | PWA | Service Worker (cache-first), Web App Manifest |
 | Hosting | [Vercel](https://vercel.com) |
-| Linting | [ESLint](https://eslint.org) 8 (recommended config) |
-| Formatting | [Prettier](https://prettier.io) 3 |
-
+| Linting | [ESLint](https://eslint.org) (`.eslintrc.json`) |
 ---
 
 ## Getting Started
@@ -253,7 +247,7 @@ GITHUB_REPO_NAME=your_repo_name                   # optional
 ```
 
 ```bash
-npm start          # Starts Vercel Dev server on localhost:3000
+npx vercel dev     # Starts Vercel Dev server on localhost:3000
 ```
 
 ---
@@ -262,10 +256,8 @@ npm start          # Starts Vercel Dev server on localhost:3000
 
 | Command | Description |
 |---------|------------|
-| `npm start` | Start local dev server (`vercel dev`) |
-| `npm run lint` | Lint JS files with ESLint |
-| `npm run format` | Format all files with Prettier |
-
+| `npx vercel dev` | Start local dev server with all API functions |
+| `npx eslint js/ api/ service-worker.js` | Lint JS files with ESLint |
 ---
 
 ## API
