@@ -222,7 +222,7 @@ SmartShuttle uses a CSS custom properties system consolidated into a cohesive da
 | Feedback | [GitHub Issues API](https://docs.github.com/en/rest/issues/issues) |
 | PWA | Service Worker (cache-first), Web App Manifest |
 | Hosting | [Vercel](https://vercel.com) |
-| Linting | [ESLint](https://eslint.org) (`.eslintrc.json`) |
+| Linting | [ESLint](https://eslint.org) (`eslint.config.js`) |
 ---
 
 ## Getting Started

@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 function sanitizeText(text, maxLength = 5000) {
   if (!text) return '';
   return String(text)

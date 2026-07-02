@@ -1,4 +1,3 @@
-/* eslint-env node */
 const RATE_LIMIT_WINDOW = 60000;
 const RATE_LIMIT_MAX = 120;
 const requestCounts = new Map();
