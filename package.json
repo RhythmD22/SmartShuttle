@@ -6,6 +6,7 @@
   "scripts": {
     "build": "bash build-bundle.sh",
     "lint": "npx eslint js/ api/ service-worker.js",
+    "test": "node --test tests/*.test.js",
     "start": "vercel dev"
   },
   "devDependencies": {

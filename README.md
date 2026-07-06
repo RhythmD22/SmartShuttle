@@ -103,9 +103,12 @@ SmartShuttle/
 ├── manifest.json          # PWA manifest
 ├── service-worker.js      # Cache-first service worker
 ├── build-bundle.sh        # Shell script to regenerate bundle.js from source modules
-├── package.json           # npm scripts: build, lint, start
+├── package.json           # npm scripts: build, lint, test, start
 ├── package-lock.json      # Lockfile for dev dependencies
 ├── eslint.config.js       # ESLint flat config (browser, serviceworker, node globals)
+├── tests/
+│   ├── utils.test.js      # Tests for route types, departure formatting, validation
+│   └── cache.test.js      # Tests for cache key generation and freshness checks
 ├── .gitignore
 ├── .env.example           # Environment variable template
 ├── vercel.json            # Vercel routing, headers, rewrites
@@ -224,6 +227,8 @@ SmartShuttle uses a CSS custom properties system consolidated into a cohesive da
 | PWA | Service Worker (cache-first), Web App Manifest |
 | Hosting | [Vercel](https://vercel.com) |
 | Linting | [ESLint](https://eslint.org) (`eslint.config.js`) |
+| Testing | Node.js native test runner |
+| Bundling | Shell script concatenation |
 ---
 
 ## Getting Started
@@ -262,6 +267,7 @@ npx vercel dev     # Starts Vercel Dev server on localhost:3000
 | `npm start` | Start local dev server with all API functions (`vercel dev`) |
 | `npm run build` | Regenerate `js/bundle.js` from source modules |
 | `npm run lint` | Lint JS files with ESLint (`js/`, `api/`, `service-worker.js`) |
+| `npm run test` | Run the test suite |
 ---
 
 ## API
