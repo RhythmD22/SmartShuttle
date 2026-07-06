@@ -4,6 +4,7 @@
   "description": "SmartShuttle — Real-time transit tracking PWA",
   "type": "module",
   "scripts": {
+    "build": "bash build-bundle.sh",
     "lint": "npx eslint js/ api/ service-worker.js",
     "start": "vercel dev"
   },
