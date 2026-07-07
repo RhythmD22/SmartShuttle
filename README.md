@@ -57,7 +57,7 @@ Visit **[smartshuttle.vercel.app](https://smartshuttle.vercel.app)** or scan the
 ```bash
 git clone https://github.com/rhythmd22/SmartShuttle.git
 cd SmartShuttle
-npm run build && npx vercel dev
+npx vercel dev
 ```
 
 ---
