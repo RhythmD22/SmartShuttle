@@ -29,18 +29,22 @@
 
 | Feature | Description |
 |---------|------------|
-| Live Stop Map | Interactive Leaflet map with nearby transit stops and route info popups |
+| Live Stop Map | Interactive Leaflet map with nearby transit stops, route polylines, and info popups |
+| Route Polylines | Color-coded dashed lines showing each route's path on the map |
 | Live GPS Tracking | Continuous `watchPosition` with auto-follow — map follows you as you walk |
 | Compass Heading | Directional cone on your location marker rotates with device orientation |
-| Route & Departures | Real-time departure countdowns for nearby routes |
+| Route & Departures | Real-time departure countdowns with cancelled-trip detection and last-bus-of-night warnings |
+| Trip Timeline | Tap any departure to see the full stop-by-stop schedule with origin/destination labels |
 | Estimated Occupancy | Per-route crowding estimate (Likely Full / Moderate / Seats Available) based on vehicle type, time of day, and day of week |
-| Live Alerts | Service disruptions, delays, and detours from the Transit API |
+| Live Alerts | Service disruptions, delays, and detours color-coded by severity (Severe / Warning / Info) |
 | Location Search | Search any address or landmark; persists your last location between pages |
 | Route Filtering | Search by route name/number to filter both the list and map markers simultaneously |
+| Duplicate Filtering | Non-canonical itinerary variants are automatically hidden to reduce clutter |
+| Transit Network Labels | Each route shows its transit agency name (e.g. "STM", "TTC") |
 | Swipe Navigation | Swipe left/right between Stops, Routes, and Notifications |
 | Pull-to-Refresh | Quick alert refresh on the Notifications page |
 | Feedback Form | Submit issues with optional file attachments (creates a GitHub Issue) |
-| Transit Data Caching | IndexedDB caches transit API responses per location (stale-while-revalidate: instant display, background refresh) |
+| Transit Data Caching | IndexedDB caches transit API responses per location (stale-while-revalidate) |
 | Offline Support | Service worker caches static assets (cache-first strategy); cached transit data displayed when offline |
 | PWA Installable | Add to home screen for a native app experience |
 
@@ -221,7 +225,7 @@ SmartShuttle uses a CSS custom properties system consolidated into a cohesive da
 | Animations | [dotLottie Web Component](https://github.com/LottieFiles/dotlottie-web) (Lottie) |
 | Font | [Inter](https://fonts.google.com/specimen/Inter) |
 | API Backend | [Vercel serverless functions](https://vercel.com/docs/functions) (Node.js) |
-| Transit Data | [Transit API v3](https://transitapp.com) (`external.transitapp.com`) |
+| Transit Data | [Transit API v4](https://transitapp.com) (`external.transitapp.com`) |
 | Geocoding | [Nominatim](https://nominatim.org) (OpenStreetMap) |
 | Feedback | [GitHub Issues API](https://docs.github.com/en/rest/issues/issues) |
 | PWA | Service Worker (cache-first), Web App Manifest |
@@ -275,10 +279,13 @@ npx vercel dev     # Starts Vercel Dev server on localhost:3000
 ### Transit Proxy
 
 ```
-GET /api/transit/nearby_routes?lat={lat}&lon={lng}&max_distance=1500
+GET /api/transit/nearby_routes?lat={lat}&lon={lng}&max_distance=1500&should_update_realtime=true&include_stops_and_shapes=true&stop_detailed=true
+GET /api/transit/trip_details?trip_search_key={key}
+GET /api/transit/nearby_stops?lat={lat}&lon={lng}&max_distance=1500
+GET /api/transit/stop_departures?global_stop_ids={ids}
 ```
 
-Proxies requests to the Transit API v3. The API key is injected server-side. Rate limited to 120 requests/minute per IP.
+Proxies requests to the Transit API v4. The API key is injected server-side. Rate limited to 120 requests/minute per IP. All `/api/transit/*` paths are forwarded through a single serverless function via Vercel rewrite rules.
 
 ### Send Feedback
 
@@ -303,7 +310,7 @@ Creates a GitHub Issue in the configured repository. Image attachments are uploa
 
 | Variable | Required | Description |
 |----------|----------|------------|
-| `TRANSIT_API_KEY` | Yes | Transit API v3 key from [transitapp.com](https://transitapp.com) |
+| `TRANSIT_API_KEY` | Yes | Transit API v4 key from [transitapp.com](https://transitapp.com) |
 | `GITHUB_TOKEN` | No | GitHub personal access token (classic: `repo` scope; fine-grained: `Issues` and `Contents` read/write) |
 | `GITHUB_REPO_OWNER` | No | GitHub username or org for feedback issues |
 | `GITHUB_REPO_NAME` | No | GitHub repository name for feedback issues |

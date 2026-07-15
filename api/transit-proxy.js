@@ -56,7 +56,7 @@ export default async function handler(request, response) {
     const apiEndpoint = formattedEndpoint.startsWith('/public')
       ? formattedEndpoint
       : `/public${formattedEndpoint}`;
-    const targetUrl = `https://external.transitapp.com/v3${apiEndpoint}${searchParams}`;
+    const targetUrl = `https://external.transitapp.com/v4${apiEndpoint}${searchParams}`;
 
     try {
       new URL(targetUrl);

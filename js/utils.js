@@ -580,6 +580,7 @@ const SS = (() => {
     if (!map || !markersArray) return;
     markersArray.forEach((marker) => map.removeLayer(marker));
     markersArray.length = 0;
+    clearRouteShapes(map);
   }
 
   function showSkeletons(container, count = 3) {
@@ -857,6 +858,227 @@ const SS = (() => {
 
   window.__stopTracking = stopLocationTracking;
 
+  function decodePolyline(encoded) {
+    if (!encoded) return [];
+    const points = [];
+    let index = 0, lat = 0, lng = 0;
+    while (index < encoded.length) {
+      let shift = 0, result = 0;
+      let byte;
+      do {
+        byte = encoded.charCodeAt(index++) - 63;
+        result |= (byte & 0x1f) << shift;
+        shift += 5;
+      } while (byte >= 0x20);
+      const dlat = (result & 1) ? ~(result >> 1) : (result >> 1);
+      lat += dlat;
+      shift = 0;
+      result = 0;
+      do {
+        byte = encoded.charCodeAt(index++) - 63;
+        result |= (byte & 0x1f) << shift;
+        shift += 5;
+      } while (byte >= 0x20);
+      const dlng = (result & 1) ? ~(result >> 1) : (result >> 1);
+      lng += dlng;
+      points.push([lat * 1e-5, lng * 1e-5]);
+    }
+    return points;
+  }
+
+  const routeShapeLayers = [];
+
+  function clearRouteShapes(mapInstance) {
+    routeShapeLayers.forEach((layer) => {
+      if (mapInstance) mapInstance.removeLayer(layer);
+    });
+    routeShapeLayers.length = 0;
+  }
+
+  function renderShapesOnMap(mapInstance, routesData) {
+    clearRouteShapes(mapInstance);
+    if (!mapInstance || !routesData) return;
+
+    const drawnShapes = new Set();
+
+    routesData.forEach((route) => {
+      if (!route.merged_itineraries) return;
+      route.merged_itineraries.forEach((itinerary) => {
+        if (itinerary.itineraries?.[0]?.canonical_itinerary === false) return;
+        itinerary.itineraries?.forEach((innerIt) => {
+          if (!innerIt.shape) return;
+          const shapeKey = innerIt.shape.substring(0, 30);
+          if (drawnShapes.has(shapeKey)) return;
+          drawnShapes.add(shapeKey);
+
+          const coords = decodePolyline(innerIt.shape);
+          if (coords.length < 2) return;
+
+          const color = `#${route.route_color || '6A63F6'}`;
+          const line = L.polyline(coords, {
+            color: color,
+            weight: 3,
+            opacity: 0.5,
+            dashArray: '10 6',
+          }).addTo(mapInstance);
+
+          routeShapeLayers.push(line);
+        });
+      });
+    });
+  }
+
+  window.__routeShapes = routeShapeLayers;
+  window.__clearRouteShapes = clearRouteShapes;
+
+  function trapFocus(container) {
+    const focusable = container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const prevActive = document.activeElement;
+
+    function handleKey(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    }
+
+    function closeModal() {
+      document.removeEventListener('keydown', handleKey);
+      container.remove();
+      if (prevActive && typeof prevActive.focus === 'function') {
+        prevActive.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKey);
+    if (first) first.focus();
+    return closeModal;
+  }
+
+  function showTripErrorModal(message) {
+    const existing = document.querySelector('.trip-details-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.className = 'trip-details-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Trip details error');
+    modal.innerHTML = `<div class="trip-details-overlay"></div>
+      <div class="trip-details-card">
+        <div class="trip-details-header">
+          <h3>Trip Stops</h3>
+          <button class="trip-details-close" aria-label="Close trip details">&times;</button>
+        </div>
+        <div class="trip-details-list"><p class="trip-details-empty">${message}</p></div>
+      </div>`;
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('.trip-details-close');
+    const overlay = modal.querySelector('.trip-details-overlay');
+    const close = trapFocus(modal);
+
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', close);
+  }
+
+  window.viewTripDetails = async function (event, tripSearchKey) {
+    event.stopPropagation();
+    if (!tripSearchKey) return;
+
+    try {
+      const response = await fetch(
+        `/api/transit/trip_details?trip_search_key=${encodeURIComponent(tripSearchKey)}`
+      );
+      if (!response.ok) throw new Error('Failed to load trip details');
+      const data = await response.json();
+
+      const details = data.schedule_items || [];
+      if (details.length === 0) {
+        showTripErrorModal('No stop details available for this trip.');
+        return;
+      }
+
+      const route = data.route || {};
+      const routeName = route.route_short_name || route.real_time_route_id || 'Route';
+      const routeColor = route.route_color || '6A63F6';
+      const routeTextColor = route.route_text_color || 'ffffff';
+      const network = route.route_network_name ? ` \u00B7 ${route.route_network_name}` : '';
+
+      const html = details.map((d, i) => {
+        const stopField = d.stop;
+        const stopName =
+          stopField?.stop_name ||
+          d.stop_name ||
+          stopField?.stop_code ||
+          stopField?.global_stop_id ||
+          `Stop ${i + 1}`;
+        const time = d.departure_time
+          ? new Date(d.departure_time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          : '\u2014';
+        const isFirst = i === 0;
+        const isLast = i === details.length - 1;
+        const label = isFirst ? 'Origin' : isLast ? 'Destination' : '';
+        return `<div class="trip-stop-row" role="listitem">
+          <div class="trip-stop-marker ${isFirst ? 'first' : isLast ? 'last' : ''}" aria-hidden="true">
+            <div class="trip-stop-dot"></div>
+            ${!isLast ? '<div class="trip-stop-line"></div>' : ''}
+          </div>
+          <div class="trip-stop-info">
+            <div class="trip-stop-name">
+              ${stopName}
+              ${label ? `<span class="trip-stop-label">${label}</span>` : ''}
+            </div>
+            <div class="trip-stop-time">${time}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      const modal = document.createElement('div');
+      modal.className = 'trip-details-modal';
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
+      modal.setAttribute('aria-label', 'Trip stop details');
+      modal.innerHTML = `<div class="trip-details-overlay"></div>
+        <div class="trip-details-card">
+          <div class="trip-details-header">
+            <div class="trip-details-header-left">
+              <span class="trip-details-route-badge" style="background-color:#${routeColor};color:#${routeTextColor}">${routeName}</span>
+              <span class="trip-details-route-network">${network}</span>
+            </div>
+            <button class="trip-details-close" aria-label="Close trip details">&times;</button>
+          </div>
+          <div class="trip-details-legend">
+            <span class="trip-legend-item"><span class="trip-legend-dot origin"></span> Origin</span>
+            <span class="trip-legend-item"><span class="trip-legend-dot"></span> Stop</span>
+            <span class="trip-legend-item"><span class="trip-legend-dot dest"></span> Destination</span>
+          </div>
+          <div class="trip-details-list" role="list">${html}</div>
+        </div>`;
+      document.body.appendChild(modal);
+
+      const closeBtn = modal.querySelector('.trip-details-close');
+      const overlay = modal.querySelector('.trip-details-overlay');
+      const close = trapFocus(modal);
+
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', close);
+    } catch (err) {
+      console.error('Error loading trip details:', err);
+      showTripErrorModal('Could not load trip details. Please try again.');
+    }
+  };
+
   return {
     initializeDesktopNotification,
     initializeFeedbackButton,
@@ -889,6 +1111,9 @@ const SS = (() => {
     initializeTransitMap,
     hideMapLoadingOverlay,
     stopTracking: stopLocationTracking,
+    decodePolyline,
+    renderShapesOnMap,
+    clearRouteShapes,
   };
 })();
 

@@ -24,11 +24,12 @@ import { TransitCache } from './cache.js';
 
     SS.clearMapMarkers(map, shuttleMarkers);
 
-    if (transitData.routes && transitData.routes.length > 0) {
+    if (transitData.nearby_routes && transitData.nearby_routes.length > 0) {
       let stopCount = 0;
-      transitData.routes.forEach((route) => {
-        if (route.itineraries && route.itineraries.length > 0) {
-          route.itineraries.forEach((itinerary) => {
+      transitData.nearby_routes.forEach((route) => {
+        if (route.merged_itineraries && route.merged_itineraries.length > 0) {
+          route.merged_itineraries.forEach((itinerary) => {
+            if (itinerary.itineraries?.[0]?.canonical_itinerary === false) return;
             if (itinerary.closest_stop) {
               stopCount++;
               const stop = itinerary.closest_stop;
@@ -42,10 +43,26 @@ import { TransitCache } from './cache.js';
               });
 
               const { cls: vehicleClass, text: vehicleText } = SS.getVehicleDisplayData(route);
+              const networkName = route.route_network_name ? ` &middot; ${route.route_network_name}` : '';
+
+              let departureHTML = '';
+              if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
+                const nextItem = itinerary.schedule_items.find(
+                  (si) => si.departure_time && !si.is_cancelled
+                );
+                if (nextItem) {
+                  const timeText = SS.formatDepartureTime(nextItem.departure_time);
+                  const lastNote = nextItem.is_last ? ' &middot; <span class="last-bus-badge">Last bus</span>' : '';
+                  departureHTML = `<div class="departure-info">${timeText}${lastNote}</div>`;
+                } else if (itinerary.schedule_items[0].is_cancelled) {
+                  departureHTML = '<div class="departure-info cancelled">Cancelled</div>';
+                }
+              }
 
               const popupContent = `
                                         <div class="bus-stop-popup">
-                                            <h3 class="stop-name">${stop.stop_name}</h3>
+                                            <h3 class="stop-name">${stop.stop_name}${networkName}</h3>
+                                            ${departureHTML}
                                             <div class="popup-details">
                                                 <div class="vehicle-type">
                                                     <span class="vehicle-type-label">Vehicle:</span>
@@ -113,6 +130,7 @@ import { TransitCache } from './cache.js';
         const cached = await TransitCache.getTransitData(lat, lng);
         if (cached && cached.data) {
           displayStopsFromData(cached.data);
+          SS.renderShapesOnMap(map, cached.data.nearby_routes);
           hasCachedData = true;
         }
       } catch (e) {
@@ -121,7 +139,7 @@ import { TransitCache } from './cache.js';
 
       try {
         const transitResponse = await fetch(
-          `/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`
+          `/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true&include_stops_and_shapes=true&stop_detailed=true`
         );
 
         if (!transitResponse.ok) {
@@ -133,6 +151,7 @@ import { TransitCache } from './cache.js';
         TransitCache.setTransitData(lat, lng, transitData);
 
         displayStopsFromData(transitData);
+        SS.renderShapesOnMap(map, transitData.nearby_routes);
         hasCachedData = false;
       } catch (error) {
         console.error('Error finding nearby bus stops:', error);

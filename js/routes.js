@@ -72,14 +72,14 @@ import { TransitCache } from './cache.js';
         const longName = (route.route_long_name || '').toLowerCase();
         const routeName = (route.route_name || '').toLowerCase();
         const routeId = (route.real_time_route_id || '').toLowerCase();
-        const headsign = route.itineraries?.[0]?.headsign?.toLowerCase() || '';
+        const headsign = route.merged_itineraries?.[0]?.itineraries?.[0]?.headsign?.toLowerCase() || '';
 
         return (
           shortName.includes(query) ||
           longName.includes(query) ||
           routeName.includes(query) ||
           routeId.includes(query) ||
-          headsign.includes(query)
+          (headsign || '').includes(query)
         );
       });
 
@@ -122,10 +122,11 @@ import { TransitCache } from './cache.js';
   const displayRoutesFromData = (data) => {
     SS.clearMapMarkers(map, routeMarkers);
 
-    if (data.routes && data.routes.length > 0) {
-      currentRoutes = data.routes;
-      processRoutesData(data.routes);
-      updateRouteArrivalsSection(data.routes);
+    if (data.nearby_routes && data.nearby_routes.length > 0) {
+      currentRoutes = data.nearby_routes;
+      processRoutesData(data.nearby_routes);
+      updateRouteArrivalsSection(data.nearby_routes);
+      SS.renderShapesOnMap(map, data.nearby_routes);
       hideRoutesEmptyState();
     } else {
       currentRoutes = [];
@@ -154,7 +155,7 @@ import { TransitCache } from './cache.js';
 
     try {
       const response = await fetch(
-        `/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true`
+        `/api/transit/nearby_routes?lat=${lat}&lon=${lng}&max_distance=1500&should_update_realtime=true&include_stops_and_shapes=true&stop_detailed=true`
       );
 
       if (!response.ok) {
@@ -186,19 +187,29 @@ import { TransitCache } from './cache.js';
 
   const processRoutesData = (routes) => {
     routes.forEach((route) => {
-      if (route.itineraries && route.itineraries.length > 0) {
-        route.itineraries.forEach((itinerary) => {
+      if (route.merged_itineraries && route.merged_itineraries.length > 0) {
+        route.merged_itineraries.forEach((itinerary) => {
+          if (itinerary.itineraries?.[0]?.canonical_itinerary === false) return;
           if (itinerary.closest_stop) {
             const stop = itinerary.closest_stop;
 
             let nextDepartureTime = 'No schedule available';
             let isRealTime = false;
+            let isCancelled = false;
+            let isLast = false;
+            let tripSearchKey = null;
 
             if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
-              const nextDeparture = itinerary.schedule_items[0];
-              if (nextDeparture.departure_time) {
+              const nextDeparture = itinerary.schedule_items.find(
+                (si) => si.departure_time && !si.is_cancelled
+              );
+              if (nextDeparture) {
                 nextDepartureTime = SS.formatDepartureTime(nextDeparture.departure_time);
                 isRealTime = SS.isRealTimeDeparture(nextDeparture);
+                isLast = nextDeparture.is_last || false;
+                tripSearchKey = nextDeparture.trip_search_key || null;
+              } else if (itinerary.schedule_items[0].is_cancelled) {
+                isCancelled = true;
               }
             }
 
@@ -210,28 +221,42 @@ import { TransitCache } from './cache.js';
             });
 
             const { cls: vehicleClass, text: vehicleText } = SS.getVehicleDisplayData(route);
+            const networkName = route.route_network_name ? ` &middot; ${route.route_network_name}` : '';
+            const lastNote = isLast ? ' &middot; <span class="last-bus-badge">Last bus</span>' : '';
+
+            let departureBadge = '';
+            if (isCancelled) {
+              departureBadge = '<span class="cancelled-badge">&#x2022; Cancelled</span>';
+            } else if (isRealTime) {
+              departureBadge = '<span class="real-time-badge">&#x2022; Real-time</span>';
+            } else {
+              departureBadge = '<span class="scheduled-badge">&#x2022; Scheduled</span>';
+            }
+
+            let tripDetailsButton = '';
+            if (tripSearchKey) {
+              tripDetailsButton = `<button class="trip-details-btn" data-trip-key="${tripSearchKey}" onclick="window.viewTripDetails(event, '${tripSearchKey.replace(/'/g, "\\'")}')" aria-label="View all stops for this trip">View all stops &rarr;</button>`;
+            }
 
             const popupContent = `
                         <div class="bus-stop-popup">
-                            <h3 class="stop-name">${stop.stop_name}</h3>
+                            <h3 class="stop-name">${stop.stop_name}${networkName}</h3>
                             <div class="popup-details">
                                 <div class="route-info">
                                     <span class="route-number" style="background-color: #${route.route_color || '6A63F6'}; color: ${route.route_text_color || 'white'}; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
                                         ${route.route_short_name || route.real_time_route_id}
                                     </span>
-                                    <span class="direction">${itinerary.headsign || 'Direction Unknown'}</span>
+                                    <span class="direction">${itinerary.itineraries?.[0]?.headsign || 'Direction Unknown'}</span>
                                 </div>
                                 <div class="vehicle-type">
                                     <span class="vehicle-type-label">Vehicle:</span>
                                     <span class="vehicle-type-value ${vehicleClass}">${vehicleText}</span>
                                 </div>
                                 <div class="departure-info">
-                                    <span class="next-departure">
-                                        ${nextDepartureTime}
+                                    <span class="next-departure ${isCancelled ? 'cancelled' : ''}">
+                                        ${isCancelled ? 'Cancelled' : nextDepartureTime}${lastNote}
                                     </span>
-                                    <span class="${isRealTime ? 'real-time-badge' : 'scheduled-badge'}">
-                                        ${isRealTime ? '\u2022 Real-time' : '\u2022 Scheduled'}
-                                    </span>
+                                    ${departureBadge}
                                 </div>
                                 <div class="accessibility-info">
                                     <span class="accessibility-label">Accessibility:</span>
@@ -239,6 +264,7 @@ import { TransitCache } from './cache.js';
                                         ${stop.wheelchair_boarding === 1 ? 'Accessible' : stop.wheelchair_boarding === 2 ? 'Not Accessible' : 'Unknown'}
                                     </span>
                                 </div>
+                                ${tripDetailsButton}
                             </div>
                         </div>
                     `;
@@ -268,8 +294,9 @@ import { TransitCache } from './cache.js';
               route.route_long_name,
               route.route_name,
               route.real_time_route_id,
-              itinerary.headsign,
+              itinerary.itineraries?.[0]?.headsign,
               stop.stop_name,
+              route.route_network_name,
             ]
               .filter(Boolean)
               .map((s) => s.toLowerCase())
@@ -297,26 +324,51 @@ import { TransitCache } from './cache.js';
     }
 
     routes.forEach((route) => {
-      if (route.itineraries && route.itineraries.length > 0) {
-        route.itineraries.forEach((itinerary) => {
+      if (route.merged_itineraries && route.merged_itineraries.length > 0) {
+        route.merged_itineraries.forEach((itinerary) => {
+          if (itinerary.itineraries?.[0]?.canonical_itinerary === false) return;
           if (itinerary.schedule_items && itinerary.schedule_items.length > 0) {
-            const scheduleItem = itinerary.schedule_items[0];
-            const arrivalText = SS.formatDepartureTimeShort(scheduleItem.departure_time);
+            const nextItem = itinerary.schedule_items.find(
+              (si) => si.departure_time && !si.is_cancelled
+            );
+            if (nextItem) {
+              const arrivalText = SS.formatDepartureTimeShort(nextItem.departure_time);
+              const lastNote = nextItem.is_last ? ' \u2022 Last' : '';
 
-            const routeRow = document.createElement('div');
-            routeRow.className = 'route-row';
+              const routeRow = document.createElement('div');
+              routeRow.className = 'route-row';
 
-            const routeName = SS.getRouteDisplayName(route);
-            const modeText = SS.getVehicleDisplayData(route).text;
+              const routeName = SS.getRouteDisplayName(route);
+              const modeText = SS.getVehicleDisplayData(route).text;
+              const networkName = route.route_network_name ? ` \u00B7 ${route.route_network_name}` : '';
+              const headsign = itinerary.itineraries?.[0]?.headsign || 'Direction Unknown';
 
-            routeRow.innerHTML = `
-                        <div class="route-info">
-                            ${routeName} (${modeText}) - ${itinerary.headsign || 'Direction Unknown'}
-                        </div>
-                        <div class="arrival-info">${arrivalText}</div>
-                    `;
+              routeRow.innerHTML = `
+                          <div class="route-info">
+                              ${routeName}${networkName} (${modeText}) - ${headsign}
+                          </div>
+                          <div class="arrival-info">
+                              <span class="${nextItem.is_last ? 'last-bus-text' : ''}">${arrivalText}${lastNote}</span>
+                          </div>
+                      `;
 
-            routeArrivalsContent.appendChild(routeRow);
+              routeArrivalsContent.appendChild(routeRow);
+            } else if (itinerary.schedule_items[0].is_cancelled) {
+              const routeRow = document.createElement('div');
+              routeRow.className = 'route-row cancelled';
+
+              const routeName = SS.getRouteDisplayName(route);
+              const headsign = itinerary.itineraries?.[0]?.headsign || 'Direction Unknown';
+
+              routeRow.innerHTML = `
+                          <div class="route-info">
+                              ${routeName} - ${headsign}
+                          </div>
+                          <div class="arrival-info cancelled">Cancelled</div>
+                      `;
+
+              routeArrivalsContent.appendChild(routeRow);
+            }
           } else {
             const routeRow = document.createElement('div');
             routeRow.className = 'route-row';

@@ -38,7 +38,7 @@
   "rewrites": [
     {
       "source": "/api/transit/:path*",
-      "destination": "/api/transit-proxy.js"
+      "destination": "/api/transit-proxy"
     },
     {
       "source": "/api/send-feedback",

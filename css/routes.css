@@ -145,6 +145,20 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.routes-page .route-row.cancelled .arrival-info,
+.routes-page .route-row.cancelled .route-info {
+  color: var(--color-danger, #ff6b6b);
+}
+
+.routes-page .last-bus-text {
+  color: var(--color-warning, #e6a600);
+}
+
+.routes-page .arrival-info.cancelled {
+  color: var(--color-danger, #ff6b6b);
+  font-weight: 600;
+}
+
 .routes-page .route-info {
   color: white;
   font-size: var(--text-base);

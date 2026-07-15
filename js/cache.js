@@ -1,6 +1,6 @@
 const TransitCache = (() => {
   const DB_NAME = 'SmartShuttleCache';
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   const STORE_NAME = 'transitCache';
   const DEFAULT_TTL = 5 * 60 * 1000;
 

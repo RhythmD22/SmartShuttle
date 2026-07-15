@@ -128,7 +128,7 @@ import { SS } from './utils.js';
 
     try {
       const response = await fetch(
-        `/api/transit/nearby_routes?lat=${lat}&lon=${lon}&max_distance=1500&should_update_realtime=true`
+        `/api/transit/nearby_routes?lat=${lat}&lon=${lon}&max_distance=1500&should_update_realtime=true&include_stops_and_shapes=true&stop_detailed=true`
       );
 
       if (!response.ok) {
@@ -139,11 +139,11 @@ import { SS } from './utils.js';
 
       container.innerHTML = '';
 
-      if (data.routes && data.routes.length > 0) {
+      if (data.nearby_routes && data.nearby_routes.length > 0) {
         const allAlerts = [];
         const displayedAlerts = new Set();
 
-        data.routes.forEach((route) => {
+        data.nearby_routes.forEach((route) => {
           if (route.alerts && route.alerts.length > 0) {
             route.alerts.forEach((alert) => {
               const alertIdentifier =
