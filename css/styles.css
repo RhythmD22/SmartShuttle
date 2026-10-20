@@ -1500,3 +1500,19 @@ dotlottie-wc {
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }
+
+/* ── iOS 27 home-screen web app top blur workaround ────── */
+
+html[data-ios27="true"] {
+  --ios27-blur-gap: 0px;
+}
+
+@media (orientation: portrait) {
+  html[data-ios27="true"] {
+    --ios27-blur-gap: 20px;
+  }
+}
+
+html[data-ios27="true"] .container:not(.landing-page) {
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--ios27-blur-gap));
+}
